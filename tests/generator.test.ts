@@ -82,6 +82,39 @@ const SAMPLE_MANIFEST = parseAbiManifest({
         asyncBoundary: null,
       },
     },
+    {
+      name: "alloc_bytes",
+      async: false,
+      symbolVersion: 1,
+      params: [
+        {
+          name: "len",
+          fzy: "usize",
+          c: "size_t",
+          contract: {
+            ownership: "value",
+            nullability: "n/a",
+            mutability: "const",
+            lifetimeAnchor: null,
+            view: null,
+          },
+        },
+      ],
+      return: {
+        fzy: "*u8",
+        c: "uint8_t*",
+        contract: {
+          ownership: "owned",
+          nullability: "non_null",
+          mutability: "mut",
+        },
+      },
+      contract: {
+        execution: "sync",
+        callbackBindings: [],
+        asyncBoundary: null,
+      },
+    },
   ],
 });
 
@@ -92,5 +125,8 @@ test("renderBindingModule emits typed bindings", () => {
 
   assert.match(text, /export function createBindings/);
   assert.match(text, /hash32\(ptr_borrowed: Uint8Array \| Buffer, len: bigint\): number;/);
+  assert.match(text, /export interface uint8_tOwnedHandle extends OpaqueHandle<"uint8_t">/);
+  assert.match(text, /decodeBytes\(length: number\): Uint8Array;/);
+  assert.match(text, /alloc_bytes\(len: bigint\): uint8_tOwnedHandle;/);
   assert.match(text, /module\.exports\.get\("hash32"\)/);
 });

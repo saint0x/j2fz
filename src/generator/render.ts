@@ -11,13 +11,20 @@ export function renderBindingModule(
   const model = buildGeneratedModuleModel(manifest, exportName);
 
   const lines: string[] = [];
-  lines.push(`import type { LoadModuleOptions } from "${runtimeImportPath}";`);
+  lines.push(`import type { LoadModuleOptions, OpaqueHandle } from "${runtimeImportPath}";`);
   lines.push(`import { loadFozzyModule } from "${runtimeImportPath}";`);
   lines.push("");
-  lines.push("export interface OpaqueHandle<TBrand extends string> {");
-  lines.push("  readonly __brand: TBrand;");
-  lines.push("}");
-  lines.push("");
+  for (const handle of model.handleTypes) {
+    lines.push(`export interface ${handle.typeName} extends OpaqueHandle<${JSON.stringify(handle.brand)}> {`);
+    lines.push("  readonly pointer: unknown;");
+    lines.push("  readonly disposed: boolean;");
+    lines.push("  decodeBytes(length: number): Uint8Array;");
+    if (handle.supportsStringDecode) {
+      lines.push("  decodeString(): string;");
+    }
+    lines.push("}");
+    lines.push("");
+  }
   lines.push(`export interface ${sanitizeIdentifier(manifest.package.name)}Bindings {`);
   for (const item of model.exports) {
     const params = item.tsParams.map((param) => `${param.jsName}: ${param.tsType}`).join(", ");
@@ -33,7 +40,7 @@ export function renderBindingModule(
     lines.push(`    ${item.jsName}(${argNames}) {`);
     lines.push(`      const fn = module.exports.get(${JSON.stringify(item.abiName)});`);
     lines.push(`      if (!fn) throw new Error(${JSON.stringify(`missing export binding for ${item.abiName}`)});`);
-    lines.push(`      return fn.call(${argNames});`);
+    lines.push(`      return fn.call(${argNames}) as ${item.tsReturnType};`);
     lines.push("    },");
   }
   lines.push("  };");

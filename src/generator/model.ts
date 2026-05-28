@@ -4,6 +4,7 @@ export interface GeneratedModuleModel {
   readonly packageName: string;
   readonly exportName: string;
   readonly exports: GeneratedExportModel[];
+  readonly handleTypes: GeneratedHandleTypeModel[];
 }
 
 export interface GeneratedExportModel {
@@ -12,6 +13,7 @@ export interface GeneratedExportModel {
   readonly tsReturnType: string;
   readonly tsParams: GeneratedParamModel[];
   readonly isAsync: boolean;
+  readonly returnsOwnedHandle: boolean;
 }
 
 export interface GeneratedParamModel {
@@ -20,18 +22,28 @@ export interface GeneratedParamModel {
   readonly tsType: string;
 }
 
+export interface GeneratedHandleTypeModel {
+  readonly typeName: string;
+  readonly brand: string;
+  readonly cType: string;
+  readonly supportsStringDecode: boolean;
+}
+
 export function buildGeneratedModuleModel(
   manifest: FozzyAbiManifest,
   exportName = "createBindings",
 ): GeneratedModuleModel {
+  const handleTypes = collectHandleTypes(manifest.exports);
   return {
     packageName: manifest.package.name,
     exportName,
     exports: manifest.exports.map((abiExport) => buildGeneratedExportModel(abiExport)),
+    handleTypes,
   };
 }
 
 function buildGeneratedExportModel(abiExport: AbiExport): GeneratedExportModel {
+  const returnsOwnedHandle = returnsOwnedPointerHandle(abiExport);
   return {
     abiName: abiExport.name,
     jsName: sanitizeIdentifier(abiExport.name),
@@ -44,6 +56,7 @@ function buildGeneratedExportModel(abiExport: AbiExport): GeneratedExportModel {
       tsType: renderTsTypeForParam(param.c, param.contract.ownership),
     })),
     isAsync: abiExport.async,
+    returnsOwnedHandle,
   };
 }
 
@@ -60,9 +73,14 @@ export function renderTsTypeForCType(cType: string, ownership: string): string {
   if (normalized.endsWith("*")) {
     const base = normalized.replace(/\*/g, "").trim();
     if (base === "char") {
-      return ownership === "owned" ? "string | bigint" : "string | Uint8Array | Buffer";
+      return ownership === "owned"
+        ? ownedHandleTypeName(base)
+        : "string | Uint8Array | Buffer";
     }
     if (base === "uint8_t" || base === "int8_t") {
+      if (ownership === "owned") {
+        return ownedHandleTypeName(base);
+      }
       if (ownership === "out" || ownership === "inout") {
         return "Uint8Array | Buffer";
       }
@@ -106,4 +124,32 @@ function sanitizeIdentifier(value: string): string {
 
 function sanitizeTypeReference(value: string): string {
   return value.replace(/[^A-Za-z0-9_$]/g, "_");
+}
+
+function returnsOwnedPointerHandle(abiExport: AbiExport): boolean {
+  return abiExport.return.contract.ownership === "owned" && abiExport.return.c.includes("*");
+}
+
+function collectHandleTypes(exports: AbiExport[]): GeneratedHandleTypeModel[] {
+  const byName = new Map<string, GeneratedHandleTypeModel>();
+  for (const abiExport of exports) {
+    if (!returnsOwnedPointerHandle(abiExport)) {
+      continue;
+    }
+    const base = abiExport.return.c.replace(/\bconst\b/g, "").replace(/\*/g, "").trim().replace(/\s+/g, " ");
+    const typeName = ownedHandleTypeName(base);
+    if (!byName.has(typeName)) {
+      byName.set(typeName, {
+        typeName,
+        brand: base,
+        cType: abiExport.return.c,
+        supportsStringDecode: base === "char",
+      });
+    }
+  }
+  return [...byName.values()];
+}
+
+function ownedHandleTypeName(base: string): string {
+  return `${sanitizeTypeReference(base)}OwnedHandle`;
 }

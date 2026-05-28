@@ -105,6 +105,7 @@ Current generator responsibilities:
 - map ABI types into TypeScript surface types
 - render typed binding module source
 - write generated module output
+- emit ownership-aware handle interfaces for owned pointer returns
 
 ## Current Runtime Contract
 

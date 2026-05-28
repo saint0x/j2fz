@@ -23,6 +23,7 @@ The repo now includes a real production foundation rather than only planning doc
 - Koffi-backed native loading and symbol declaration
 - manifest-driven TypeScript binding generation
 - ownership-aware argument and result adaptation
+- generated ownership-aware handle types for typed binding output
 - callback registration and native callback roundtrip coverage
 - native integration testing against a compiled fixture shared library
 
