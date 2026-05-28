@@ -36,6 +36,13 @@ export interface LoadedExport {
   registerCallback(bindingId: string, fn: (...args: unknown[]) => unknown): RegisteredCallbackHandle;
 }
 
+export interface AsyncHandleRuntimeBinding {
+  start(...args: unknown[]): unknown;
+  poll(handle: bigint | number, doneOut: Array<number | bigint | boolean | null>): unknown;
+  awaitResult(handle: bigint | number, resultOut: Array<unknown>): unknown;
+  drop(handle: bigint | number): unknown;
+}
+
 export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
   ensureReadable(options.paths.abiManifest);
   ensureReadable(options.paths.sharedLibrary);
@@ -144,90 +151,102 @@ function invokeAsyncHandleExport(
   }
 
   try {
-    const start = library.func(
+    const binding: AsyncHandleRuntimeBinding = {
+      start: library.func(
       `int32_t ${boundary.startSymbol}(${[
         ...abiExport.params.map((param) => renderPrototypeParam(abiExport, param.name, registry)),
         "_Out_ uint64_t *handle_out",
       ].join(", ")})`,
-    );
-    const poll = library.func(`int32_t ${boundary.pollSymbol}(uint64_t handle, _Out_ int32_t *done_out)`);
-    const awaitResult = library.func(
-      `int32_t ${boundary.awaitSymbol}(uint64_t handle, _Out_ ${boundary.resultType} *result_out)`,
-    );
-    const drop = library.func(`int32_t ${boundary.dropSymbol}(uint64_t handle)`);
+      ),
+      poll: library.func(`int32_t ${boundary.pollSymbol}(uint64_t handle, _Out_ int32_t *done_out)`),
+      awaitResult: library.func(
+        `int32_t ${boundary.awaitSymbol}(uint64_t handle, _Out_ ${boundary.resultType} *result_out)`,
+      ),
+      drop: library.func(`int32_t ${boundary.dropSymbol}(uint64_t handle)`),
+    };
 
-    const handleOut: Array<bigint | number | null> = [null];
-    const startCode = start(...args, handleOut);
-    if (typeof startCode !== "number" || startCode !== 0) {
-      throw new AsyncInteropError(`async start failed for ${abiExport.name}: code=${String(startCode)}`);
-    }
-    const handle = handleOut[0];
-    if (typeof handle !== "bigint" && typeof handle !== "number") {
-      throw new AsyncInteropError(`async start did not return a valid handle for ${abiExport.name}`);
-    }
-
-    return new Promise((resolve, reject) => {
-      let settled = false;
-      let lastDoneValue: unknown = null;
-      const finish = (fn: () => void) => {
-        if (settled) {
-          return;
-        }
-        settled = true;
-        clearInterval(timer);
-        clearTimeout(timeout);
-        fn();
-      };
-      const timer = setInterval(() => {
-        try {
-          const doneOut: Array<number | null> = [null];
-          const pollCode = poll(handle, doneOut);
-          if (typeof pollCode !== "number" || pollCode !== 0) {
-            finish(() => {
-              tryDrop(drop, handle);
-              reject(new AsyncInteropError(`async poll failed for ${abiExport.name}: code=${String(pollCode)}`));
-            });
-            return;
-          }
-          lastDoneValue = doneOut[0];
-          if (!isCompletionSignal(doneOut[0])) {
-            return;
-          }
-
-          const resultOut: Array<unknown> = [null];
-          const awaitCode = awaitResult(handle, resultOut);
-          finish(() => {
-            tryDrop(drop, handle);
-            if (typeof awaitCode !== "number" || awaitCode !== 0) {
-              reject(new AsyncInteropError(`async await failed for ${abiExport.name}: code=${String(awaitCode)}`));
-              return;
-            }
-            resolve(resultOut[0]);
-          });
-        } catch (error) {
-          finish(() => {
-            tryDrop(drop, handle);
-            reject(new AsyncInteropError(`async export failed for ${abiExport.name}`, { cause: error }));
-          });
-        }
-      }, pollIntervalMs);
-      const timeout = setTimeout(() => {
-        finish(() => {
-          tryDrop(drop, handle);
-          reject(
-            new AsyncInteropError(
-              `async export timed out for ${abiExport.name} after ${asyncTimeoutMs}ms (last done=${String(lastDoneValue)})`,
-            ),
-          );
-        });
-      }, asyncTimeoutMs);
-    });
+    return invokeAsyncHandleRuntimeBinding(binding, abiExport.name, args, pollIntervalMs, asyncTimeoutMs);
   } catch (error) {
     if (error instanceof AsyncInteropError) {
       throw error;
     }
     throw new SymbolLoadError(`failed binding async handle symbols for ${abiExport.name}`, { cause: error });
   }
+}
+
+export function invokeAsyncHandleRuntimeBinding(
+  binding: AsyncHandleRuntimeBinding,
+  exportName: string,
+  args: unknown[],
+  pollIntervalMs: number,
+  asyncTimeoutMs: number,
+): Promise<unknown> {
+  const handleOut: Array<bigint | number | null> = [null];
+  const startCode = binding.start(...args, handleOut);
+  if (typeof startCode !== "number" || startCode !== 0) {
+    throw new AsyncInteropError(`async start failed for ${exportName}: code=${String(startCode)}`);
+  }
+  const handle = handleOut[0];
+  if (typeof handle !== "bigint" && typeof handle !== "number") {
+    throw new AsyncInteropError(`async start did not return a valid handle for ${exportName}`);
+  }
+
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    let lastDoneValue: unknown = null;
+    const finish = (fn: () => void) => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      clearInterval(timer);
+      clearTimeout(timeout);
+      fn();
+    };
+    const timer = setInterval(() => {
+      try {
+        const doneOut: Array<number | bigint | boolean | null> = [null];
+        const pollCode = binding.poll(handle, doneOut);
+        if (typeof pollCode !== "number" || pollCode !== 0) {
+          finish(() => {
+            tryDrop(binding.drop, handle);
+            reject(new AsyncInteropError(`async poll failed for ${exportName}: code=${String(pollCode)}`));
+          });
+          return;
+        }
+        lastDoneValue = doneOut[0];
+        if (!isCompletionSignal(doneOut[0])) {
+          return;
+        }
+
+        const resultOut: Array<unknown> = [null];
+        const awaitCode = binding.awaitResult(handle, resultOut);
+        finish(() => {
+          tryDrop(binding.drop, handle);
+          if (typeof awaitCode !== "number" || awaitCode !== 0) {
+            reject(new AsyncInteropError(`async await failed for ${exportName}: code=${String(awaitCode)}`));
+            return;
+          }
+          resolve(resultOut[0]);
+        });
+      } catch (error) {
+        finish(() => {
+          tryDrop(binding.drop, handle);
+          reject(new AsyncInteropError(`async export failed for ${exportName}`, { cause: error }));
+        });
+      }
+    }, pollIntervalMs);
+    const timeout = setTimeout(() => {
+      finish(() => {
+        tryDrop(binding.drop, handle);
+        reject(
+          new AsyncInteropError(
+            `async export timed out for ${exportName} after ${asyncTimeoutMs}ms (last done=${String(lastDoneValue)})`,
+          ),
+        );
+      });
+    }, asyncTimeoutMs);
+  });
 }
 
 function bindParamSpec(
@@ -261,7 +280,7 @@ function renderPrototypeParam(
   return `${qualifier}${param.c} ${param.name}`;
 }
 
-function tryDrop(drop: (...args: unknown[]) => unknown, handle: bigint | number): void {
+function tryDrop(drop: (handle: bigint | number) => unknown, handle: bigint | number): void {
   try {
     drop(handle);
   } catch {
