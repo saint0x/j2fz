@@ -8,11 +8,13 @@ export function renderBindingModule(
 ): string {
   const runtimeImportPath = options.runtimeImportPath ?? "j2fz";
   const exportName = options.exportName ?? "createBindings";
+  const discoveredExportName = options.discoveredExportName ?? "createDiscoveredBindings";
   const model = buildGeneratedModuleModel(manifest, exportName);
 
   const lines: string[] = [];
-  lines.push(`import type { Disposable, LoadModuleOptions, OpaqueHandle } from "${runtimeImportPath}";`);
-  lines.push(`import { loadFozzyModule } from "${runtimeImportPath}";`);
+  lines.push(`import { fileURLToPath } from "node:url";`);
+  lines.push(`import type { CallbackContextValue, LoadModuleOptions, LoadPackageOptions, OpaqueHandle, RegisteredCallbackHandle } from "${runtimeImportPath}";`);
+  lines.push(`import { loadFozzyModule, loadFozzyPackage } from "${runtimeImportPath}";`);
   lines.push("");
   for (const handle of model.handleTypes) {
     lines.push(`export interface ${handle.typeName} extends OpaqueHandle<${JSON.stringify(handle.brand)}> {`);
@@ -25,6 +27,13 @@ export function renderBindingModule(
     lines.push("}");
     lines.push("");
   }
+  for (const callback of model.callbacks) {
+    lines.push(`export interface ${callback.handleTypeName} extends RegisteredCallbackHandle<${JSON.stringify(callback.bindingId)}> {}`);
+    if (callback.contextTypeName !== null) {
+      lines.push(`export type ${callback.contextTypeName} = CallbackContextValue;`);
+    }
+    lines.push("");
+  }
   lines.push(`export interface ${sanitizeIdentifier(manifest.package.name)}Bindings {`);
   lines.push("  dispose(): void;");
   for (const item of model.exports) {
@@ -32,12 +41,29 @@ export function renderBindingModule(
     lines.push(`  ${item.jsName}(${params}): ${item.tsReturnType};`);
   }
   for (const callback of model.callbacks) {
-    lines.push(`  ${callback.methodName}(fn: ${callback.callbackType}): Disposable;`);
+    lines.push(`  ${callback.methodName}(fn: ${callback.callbackType}): ${callback.handleTypeName};`);
   }
   lines.push("}");
   lines.push("");
   lines.push(`export function ${exportName}(options: LoadModuleOptions): ${sanitizeIdentifier(manifest.package.name)}Bindings {`);
   lines.push("  const module = loadFozzyModule(options);");
+  lines.push("  return createBindingsFromLoadedModule(module);");
+  lines.push("}");
+  lines.push("");
+  lines.push(
+    `export function ${discoveredExportName}(options: Omit<LoadPackageOptions, "discovery"> = {}): ${sanitizeIdentifier(manifest.package.name)}Bindings {`,
+  );
+  lines.push("  const module = loadFozzyPackage({");
+  lines.push("    ...options,");
+  lines.push("    discovery: {");
+  lines.push("      packageRoot: fileURLToPath(new URL(\".\", import.meta.url)),");
+  lines.push(`      package: { name: ${JSON.stringify(manifest.package.name)}, version: ${JSON.stringify(manifest.package.version)} },`);
+  lines.push("    },");
+  lines.push("  });");
+  lines.push("  return createBindingsFromLoadedModule(module);");
+  lines.push("}");
+  lines.push("");
+  lines.push(`function createBindingsFromLoadedModule(module: ReturnType<typeof loadFozzyModule>): ${sanitizeIdentifier(manifest.package.name)}Bindings {`);
   lines.push("  return {");
   lines.push("    dispose() {");
   lines.push("      module.dispose();");
@@ -69,13 +95,30 @@ export function renderBindingJavaScript(
 ): string {
   const runtimeImportPath = options.runtimeImportPath ?? "j2fz";
   const exportName = options.exportName ?? "createBindings";
+  const discoveredExportName = options.discoveredExportName ?? "createDiscoveredBindings";
   const model = buildGeneratedModuleModel(manifest, exportName);
 
   const lines: string[] = [];
-  lines.push(`import { loadFozzyModule } from "${runtimeImportPath}";`);
+  lines.push(`import { fileURLToPath } from "node:url";`);
+  lines.push(`import { loadFozzyModule, loadFozzyPackage } from "${runtimeImportPath}";`);
   lines.push("");
   lines.push(`export function ${exportName}(options) {`);
   lines.push("  const module = loadFozzyModule(options);");
+  lines.push("  return createBindingsFromLoadedModule(module);");
+  lines.push("}");
+  lines.push("");
+  lines.push(`export function ${discoveredExportName}(options = {}) {`);
+  lines.push("  const module = loadFozzyPackage({");
+  lines.push("    ...options,");
+  lines.push("    discovery: {");
+  lines.push("      packageRoot: fileURLToPath(new URL(\".\", import.meta.url)),");
+  lines.push(`      package: { name: ${JSON.stringify(manifest.package.name)}, version: ${JSON.stringify(manifest.package.version)} },`);
+  lines.push("    },");
+  lines.push("  });");
+  lines.push("  return createBindingsFromLoadedModule(module);");
+  lines.push("}");
+  lines.push("");
+  lines.push("function createBindingsFromLoadedModule(module) {");
   lines.push("  return {");
   for (const item of model.exports) {
     const argNames = item.tsParams.map((param) => param.jsName).join(", ");
@@ -107,10 +150,11 @@ export function renderBindingTypes(
 ): string {
   const runtimeImportPath = options.runtimeImportPath ?? "j2fz";
   const exportName = options.exportName ?? "createBindings";
+  const discoveredExportName = options.discoveredExportName ?? "createDiscoveredBindings";
   const model = buildGeneratedModuleModel(manifest, exportName);
 
   const lines: string[] = [];
-  lines.push(`import type { Disposable, LoadModuleOptions, OpaqueHandle } from "${runtimeImportPath}";`);
+  lines.push(`import type { CallbackContextValue, LoadModuleOptions, LoadPackageOptions, OpaqueHandle, RegisteredCallbackHandle } from "${runtimeImportPath}";`);
   lines.push("");
   for (const handle of model.handleTypes) {
     lines.push(`export interface ${handle.typeName} extends OpaqueHandle<${JSON.stringify(handle.brand)}> {`);
@@ -123,6 +167,13 @@ export function renderBindingTypes(
     lines.push("}");
     lines.push("");
   }
+  for (const callback of model.callbacks) {
+    lines.push(`export interface ${callback.handleTypeName} extends RegisteredCallbackHandle<${JSON.stringify(callback.bindingId)}> {}`);
+    if (callback.contextTypeName !== null) {
+      lines.push(`export type ${callback.contextTypeName} = CallbackContextValue;`);
+    }
+    lines.push("");
+  }
   lines.push(`export interface ${sanitizeIdentifier(manifest.package.name)}Bindings {`);
   lines.push("  dispose(): void;");
   for (const item of model.exports) {
@@ -130,11 +181,12 @@ export function renderBindingTypes(
     lines.push(`  ${item.jsName}(${params}): ${item.tsReturnType};`);
   }
   for (const callback of model.callbacks) {
-    lines.push(`  ${callback.methodName}(fn: ${callback.callbackType}): Disposable;`);
+    lines.push(`  ${callback.methodName}(fn: ${callback.callbackType}): ${callback.handleTypeName};`);
   }
   lines.push("}");
   lines.push("");
   lines.push(`export function ${exportName}(options: LoadModuleOptions): ${sanitizeIdentifier(manifest.package.name)}Bindings;`);
+  lines.push(`export function ${discoveredExportName}(options?: Omit<LoadPackageOptions, "discovery">): ${sanitizeIdentifier(manifest.package.name)}Bindings;`);
   lines.push("");
   return `${lines.join("\n")}\n`;
 }
@@ -179,6 +231,7 @@ export function renderGeneratedReadme(
   options: GeneratedBindingOptions = {},
 ): string {
   const exportName = options.exportName ?? "createBindings";
+  const discoveredExportName = options.discoveredExportName ?? "createDiscoveredBindings";
   const model = buildGeneratedModuleModel(manifest, exportName);
   const lines: string[] = [];
   lines.push(`# ${options.packageName ?? defaultGeneratedPackageName(manifest.package.name)}`);
@@ -203,7 +256,7 @@ export function renderGeneratedReadme(
   lines.push("## Usage");
   lines.push("");
   lines.push("```ts");
-  lines.push(`import { ${exportName} } from ".";`);
+  lines.push(`import { ${exportName}, ${discoveredExportName} } from ".";`);
   lines.push("");
   lines.push(`const bindings = ${exportName}({`);
   lines.push("  paths: {");
@@ -211,6 +264,8 @@ export function renderGeneratedReadme(
   lines.push('    abiManifest: "/absolute/path/to/abi.manifest.json",');
   lines.push("  },");
   lines.push("});");
+  lines.push("");
+  lines.push(`const discovered = ${discoveredExportName}();`);
   lines.push("```");
   lines.push("");
   return `${lines.join("\n")}\n`;

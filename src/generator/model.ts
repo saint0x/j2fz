@@ -35,6 +35,9 @@ export interface GeneratedCallbackModel {
   readonly methodName: string;
   readonly bindingId: string;
   readonly callbackType: string;
+  readonly handleTypeName: string;
+  readonly contextTypeName: string | null;
+  readonly contextParamName: string | null;
 }
 
 export function buildGeneratedModuleModel(
@@ -62,7 +65,7 @@ function buildGeneratedExportModel(abiExport: AbiExport): GeneratedExportModel {
     tsParams: abiExport.params.map((param) => ({
       abiName: param.name,
       jsName: sanitizeIdentifier(param.name),
-      tsType: renderTsTypeForParam(param.c, param.contract.ownership),
+      tsType: renderTsTypeForExportParam(abiExport, param.name),
     })),
     isAsync: abiExport.async,
     returnsOwnedHandle,
@@ -75,6 +78,28 @@ function renderTsTypeForReturn(abiExport: AbiExport): string {
 
 function renderTsTypeForParam(cType: string, ownership: string): string {
   return renderTsTypeForCType(cType, ownership);
+}
+
+function renderTsTypeForExportParam(abiExport: AbiExport, paramName: string): string {
+  const callbackBinding = abiExport.contract.callbackBindings.find((binding) => binding.callbackParam === paramName);
+  if (callbackBinding) {
+    return callbackHandleTypeName(abiExport.name, callbackBinding.bindingId);
+  }
+
+  const contextBinding = abiExport.contract.callbackBindings.find((binding) => binding.contextParam === paramName);
+  if (contextBinding) {
+    const contextParam = abiExport.params.find((param) => param.name === paramName);
+    if (!contextParam) {
+      return "CallbackContextValue";
+    }
+    return renderCallbackContextType(abiExport.name, contextBinding.bindingId, contextParam.c);
+  }
+
+  const param = abiExport.params.find((item) => item.name === paramName);
+  if (!param) {
+    return "unknown";
+  }
+  return renderTsTypeForParam(param.c, param.contract.ownership);
 }
 
 export function renderTsTypeForCType(cType: string, ownership: string): string {
@@ -167,11 +192,20 @@ function collectCallbacks(exports: AbiExport[]): GeneratedCallbackModel[] {
   const callbacks: GeneratedCallbackModel[] = [];
   for (const abiExport of exports) {
     for (const binding of abiExport.contract.callbackBindings) {
+      const contextParam = binding.contextParam === null
+        ? null
+        : abiExport.params.find((param) => param.name === binding.contextParam) ?? null;
       callbacks.push({
         exportAbiName: abiExport.name,
         methodName: sanitizeIdentifier(`register_${abiExport.name}_${binding.bindingId}`),
         bindingId: binding.bindingId,
         callbackType: renderCallbackType(binding),
+        handleTypeName: callbackHandleTypeName(abiExport.name, binding.bindingId),
+        contextTypeName:
+          contextParam === null
+            ? null
+            : callbackContextTypeName(abiExport.name, binding.bindingId),
+        contextParamName: binding.contextParam,
       });
     }
   }
@@ -184,4 +218,21 @@ function renderCallbackType(binding: AbiCallbackBinding): string {
     .join(", ");
   const returnType = renderTsTypeForCType(binding.signature.returnCType, "value");
   return `(${params}) => ${returnType}`;
+}
+
+function renderCallbackContextType(exportName: string, bindingId: string, cType: string): string {
+  const normalized = cType.replace(/\bconst\b/g, "").trim().replace(/\s+/g, " ");
+  if (normalized.endsWith("*")) {
+    const base = normalized.replace(/\*/g, "").trim();
+    return `CallbackContextValue<${JSON.stringify(base)}>`;
+  }
+  return callbackContextTypeName(exportName, bindingId);
+}
+
+function callbackHandleTypeName(exportName: string, bindingId: string): string {
+  return `${sanitizeTypeReference(`${exportName}_${bindingId}`)}RegisteredCallbackHandle`;
+}
+
+function callbackContextTypeName(exportName: string, bindingId: string): string {
+  return `${sanitizeTypeReference(`${exportName}_${bindingId}`)}CallbackContext`;
 }

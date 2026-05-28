@@ -143,6 +143,18 @@ const SAMPLE_MANIFEST = parseAbiManifest({
           },
         },
         {
+          name: "cb_ctx",
+          fzy: "*u8",
+          c: "void*",
+          contract: {
+            ownership: "borrowed",
+            nullability: "nullable",
+            mutability: "const",
+            lifetimeAnchor: null,
+            view: null,
+          },
+        },
+        {
           name: "value",
           fzy: "i32",
           c: "int32_t",
@@ -169,12 +181,15 @@ const SAMPLE_MANIFEST = parseAbiManifest({
         callbackBindings: [
           {
             callbackParam: "cb",
-            contextParam: null,
+            contextParam: "cb_ctx",
             bindingId: "main",
             obligation: "register a callback before use",
             signature: {
               returnCType: "int32_t",
-              params: [{ name: "value", c: "int32_t" }],
+              params: [
+                { name: "value", c: "int32_t" },
+                { name: "ctx", c: "void*" },
+              ],
             },
             lifetime: "registered",
           },
@@ -190,13 +205,18 @@ test("renderBindingModule emits typed bindings", () => {
     runtimeImportPath: "j2fz",
   });
 
+  assert.match(text, /import \{ fileURLToPath \} from "node:url";/);
   assert.match(text, /export function createBindings/);
+  assert.match(text, /export function createDiscoveredBindings\(options: Omit<LoadPackageOptions, "discovery"> = \{\}\)/);
   assert.match(text, /hash32\(ptr_borrowed: Uint8Array \| Buffer, len: bigint\): number;/);
   assert.match(text, /export interface uint8_tOwnedHandle extends OpaqueHandle<"uint8_t">/);
   assert.match(text, /decodeBytes\(length: number\): Uint8Array;/);
   assert.match(text, /alloc_bytes\(len: bigint\): uint8_tOwnedHandle;/);
+  assert.match(text, /export interface with_callback_mainRegisteredCallbackHandle extends RegisteredCallbackHandle<"main"> \{\}/);
+  assert.match(text, /export type with_callback_mainCallbackContext = CallbackContextValue;/);
+  assert.match(text, /with_callback\(cb: with_callback_mainRegisteredCallbackHandle, cb_ctx: CallbackContextValue<"void">, value: number\): number;/);
   assert.match(text, /dispose\(\): void;/);
-  assert.match(text, /register_with_callback_main\(fn: \(value: number\) => number\): Disposable;/);
+  assert.match(text, /register_with_callback_main\(fn: \(value: number, ctx: OpaqueHandle<"void">\) => number\): with_callback_mainRegisteredCallbackHandle;/);
   assert.match(text, /module\.exports\.get\("hash32"\)/);
 });
 
@@ -205,8 +225,12 @@ test("renderBindingJavaScript emits publishable runtime wrapper", () => {
     runtimeImportPath: "j2fz",
   });
 
-  assert.match(text, /import \{ loadFozzyModule \} from "j2fz";/);
+  assert.match(text, /import \{ fileURLToPath \} from "node:url";/);
+  assert.match(text, /import \{ loadFozzyModule, loadFozzyPackage \} from "j2fz";/);
   assert.match(text, /export function createBindings\(options\)/);
+  assert.match(text, /export function createDiscoveredBindings\(options = \{\}\)/);
+  assert.match(text, /loadFozzyPackage\(\{/);
+  assert.match(text, /packageRoot: fileURLToPath\(new URL\("\.", import\.meta\.url\)\)/);
   assert.match(text, /return fn\.call\(ptr_borrowed, len\);/);
   assert.match(text, /dispose\(\) \{/);
   assert.match(text, /register_with_callback_main\(fn\) \{/);
@@ -218,10 +242,12 @@ test("renderBindingTypes emits declaration output", () => {
     runtimeImportPath: "j2fz",
   });
 
-  assert.match(text, /import type \{ Disposable, LoadModuleOptions, OpaqueHandle \} from "j2fz";/);
+  assert.match(text, /import type \{ CallbackContextValue, LoadModuleOptions, LoadPackageOptions, OpaqueHandle, RegisteredCallbackHandle \} from "j2fz";/);
   assert.match(text, /export interface demo_bridgeBindings/);
   assert.match(text, /alloc_bytes\(len: bigint\): uint8_tOwnedHandle;/);
-  assert.match(text, /register_with_callback_main\(fn: \(value: number\) => number\): Disposable;/);
+  assert.match(text, /with_callback\(cb: with_callback_mainRegisteredCallbackHandle, cb_ctx: CallbackContextValue<"void">, value: number\): number;/);
+  assert.match(text, /register_with_callback_main\(fn: \(value: number, ctx: OpaqueHandle<"void">\) => number\): with_callback_mainRegisteredCallbackHandle;/);
+  assert.match(text, /export function createDiscoveredBindings\(options\?: Omit<LoadPackageOptions, "discovery">\): demo_bridgeBindings;/);
 });
 
 test("renderGeneratedPackageJson emits dependency-aware package metadata", () => {
@@ -241,7 +267,9 @@ test("renderGeneratedReadme emits export inventory", () => {
   assert.match(text, /Generated j2fz bindings for the Fozzy package `demo\.bridge`\./);
   assert.match(text, /`hash32\(`ptr_borrowed: Uint8Array \| Buffer`/);
   assert.match(text, /## Callback Registrations/);
-  assert.match(text, /`register_with_callback_main\(fn: \(value: number\) => number\)`/);
+  assert.match(text, /`register_with_callback_main\(fn: \(value: number, ctx: OpaqueHandle<"void">\) => number\)`/);
+  assert.match(text, /import \{ createBindings, createDiscoveredBindings \} from "\.";/);
+  assert.match(text, /const discovered = createDiscoveredBindings\(\);/);
   assert.match(text, /const bindings = createBindings\(\{/);
 });
 

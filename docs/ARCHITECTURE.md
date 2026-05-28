@@ -111,7 +111,9 @@ Current generator responsibilities:
 - write generated package output
 - emit ownership-aware handle interfaces for owned pointer returns
 - emit typed callback registration helpers
+- emit typed callback handle interfaces and context-bearing callback argument types
 - emit binding-level disposal surface
+- emit package-local discovered loader entrypoints
 
 ## Current Runtime Contract
 
@@ -129,7 +131,9 @@ Implemented today:
 - manifest-driven TypeScript rendering
 - package-ready binding artifact generation
 - generated callback registration helpers
+- generated typed callback handle surfaces
 - generated binding disposal
+- generated package-local discovered loaders
 
 Validated today:
 

@@ -6,6 +6,18 @@ export interface OpaqueHandle<TBrand extends string> extends Disposable {
   readonly __brand: TBrand;
 }
 
+export interface RegisteredCallbackHandle<TBinding extends string = string> extends Disposable {
+  readonly pointer: bigint;
+  readonly bindingId: TBinding;
+  readonly exportName: string;
+}
+
+export type CallbackContextValue<TBrand extends string = string> =
+  | OpaqueHandle<TBrand>
+  | bigint
+  | number
+  | null;
+
 export interface PackageIdentity {
   name: string;
   version: string;
@@ -41,6 +53,7 @@ export interface LoadModuleOptions {
 export interface GeneratedBindingOptions {
   runtimeImportPath?: string;
   exportName?: string;
+  discoveredExportName?: string;
   packageName?: string;
   packageVersion?: string;
   packageDescription?: string;

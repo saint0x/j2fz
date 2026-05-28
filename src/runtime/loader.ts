@@ -3,7 +3,7 @@ import { accessSync, constants, readFileSync } from "node:fs";
 import koffi, { type LibraryHandle } from "koffi";
 
 import type { AbiExport, FozzyAbiManifest } from "../types/abi.js";
-import type { LoadModuleOptions } from "../types/public.js";
+import type { LoadModuleOptions, RegisteredCallbackHandle as PublicRegisteredCallbackHandle } from "../types/public.js";
 import {
   AsyncInteropError,
   NativeBoundaryError,
@@ -33,7 +33,7 @@ export interface LoadedFozzyModule {
 export interface LoadedExport {
   readonly abi: AbiExport;
   call(...args: unknown[]): unknown;
-  registerCallback(bindingId: string, fn: (...args: unknown[]) => unknown): RegisteredCallbackHandle;
+  registerCallback(bindingId: string, fn: (...args: unknown[]) => unknown): PublicRegisteredCallbackHandle;
 }
 
 export interface AsyncHandleRuntimeBinding {
@@ -105,7 +105,9 @@ export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
         const handle = registerCallback(binding, fn, registry);
         activeCallbacks.add(handle);
         return {
-          ...handle,
+          pointer: handle.pointer,
+          bindingId: handle.binding.bindingId,
+          exportName: abiExport.name,
           dispose() {
             handle.dispose();
             activeCallbacks.delete(handle);

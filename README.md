@@ -26,7 +26,8 @@ The repo now includes a real production foundation rather than only planning doc
 - package-ready generated binding output
 - ownership-aware argument and result adaptation
 - generated ownership-aware handle types for typed binding output
-- generated typed callback registration helpers and binding-level disposal
+- generated typed callback registration helpers, typed callback handles, and binding-level disposal
+- generated package-local discovered loaders for emitted binding packages
 - callback registration and native callback roundtrip coverage
 - native integration testing against a compiled fixture shared library
 
@@ -86,6 +87,7 @@ It also exercises:
 - Ownership-aware runtime adapters implemented
 - Package-ready generated binding output implemented
 - Generated callback registration and disposal surface implemented
+- Generated typed callback handles and discovered package entrypoints implemented
 - Package artifact discovery and package-layout loading implemented
 - Native callback roundtrip integration test implemented
 

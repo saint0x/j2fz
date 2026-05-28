@@ -285,8 +285,8 @@ This checklist is the full production implementation plan for `j2fz`, the JavaSc
 - Define behavior for concurrent callback invocation.
 - Normalize thrown JS callback exceptions into native-compatible failure semantics.
 - Add tracing and diagnostics for callback registration, invocation, and teardown.
-- Generate TypeScript callback signatures from ABI metadata rather than handwritten callback declarations.
-- Ensure callback context types are represented explicitly in generated TypeScript APIs.
+✅ Generate TypeScript callback signatures from ABI metadata rather than handwritten callback declarations.
+✅ Ensure callback context types are represented explicitly in generated TypeScript APIs.
 
 ## Generator
 
@@ -297,6 +297,7 @@ This checklist is the full production implementation plan for `j2fz`, the JavaSc
 ✅ Generate owned-handle helpers.
 ✅ Generate callback registration helpers where applicable.
 ✅ Generate package-ready binding directories with runtime entrypoint, declarations, manifest copy, and package metadata.
+✅ Generate package-local discovered loader entrypoints for emitted packages.
 - Generate async wrappers where applicable.
 - Generate docs metadata from ABI fields.
 - Guarantee strict-TypeScript-clean generated output.
