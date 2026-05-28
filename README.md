@@ -21,6 +21,7 @@ The repo now includes a real production foundation rather than only planning doc
 
 - strict ABI manifest types and validation
 - Koffi-backed native loading and symbol declaration
+- package artifact discovery for generated package layouts
 - manifest-driven TypeScript binding generation
 - package-ready generated binding output
 - ownership-aware argument and result adaptation
@@ -34,6 +35,7 @@ The current implementation center is:
 - [src/runtime/manifest.ts](/Users/deepsaint/Desktop/j2fz/src/runtime/manifest.ts:1)
 - [src/runtime/koffi.ts](/Users/deepsaint/Desktop/j2fz/src/runtime/koffi.ts:1)
 - [src/runtime/loader.ts](/Users/deepsaint/Desktop/j2fz/src/runtime/loader.ts:1)
+- [src/runtime/discovery.ts](/Users/deepsaint/Desktop/j2fz/src/runtime/discovery.ts:1)
 - [src/generator/render.ts](/Users/deepsaint/Desktop/j2fz/src/generator/render.ts:1)
 - [tests/integration.test.ts](/Users/deepsaint/Desktop/j2fz/tests/integration.test.ts:1)
 
@@ -41,6 +43,7 @@ The current implementation center is:
 
 - `src/runtime`
   - native library loading
+  - package artifact discovery
   - symbol resolution
   - marshaling
   - ownership
@@ -72,6 +75,7 @@ It also exercises:
 - borrowed buffer inputs
 - `out` buffer writes
 - owned native pointer handles with explicit disposal
+- generated package artifact discovery and loading
 
 ## Status
 
@@ -82,6 +86,7 @@ It also exercises:
 - Ownership-aware runtime adapters implemented
 - Package-ready generated binding output implemented
 - Generated callback registration and disposal surface implemented
+- Package artifact discovery and package-layout loading implemented
 - Native callback roundtrip integration test implemented
 
 See [CHECKLIST.md](/Users/deepsaint/Desktop/j2fz/CHECKLIST.md:1) for the actionable implementation plan.

@@ -17,6 +17,18 @@ export interface LibraryPaths {
   header?: string;
 }
 
+export interface PackageArtifactDiscoveryOptions {
+  packageRoot: string;
+  package?: PackageIdentity;
+  nativeDir?: string;
+  includeDir?: string;
+  sharedLibraryFileName?: string;
+  sharedLibraryStem?: string;
+  abiManifestFileName?: string;
+  headerFileName?: string;
+  env?: NodeJS.ProcessEnv;
+}
+
 export interface LoadModuleOptions {
   paths: LibraryPaths;
   package?: PackageIdentity;
@@ -34,4 +46,8 @@ export interface GeneratedBindingOptions {
   packageDescription?: string;
   emitManifestCopy?: boolean;
   emitReadme?: boolean;
+}
+
+export interface LoadPackageOptions extends Omit<LoadModuleOptions, "paths"> {
+  discovery: PackageArtifactDiscoveryOptions;
 }

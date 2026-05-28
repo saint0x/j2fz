@@ -66,9 +66,9 @@ This checklist is the full production implementation plan for `j2fz`, the JavaSc
   - header
   - ABI manifest
   - optional doc metadata
-- Support explicit path configuration.
-- Support package-local default discovery rules.
-- Support environment override rules where appropriate.
+✅ Support explicit path configuration.
+✅ Support package-local default discovery rules.
+✅ Support environment override rules where appropriate.
 - Validate that manifest package identity matches expected library identity.
 - Validate that all manifest-declared symbols resolve in the native library.
 

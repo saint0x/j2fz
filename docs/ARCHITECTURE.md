@@ -22,6 +22,7 @@ Primary implementation files:
 
 - [src/types/abi.ts](/Users/deepsaint/Desktop/j2fz/src/types/abi.ts:1)
 - [src/runtime/errors.ts](/Users/deepsaint/Desktop/j2fz/src/runtime/errors.ts:1)
+- [src/runtime/discovery.ts](/Users/deepsaint/Desktop/j2fz/src/runtime/discovery.ts:1)
 - [src/runtime/manifest.ts](/Users/deepsaint/Desktop/j2fz/src/runtime/manifest.ts:1)
 - [src/runtime/koffi.ts](/Users/deepsaint/Desktop/j2fz/src/runtime/koffi.ts:1)
 - [src/runtime/loader.ts](/Users/deepsaint/Desktop/j2fz/src/runtime/loader.ts:1)
@@ -70,6 +71,8 @@ This layer exists in [src/runtime/koffi.ts](/Users/deepsaint/Desktop/j2fz/src/ru
 
 Current responsibilities:
 
+- resolve package-local generated artifact layouts
+- honor explicit environment overrides for deployment
 - build Koffi struct and enum definitions
 - map C scalar and pointer types into runtime FFI types
 - synthesize callback prototype and callback-pointer types
@@ -79,6 +82,7 @@ Current responsibilities:
 
 The loader composes:
 
+- package artifact discovery
 - ABI manifest parsing
 - package identity checks
 - native shared library loading
@@ -113,6 +117,7 @@ Current generator responsibilities:
 
 Implemented today:
 
+- package artifact discovery and package-layout loading
 - strict ABI manifest parsing
 - ABI compatibility baseline comparison
 - repr(C) layout registration
@@ -128,11 +133,13 @@ Implemented today:
 
 Validated today:
 
+- unit tests for package artifact discovery
 - unit tests for manifest validation
 - unit tests for generator rendering
 - unit tests for Koffi declaration synthesis
 - integration test using a compiled native fixture with callback roundtrip
 - integration coverage for owned-pointer disposal and out-buffer writes
+- integration coverage for package-layout loading via `loadFozzyPackage`
 
 Integration coverage lives in [tests/integration.test.ts](/Users/deepsaint/Desktop/j2fz/tests/integration.test.ts:1).
 

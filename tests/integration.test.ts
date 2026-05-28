@@ -1,11 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 
 import { loadFozzyModule } from "../src/runtime/loader.js";
+import { loadFozzyPackage } from "../src/runtime/discovery.js";
+import { defaultSharedLibraryFileNameForPackage } from "../src/runtime/platform.js";
 
 function sharedLibraryName(stem: string): string {
   switch (process.platform) {
@@ -305,6 +307,24 @@ void alloc_bytes_free(uint8_t *ptr) {
   return { libraryPath, manifestPath };
 }
 
+function materializeGeneratedPackageLayout(
+  root: string,
+  input: { libraryPath: string; manifestPath: string },
+  packageName: string,
+): { packageRoot: string; libraryPath: string; manifestPath: string } {
+  const nativeDir = join(root, "native");
+  mkdirSync(nativeDir, { recursive: true });
+  const packageLibraryPath = join(nativeDir, defaultSharedLibraryFileNameForPackage(packageName));
+  const packageManifestPath = join(root, "abi.manifest.json");
+  copyFileSync(input.libraryPath, packageLibraryPath);
+  copyFileSync(input.manifestPath, packageManifestPath);
+  return {
+    packageRoot: root,
+    libraryPath: packageLibraryPath,
+    manifestPath: packageManifestPath,
+  };
+}
+
 test("loadFozzyModule binds a real native library and callback", () => {
   const root = mkdtempSync(join(tmpdir(), "j2fz-fixture-"));
   try {
@@ -356,6 +376,40 @@ test("loadFozzyModule binds a real native library and callback", () => {
     assert.equal(owned.disposed, false);
     owned.dispose();
     assert.equal(owned.disposed, true);
+
+    module.dispose();
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("loadFozzyPackage discovers generated package artifacts", () => {
+  const root = mkdtempSync(join(tmpdir(), "j2fz-package-"));
+  try {
+    const compiled = compileFixtureLibrary(root);
+    const packageLayout = materializeGeneratedPackageLayout(root, compiled, "fixture.bridge");
+
+    const module = loadFozzyPackage({
+      discovery: {
+        packageRoot: packageLayout.packageRoot,
+        package: {
+          name: "fixture.bridge",
+          version: "0.0.1",
+        },
+      },
+      package: {
+        name: "fixture.bridge",
+        version: "0.0.1",
+      },
+      ownedPointerReleasers: {
+        alloc_bytes: "alloc_bytes_free",
+      },
+    });
+
+    const hash32 = module.exports.get("hash32");
+    assert.ok(hash32);
+    const hashValue = hash32.call(Buffer.from("pkg", "utf8"), BigInt(3));
+    assert.equal(typeof hashValue, "number");
 
     module.dispose();
   } finally {
