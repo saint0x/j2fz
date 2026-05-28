@@ -4,6 +4,7 @@ import koffi, { type LibraryHandle } from "koffi";
 
 import type { AbiExport, FozzyAbiManifest } from "../types/abi.js";
 import type { LoadModuleOptions, RegisteredCallbackHandle as PublicRegisteredCallbackHandle } from "../types/public.js";
+import { createDiagnosticEmitter, type DiagnosticEmitter } from "./diagnostics.js";
 import {
   AsyncInteropError,
   NativeBoundaryError,
@@ -44,11 +45,29 @@ export interface AsyncHandleRuntimeBinding {
 }
 
 export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
+  const emit = createDiagnosticEmitter(options.diagnostics);
+  emit({
+    kind: "module.load.start",
+    message: "Loading Fozzy module",
+    detail: {
+      sharedLibrary: options.paths.sharedLibrary,
+      abiManifest: options.paths.abiManifest,
+    },
+  });
   ensureReadable(options.paths.abiManifest);
   ensureReadable(options.paths.sharedLibrary);
 
   const manifestText = readFileSync(options.paths.abiManifest, "utf8");
   const manifest = parseAbiManifest(manifestText);
+  emit({
+    kind: "module.manifest.parsed",
+    message: "Parsed ABI manifest",
+    detail: {
+      packageName: manifest.package.name,
+      packageVersion: manifest.package.version,
+      exportCount: manifest.exports.length,
+    },
+  });
   if (options.package) {
     if (manifest.package.name !== options.package.name) {
       throw new SymbolLoadError(
@@ -63,6 +82,13 @@ export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
   }
 
   const library = koffi.load(options.paths.sharedLibrary);
+  emit({
+    kind: "module.library.loaded",
+    message: "Loaded shared library",
+    detail: {
+      sharedLibrary: options.paths.sharedLibrary,
+    },
+  });
   const registry = buildRuntimeTypeRegistry(manifest);
   const loadedExports = new Map<string, LoadedExport>();
   const activeCallbacks = new Set<RegisteredCallbackHandle>();
@@ -80,6 +106,15 @@ export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
       asyncBinding = abiExport.async
         ? bindAsyncHandleRuntimeBinding(abiExport, manifest, library, registry)
         : null;
+      emit({
+        kind: "module.export.bound",
+        message: "Bound export",
+        detail: {
+          exportName: abiExport.name,
+          async: abiExport.async,
+          callbackBindings: abiExport.contract.callbackBindings.length,
+        },
+      });
     } catch (error) {
       if (error instanceof SymbolLoadError || error instanceof AsyncInteropError) {
         throw error;
@@ -99,6 +134,7 @@ export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
             args,
             pollIntervalMs,
             asyncTimeoutMs,
+            emit,
           );
         }
         if (rawCall === null) {
@@ -118,6 +154,15 @@ export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
           throw new OwnershipError(`callback binding ${bindingId} does not exist on ${abiExport.name}`);
         }
         const handle = registerCallback(binding, fn, registry);
+        emit({
+          kind: "callback.registered",
+          message: "Registered callback binding",
+          detail: {
+            exportName: abiExport.name,
+            bindingId,
+            pointer: handle.pointer.toString(),
+          },
+        });
         activeCallbacks.add(handle);
         return {
           pointer: handle.pointer,
@@ -126,6 +171,14 @@ export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
           dispose() {
             handle.dispose();
             activeCallbacks.delete(handle);
+            emit({
+              kind: "callback.disposed",
+              message: "Disposed callback binding",
+              detail: {
+                exportName: abiExport.name,
+                bindingId,
+              },
+            });
           },
         };
       },
@@ -144,6 +197,13 @@ export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
       }
       activeCallbacks.clear();
       library.unload();
+      emit({
+        kind: "module.disposed",
+        message: "Disposed loaded module",
+        detail: {
+          packageName: manifest.package.name,
+        },
+      });
     },
   };
 }
@@ -158,9 +218,10 @@ function invokeAsyncHandleExport(
   args: unknown[],
   pollIntervalMs: number,
   asyncTimeoutMs: number,
+  emit?: DiagnosticEmitter,
 ): Promise<unknown> {
   try {
-    return invokeAsyncHandleRuntimeBinding(binding, abiExport.name, args, pollIntervalMs, asyncTimeoutMs);
+    return invokeAsyncHandleRuntimeBinding(binding, abiExport.name, args, pollIntervalMs, asyncTimeoutMs, emit);
   } catch (error) {
     if (error instanceof AsyncInteropError) {
       throw error;
@@ -210,6 +271,7 @@ export function invokeAsyncHandleRuntimeBinding(
   args: unknown[],
   pollIntervalMs: number,
   asyncTimeoutMs: number,
+  emit?: DiagnosticEmitter,
 ): Promise<unknown> {
   const handleOut: Array<bigint | number | null> = [null];
   const startCode = binding.start(...args, handleOut);
@@ -220,6 +282,14 @@ export function invokeAsyncHandleRuntimeBinding(
   if (typeof handle !== "bigint" && typeof handle !== "number") {
     throw new AsyncInteropError(`async start did not return a valid handle for ${exportName}`);
   }
+  emit?.({
+    kind: "async.started",
+    message: "Started async export",
+    detail: {
+      exportName,
+      handle: handle.toString(),
+    },
+  });
 
   return new Promise((resolve, reject) => {
     let settled = false;
@@ -240,6 +310,15 @@ export function invokeAsyncHandleRuntimeBinding(
         if (typeof pollCode !== "number" || pollCode !== 0) {
           finish(() => {
             tryDrop(binding.drop, handle);
+            emit?.({
+              kind: "async.poll_failed",
+              message: "Async export poll failed",
+              detail: {
+                exportName,
+                handle: handle.toString(),
+                code: pollCode,
+              },
+            });
             reject(new AsyncInteropError(`async poll failed for ${exportName}: code=${String(pollCode)}`));
           });
           return;
@@ -254,24 +333,59 @@ export function invokeAsyncHandleRuntimeBinding(
         finish(() => {
           tryDrop(binding.drop, handle);
           if (typeof awaitCode !== "number" || awaitCode !== 0) {
+            emit?.({
+              kind: "async.await_failed",
+              message: "Async export await failed",
+              detail: {
+                exportName,
+                handle: handle.toString(),
+                code: awaitCode,
+              },
+            });
             reject(new AsyncInteropError(`async await failed for ${exportName}: code=${String(awaitCode)}`));
             return;
           }
+          emit?.({
+            kind: "async.completed",
+            message: "Async export completed",
+            detail: {
+              exportName,
+              handle: handle.toString(),
+            },
+          });
           resolve(resultOut[0]);
         });
       } catch (error) {
         finish(() => {
           tryDrop(binding.drop, handle);
+          emit?.({
+            kind: "async.failed",
+            message: "Async export failed",
+            detail: {
+              exportName,
+              handle: handle.toString(),
+            },
+          });
           reject(new AsyncInteropError(`async export failed for ${exportName}`, { cause: error }));
         });
       }
     }, pollIntervalMs);
-    const timeout = setTimeout(() => {
-      finish(() => {
-        tryDrop(binding.drop, handle);
-        reject(
-          new AsyncInteropError(
-            `async export timed out for ${exportName} after ${asyncTimeoutMs}ms (last done=${String(lastDoneValue)})`,
+      const timeout = setTimeout(() => {
+        finish(() => {
+          tryDrop(binding.drop, handle);
+          emit?.({
+            kind: "async.timed_out",
+            message: "Async export timed out",
+            detail: {
+              exportName,
+              handle: handle.toString(),
+              timeoutMs: asyncTimeoutMs,
+              lastDoneValue: lastDoneValue === null ? null : String(lastDoneValue),
+            },
+          });
+          reject(
+            new AsyncInteropError(
+              `async export timed out for ${exportName} after ${asyncTimeoutMs}ms (last done=${String(lastDoneValue)})`,
           ),
         );
       });

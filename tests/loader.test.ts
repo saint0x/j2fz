@@ -78,3 +78,35 @@ test("invokeAsyncHandleRuntimeBinding rejects on timeout and drops handle", asyn
   assert.ok(calls.includes("drop:5"));
   assert.ok(calls.some((entry) => entry.startsWith("poll:")));
 });
+
+test("invokeAsyncHandleRuntimeBinding emits lifecycle diagnostics", async () => {
+  const events: string[] = [];
+  await invokeAsyncHandleRuntimeBinding(
+    {
+      start(handleOut: Array<bigint | number | null>) {
+        handleOut[0] = 7n;
+        return 0;
+      },
+      poll(_handle, doneOut) {
+        doneOut[0] = 1;
+        return 0;
+      },
+      awaitResult(_handle, resultOut) {
+        resultOut[0] = 99;
+        return 0;
+      },
+      drop() {
+        return 0;
+      },
+    },
+    "demo_async",
+    [],
+    1,
+    100,
+    (event) => {
+      events.push(event.kind);
+    },
+  );
+
+  assert.deepEqual(events, ["async.started", "async.completed"]);
+});

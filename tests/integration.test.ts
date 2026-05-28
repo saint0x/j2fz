@@ -389,6 +389,7 @@ test("loadFozzyPackage discovers generated package artifacts", () => {
   try {
     const compiled = compileFixtureLibrary(root);
     const packageLayout = materializeGeneratedPackageLayout(root, compiled, "fixture.bridge");
+    const events: string[] = [];
 
     const module = loadFozzyPackage({
       discovery: {
@@ -405,6 +406,11 @@ test("loadFozzyPackage discovers generated package artifacts", () => {
       ownedPointerReleasers: {
         alloc_bytes: "alloc_bytes_free",
       },
+      diagnostics: {
+        onEvent(event) {
+          events.push(event.kind);
+        },
+      },
     });
 
     const hash32 = module.exports.get("hash32");
@@ -413,6 +419,10 @@ test("loadFozzyPackage discovers generated package artifacts", () => {
     assert.equal(typeof hashValue, "number");
 
     module.dispose();
+    assert.ok(events.includes("package.discovery.resolved"));
+    assert.ok(events.includes("module.load.start"));
+    assert.ok(events.includes("module.export.bound"));
+    assert.ok(events.includes("module.disposed"));
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

@@ -348,16 +348,16 @@ This checklist is the full production implementation plan for `j2fz`, the JavaSc
 ## Observability
 
 - Implement structured diagnostics for:
-  - module load
-  - manifest validation
+  ✅ module load
+  ✅ manifest validation
   - symbol resolution
   - sync call execution
-  - async call lifecycle
+  ✅ async call lifecycle
   - callback invocation
-  - disposal and leak warnings
+  ✅ disposal and leak warnings
 - Define observability modes:
-  - silent
-  - debug
+  ✅ silent
+  ✅ debug
   - structured logger hook
 - Add correlation IDs where possible.
 - Define any trace-link integration points to Fozzy-native evidence.

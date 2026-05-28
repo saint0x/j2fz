@@ -138,6 +138,7 @@ Implemented today:
 - generated `repr(C)` layout declarations
 - generated binding disposal
 - generated package-local discovered loaders
+- structured diagnostics emitter hooks across discovery, load, callback, and async runtime paths
 
 Validated today:
 

@@ -1,4 +1,5 @@
 export * from "./compat.js";
+export * from "./diagnostics.js";
 export * from "./discovery.js";
 export * from "./errors.js";
 export * from "./loader.js";

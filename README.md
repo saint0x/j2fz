@@ -81,6 +81,7 @@ It also exercises:
 - generated package artifact discovery and loading
 - downstream consumer-style TypeScript compile validation
 - negative load-time symbol mismatch validation
+- structured diagnostics hooks for package discovery, module load, async lifecycle, callback disposal, and module disposal
 
 ## Status
 

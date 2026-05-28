@@ -7,6 +7,7 @@ import type {
   LoadModuleOptions,
   PackageArtifactDiscoveryOptions,
 } from "../types/public.js";
+import { createDiagnosticEmitter } from "./diagnostics.js";
 import { SymbolLoadError } from "./errors.js";
 import {
   defaultHeaderFileNameForPackage,
@@ -59,7 +60,18 @@ export function discoverLibraryPaths(options: PackageArtifactDiscoveryOptions): 
 }
 
 export function loadFozzyPackage(options: LoadPackageOptions): LoadedFozzyModule {
+  const emit = createDiagnosticEmitter(options.diagnostics);
   const paths = discoverLibraryPaths(options.discovery);
+  emit({
+    kind: "package.discovery.resolved",
+    message: "Resolved generated package artifacts",
+    detail: {
+      packageRoot: options.discovery.packageRoot,
+      sharedLibrary: paths.sharedLibrary,
+      abiManifest: paths.abiManifest,
+      header: paths.header ?? null,
+    },
+  });
   const loadOptions: LoadModuleOptions = {
     ...options,
     paths,

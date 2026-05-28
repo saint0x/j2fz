@@ -41,6 +41,17 @@ export interface PackageArtifactDiscoveryOptions {
   env?: NodeJS.ProcessEnv;
 }
 
+export interface DiagnosticEvent {
+  kind: string;
+  message: string;
+  detail?: Record<string, unknown>;
+}
+
+export interface DiagnosticsOptions {
+  mode?: "silent" | "debug";
+  onEvent?: (event: DiagnosticEvent) => void;
+}
+
 export interface LoadModuleOptions {
   paths: LibraryPaths;
   package?: PackageIdentity;
@@ -48,6 +59,7 @@ export interface LoadModuleOptions {
   pollIntervalMs?: number;
   asyncTimeoutMs?: number;
   ownedPointerReleasers?: Record<string, string>;
+  diagnostics?: DiagnosticsOptions;
 }
 
 export interface GeneratedBindingOptions {
