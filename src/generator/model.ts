@@ -38,6 +38,7 @@ export interface GeneratedCallbackModel {
   readonly handleTypeName: string;
   readonly contextTypeName: string | null;
   readonly contextParamName: string | null;
+  readonly contextTsType: string | null;
 }
 
 export function buildGeneratedModuleModel(
@@ -206,6 +207,10 @@ function collectCallbacks(exports: AbiExport[]): GeneratedCallbackModel[] {
             ? null
             : callbackContextTypeName(abiExport.name, binding.bindingId),
         contextParamName: binding.contextParam,
+        contextTsType:
+          contextParam === null
+            ? null
+            : renderCallbackContextType(abiExport.name, binding.bindingId, contextParam.c),
       });
     }
   }

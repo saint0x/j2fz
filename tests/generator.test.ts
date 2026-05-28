@@ -213,7 +213,7 @@ test("renderBindingModule emits typed bindings", () => {
   assert.match(text, /decodeBytes\(length: number\): Uint8Array;/);
   assert.match(text, /alloc_bytes\(len: bigint\): uint8_tOwnedHandle;/);
   assert.match(text, /export interface with_callback_mainRegisteredCallbackHandle extends RegisteredCallbackHandle<"main"> \{\}/);
-  assert.match(text, /export type with_callback_mainCallbackContext = CallbackContextValue;/);
+  assert.match(text, /export type with_callback_mainCallbackContext = CallbackContextValue<"void">;/);
   assert.match(text, /with_callback\(cb: with_callback_mainRegisteredCallbackHandle, cb_ctx: CallbackContextValue<"void">, value: number\): number;/);
   assert.match(text, /dispose\(\): void;/);
   assert.match(text, /register_with_callback_main\(fn: \(value: number, ctx: OpaqueHandle<"void">\) => number\): with_callback_mainRegisteredCallbackHandle;/);

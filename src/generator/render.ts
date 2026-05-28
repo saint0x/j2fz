@@ -29,8 +29,8 @@ export function renderBindingModule(
   }
   for (const callback of model.callbacks) {
     lines.push(`export interface ${callback.handleTypeName} extends RegisteredCallbackHandle<${JSON.stringify(callback.bindingId)}> {}`);
-    if (callback.contextTypeName !== null) {
-      lines.push(`export type ${callback.contextTypeName} = CallbackContextValue;`);
+    if (callback.contextTypeName !== null && callback.contextTsType !== null) {
+      lines.push(`export type ${callback.contextTypeName} = ${callback.contextTsType};`);
     }
     lines.push("");
   }
@@ -169,8 +169,8 @@ export function renderBindingTypes(
   }
   for (const callback of model.callbacks) {
     lines.push(`export interface ${callback.handleTypeName} extends RegisteredCallbackHandle<${JSON.stringify(callback.bindingId)}> {}`);
-    if (callback.contextTypeName !== null) {
-      lines.push(`export type ${callback.contextTypeName} = CallbackContextValue;`);
+    if (callback.contextTypeName !== null && callback.contextTsType !== null) {
+      lines.push(`export type ${callback.contextTypeName} = ${callback.contextTsType};`);
     }
     lines.push("");
   }
