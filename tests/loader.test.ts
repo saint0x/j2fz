@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
+import type { DiagnosticEmitter } from "../src/runtime/diagnostics.js";
 import { AsyncInteropError } from "../src/runtime/errors.js";
 import { invokeAsyncHandleRuntimeBinding } from "../src/runtime/loader.js";
 
@@ -81,6 +82,12 @@ test("invokeAsyncHandleRuntimeBinding rejects on timeout and drops handle", asyn
 
 test("invokeAsyncHandleRuntimeBinding emits lifecycle diagnostics", async () => {
   const events: string[] = [];
+  const emit: DiagnosticEmitter = Object.assign(
+    (event: { kind: string }) => {
+      events.push(event.kind);
+    },
+    { enabled: true as const },
+  );
   await invokeAsyncHandleRuntimeBinding(
     {
       start(handleOut: Array<bigint | number | null>) {
@@ -103,9 +110,7 @@ test("invokeAsyncHandleRuntimeBinding emits lifecycle diagnostics", async () => 
     [],
     1,
     100,
-    (event) => {
-      events.push(event.kind);
-    },
+    emit,
   );
 
   assert.deepEqual(events, ["async.started", "async.completed"]);

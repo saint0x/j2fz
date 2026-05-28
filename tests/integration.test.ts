@@ -8,7 +8,7 @@ import { tmpdir } from "node:os";
 import { loadFozzyModule } from "../src/runtime/loader.js";
 import { loadFozzyPackage } from "../src/runtime/discovery.js";
 import { defaultSharedLibraryFileNameForPackage } from "../src/runtime/platform.js";
-import { SymbolLoadError } from "../src/runtime/errors.js";
+import { OwnershipError, ResourceStateError, SymbolLoadError } from "../src/runtime/errors.js";
 
 function sharedLibraryName(stem: string): string {
   switch (process.platform) {
@@ -30,6 +30,11 @@ function compileFixtureLibrary(root: string): { libraryPath: string; manifestPat
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdint.h>
+
+typedef struct UserRow {
+  uint64_t id;
+  uint32_t score;
+} UserRow;
 
 uint32_t hash32(const uint8_t *ptr, size_t len) {
   uint32_t acc = 2166136261u;
@@ -65,6 +70,17 @@ uint8_t *alloc_bytes(size_t len) {
 void alloc_bytes_free(uint8_t *ptr) {
   free(ptr);
 }
+
+UserRow make_user_row(uint64_t id, uint32_t score) {
+  UserRow row;
+  row.id = id;
+  row.score = score;
+  return row;
+}
+
+uint32_t sum_user_row(UserRow row) {
+  return (uint32_t)(row.id + (uint64_t)row.score);
+}
 `;
   writeFileSync(sourcePath, source, "utf8");
 
@@ -85,7 +101,18 @@ void alloc_bytes_free(uint8_t *ptr) {
     },
     symbolVersioning: "strict-name-signature-v1",
     contractSchema: "fozzylang.ffi_contracts.v1",
-    reprCLayouts: [],
+    reprCLayouts: [
+      {
+        name: "UserRow",
+        kind: "struct",
+        size: 16,
+        align: 8,
+        fields: [
+          { name: "id", c: "uint64_t" },
+          { name: "score", c: "uint32_t" },
+        ],
+      },
+    ],
     exports: [
       {
         name: "hash32",
@@ -288,6 +315,84 @@ void alloc_bytes_free(uint8_t *ptr) {
           asyncBoundary: null,
         },
       },
+      {
+        name: "make_user_row",
+        async: false,
+        symbolVersion: 1,
+        params: [
+          {
+            name: "id",
+            fzy: "u64",
+            c: "uint64_t",
+            contract: {
+              ownership: "value",
+              nullability: "n/a",
+              mutability: "const",
+              lifetimeAnchor: null,
+              view: null,
+            },
+          },
+          {
+            name: "score",
+            fzy: "u32",
+            c: "uint32_t",
+            contract: {
+              ownership: "value",
+              nullability: "n/a",
+              mutability: "const",
+              lifetimeAnchor: null,
+              view: null,
+            },
+          },
+        ],
+        return: {
+          fzy: "UserRow",
+          c: "UserRow",
+          contract: {
+            ownership: "value",
+            nullability: "n/a",
+            mutability: "const",
+          },
+        },
+        contract: {
+          execution: "sync",
+          callbackBindings: [],
+          asyncBoundary: null,
+        },
+      },
+      {
+        name: "sum_user_row",
+        async: false,
+        symbolVersion: 1,
+        params: [
+          {
+            name: "row",
+            fzy: "UserRow",
+            c: "UserRow",
+            contract: {
+              ownership: "value",
+              nullability: "n/a",
+              mutability: "const",
+              lifetimeAnchor: null,
+              view: null,
+            },
+          },
+        ],
+        return: {
+          fzy: "u32",
+          c: "uint32_t",
+          contract: {
+            ownership: "value",
+            nullability: "n/a",
+            mutability: "const",
+          },
+        },
+        contract: {
+          execution: "sync",
+          callbackBindings: [],
+          asyncBoundary: null,
+        },
+      },
     ],
   };
   writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), "utf8");
@@ -384,6 +489,16 @@ test("loadFozzyModule binds a real native library and callback", () => {
     owned.dispose();
     assert.equal(owned.disposed, true);
 
+    const makeUserRow = module.exports.get("make_user_row");
+    assert.ok(makeUserRow);
+    const row = makeUserRow.call(7n, 5) as { id: bigint; score: number };
+    assert.equal(row.id, 7n);
+    assert.equal(row.score, 5);
+
+    const sumUserRow = module.exports.get("sum_user_row");
+    assert.ok(sumUserRow);
+    assert.equal(sumUserRow.call({ id: 7n, score: 5 }), 12);
+
     module.dispose();
     assert.ok(events.includes("sync.call.started"));
     assert.ok(events.includes("sync.call.completed"));
@@ -471,6 +586,89 @@ test("loadFozzyModule rejects manifest exports whose symbols are missing", () =>
         return true;
       },
     );
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("loadFozzyModule rejects use after module disposal and keeps callback disposal idempotent", () => {
+  const root = mkdtempSync(join(tmpdir(), "j2fz-disposed-"));
+  try {
+    const { libraryPath, manifestPath } = compileFixtureLibrary(root);
+    const events: string[] = [];
+    const module = loadFozzyModule({
+      paths: {
+        sharedLibrary: libraryPath,
+        abiManifest: manifestPath,
+      },
+      package: {
+        name: "fixture.bridge",
+        version: "0.0.1",
+      },
+      diagnostics: {
+        onEvent(event) {
+          events.push(event.kind);
+        },
+      },
+    });
+
+    const invoke = module.exports.get("invoke_i32_callback");
+    assert.ok(invoke);
+    const callback = invoke.registerCallback("cbctx_invoke_i32", (value: unknown) => value);
+    assert.equal(callback.disposed, false);
+    callback.dispose();
+    callback.dispose();
+    assert.equal(callback.disposed, true);
+    assert.equal(events.filter((event) => event === "callback.disposed").length, 1);
+
+    const hash32 = module.exports.get("hash32");
+    assert.ok(hash32);
+    module.dispose();
+    module.dispose();
+
+    assert.throws(() => hash32.call(Buffer.from("x", "utf8"), 1n), ResourceStateError);
+    assert.throws(
+      () =>
+        invoke.registerCallback(
+          "cbctx_invoke_i32",
+          (() => 0) as unknown as (...args: unknown[]) => unknown,
+        ),
+      ResourceStateError,
+    );
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("loadFozzyModule rejects non-function callback registration values", () => {
+  const root = mkdtempSync(join(tmpdir(), "j2fz-callback-type-"));
+  try {
+    const { libraryPath, manifestPath } = compileFixtureLibrary(root);
+    const module = loadFozzyModule({
+      paths: {
+        sharedLibrary: libraryPath,
+        abiManifest: manifestPath,
+      },
+      package: {
+        name: "fixture.bridge",
+        version: "0.0.1",
+      },
+    });
+
+    try {
+      const invoke = module.exports.get("invoke_i32_callback");
+      assert.ok(invoke);
+      assert.throws(
+        () =>
+          invoke.registerCallback(
+            "cbctx_invoke_i32",
+            "not a function" as unknown as (...args: unknown[]) => unknown,
+          ),
+        OwnershipError,
+      );
+    } finally {
+      module.dispose();
+    }
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

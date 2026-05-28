@@ -10,6 +10,7 @@ export interface RegisteredCallbackHandle<TBinding extends string = string> exte
   readonly pointer: bigint;
   readonly bindingId: TBinding;
   readonly exportName: string;
+  readonly disposed: boolean;
 }
 
 export type CallbackContextValue<TBrand extends string = string> =

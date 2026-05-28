@@ -10,6 +10,7 @@ export class AbiValidationError extends J2FzError {}
 export class AbiMismatchError extends J2FzError {}
 export class SymbolLoadError extends J2FzError {}
 export class TypeMarshalingError extends J2FzError {}
+export class ResourceStateError extends J2FzError {}
 export class OwnershipError extends J2FzError {}
 export class CallbackError extends J2FzError {}
 export class AsyncInteropError extends J2FzError {}

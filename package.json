@@ -1,8 +1,13 @@
 {
   "name": "j2fz",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "description": "TypeScript-first bidirectional JavaScript bridge for Fozzy ABI libraries",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/saint0x/j2fz.git"
+  },
+  "homepage": "https://github.com/saint0x/j2fz",
   "type": "module",
   "exports": {
     ".": "./dist/src/index.js",
@@ -12,6 +17,7 @@
     "node": ">=22.0.0"
   },
   "scripts": {
+    "bench": "npm run build && node --expose-gc dist/bench/runtime-bench.js",
     "build": "tsc -p tsconfig.json",
     "check": "tsc -p tsconfig.json --noEmit",
     "clean": "rm -rf dist",

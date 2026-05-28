@@ -47,26 +47,33 @@ const DIRECT_C_TYPE_MAP = new Map<string, KoffiTypeSpec>([
   ["fz_async_handle_t", "uint64_t"],
 ]);
 
+let runtimeLayoutSerial = 0;
+
 export function buildRuntimeTypeRegistry(manifest: FozzyAbiManifest): RuntimeTypeRegistry {
   const layouts = new Map<string, TypeObject>();
   for (const layout of manifest.reprCLayouts) {
-    layouts.set(layout.name, buildLayoutType(layout, layouts));
+    layouts.set(layout.name, buildLayoutType(layout, layouts, manifest.package.name));
   }
   return { layouts };
 }
 
-function buildLayoutType(layout: AbiReprCLayout, knownLayouts: Map<string, TypeObject>): TypeObject {
+function buildLayoutType(
+  layout: AbiReprCLayout,
+  knownLayouts: Map<string, TypeObject>,
+  packageName: string,
+): TypeObject {
+  const runtimeTypeName = runtimeLayoutTypeName(packageName, layout.name);
   if (layout.kind === "struct") {
     const fields = Object.fromEntries(
       (layout.fields ?? []).map((field) => [field.name, koffiTypeForField(field, knownLayouts)]),
     );
-    return koffi.struct(layout.name, fields);
+    return koffi.struct(runtimeTypeName, fields);
   }
 
   const variants = Object.fromEntries(
     (layout.variants ?? []).map((variant) => [variant.name, variant.value]),
   );
-  return koffi.enumeration(layout.name, variants, layout.storage ?? "int32_t");
+  return koffi.enumeration(runtimeTypeName, variants, layout.storage ?? "int32_t");
 }
 
 function koffiTypeForField(field: AbiField, knownLayouts: Map<string, TypeObject>): KoffiTypeSpec {
@@ -233,6 +240,11 @@ function parseCType(raw: string): ParsedCType {
     isConst,
     pointerDepth,
   };
+}
+
+function runtimeLayoutTypeName(packageName: string, layoutName: string): string {
+  runtimeLayoutSerial += 1;
+  return `${packageName.replace(/[^A-Za-z0-9_$]/g, "_")}__${layoutName.replace(/[^A-Za-z0-9_$]/g, "_")}__${runtimeLayoutSerial}`;
 }
 
 export function assertSupportedExportSubset(abiExport: AbiExport): void {

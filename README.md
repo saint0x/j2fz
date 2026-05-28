@@ -1,103 +1,99 @@
 # j2fz
 
-`j2fz` is a TypeScript-first bidirectional interoperability library for Fozzy.
+`j2fz` is a TypeScript-first bridge for calling native [Fzy](https://github.com/saint0x/fzy) libraries from JavaScript and TypeScript.
 
-It treats the stabilized Fozzy native ABI as the canonical language boundary and builds a production-grade JavaScript and TypeScript developer surface on top of it.
+It treats the Fzy C ABI manifest as the source of truth and builds a typed JS runtime on top of it:
 
-## Core Principles
+- JS calling Fzy exports
+- Fzy calling JS callbacks
+- explicit ownership and disposal
+- async export support
+- generated TypeScript bindings
+- separate raw unsafe escape hatch for expert use
 
-- TypeScript-first public API
-- Manifest-driven generation
-- Explicit ownership and disposal
-- Explicit async and callback contracts
-- Safe high-level API with isolated unsafe/raw escape hatches
-- Bidirectional interoperability:
-  - JavaScript calling Fozzy exports
-  - Fozzy calling JavaScript callbacks through registered bridge shims
+## When It Is Useful
 
-## Current Foundation
+`j2fz` is a good fit when TypeScript should stay the application surface and Fzy should own the native or performance-sensitive layer.
 
-The repo now includes a real production foundation rather than only planning docs:
+- Node API services that need native hashing, parsing, validation, binary protocol handling, or storage helpers
+- worker and pipeline systems doing ETL, content processing, binary transforms, or batch analysis
+- infra CLIs and developer tools where TS owns UX and orchestration while Fzy owns heavy execution
+- Electron or desktop apps where the UI is TS or React and Fzy provides local native capability
+- local-first products that need fast indexing, search, sync helpers, or binary file handling
+- fullstack apps where the frontend stays ordinary web tech and the backend uses Fzy for hot-path native modules
+- plugin systems that want typed JS bindings over ABI-stable native components
 
-- strict ABI manifest types and validation
-- Koffi-backed native loading and symbol declaration
-- package artifact discovery for generated package layouts
-- manifest-driven TypeScript binding generation
-- package-ready generated binding output
-- ownership-aware argument and result adaptation
-- generated ownership-aware handle types for typed binding output
-- generated typed callback registration helpers, typed callback handles, and binding-level disposal
-- generated package-local discovered loaders for emitted binding packages
-- generated `repr(C)` struct and enum TypeScript declarations
-- load-time symbol preflight for manifest-declared exports
-- separate explicit raw/unsafe runtime module for expert consumers
-- callback registration and native callback roundtrip coverage
-- native integration testing against a compiled fixture shared library
+## What It Gives You
 
-The current implementation center is:
+- manifest parsing and ABI validation
+- native library loading and symbol preflight
+- typed binding generation
+- callback registration helpers
+- ownership-aware pointer handling
+- generated package-local discovery loaders
+- explicit raw runtime for low-level control
 
-- [src/runtime/manifest.ts](/Users/deepsaint/Desktop/j2fz/src/runtime/manifest.ts:1)
-- [src/runtime/koffi.ts](/Users/deepsaint/Desktop/j2fz/src/runtime/koffi.ts:1)
-- [src/runtime/loader.ts](/Users/deepsaint/Desktop/j2fz/src/runtime/loader.ts:1)
-- [src/runtime/discovery.ts](/Users/deepsaint/Desktop/j2fz/src/runtime/discovery.ts:1)
-- [src/generator/render.ts](/Users/deepsaint/Desktop/j2fz/src/generator/render.ts:1)
-- [tests/integration.test.ts](/Users/deepsaint/Desktop/j2fz/tests/integration.test.ts:1)
+## Performance
 
-## Repository Layout
+Current local benchmark coverage includes:
 
-- `src/runtime`
-  - native library loading
-  - package artifact discovery
-  - symbol resolution
-  - marshaling
-  - ownership
-  - callback bridge
-  - async bridge
-- `src/generator`
-  - ABI manifest ingestion
-  - internal contract model
-  - TypeScript/JavaScript binding generation
-- `src/types`
-  - shared public type contracts
-- `fixtures`
-  - real Fozzy-built ABI fixtures for cross-language tests
-- `tests`
-  - unit, integration, compatibility, and generation tests
-- `docs`
-  - product and architecture docs
+- module load
+- scalar native calls
+- borrowed buffer calls
+- out-buffer writes
+- callback roundtrips
+- owned pointer allocate/decode/dispose
+- raw unsafe scalar calls
+
+Recent local numbers on Apple Silicon:
+
+- safe scalar call: about `80 ns/op`
+- raw scalar call: about `48 ns/op`
+- safe borrowed buffer call: about `182 ns/op`
+- safe out buffer call: about `101 ns/op`
+- safe callback roundtrip: about `193 ns/op`
+- safe owned pointer alloc/decode/dispose: about `1.33 us/op`
+
+See [docs/BENCHMARKING.md](docs/BENCHMARKING.md) for the benchmark harness and measurement notes.
 
 ## Validation
 
-Current local validation:
+The current runtime is covered by:
 
-- `npm run check`
-- `npm test`
+- strict TypeScript typecheck
+- native integration tests against compiled fixture libraries
+- async export integration tests
+- callback lifecycle tests
+- ownership misuse tests
+- generated package consumer compile tests
+- local performance benchmarks
 
-The integration suite builds a real native shared library fixture, loads it through `j2fz`, calls native exports, and round-trips a JavaScript callback through the ABI boundary.
-It also exercises:
+Run locally:
 
-- borrowed buffer inputs
-- `out` buffer writes
-- owned native pointer handles with explicit disposal
-- generated package artifact discovery and loading
-- downstream consumer-style TypeScript compile validation
-- negative load-time symbol mismatch validation
-- structured diagnostics hooks for package discovery, module load, async lifecycle, callback disposal, and module disposal
-- explicit raw/unsafe symbol binding tests
+```sh
+npm run check
+npm test
+npm run bench
+```
+
+## Docs
+
+- [Architecture](docs/ARCHITECTURE.md)
+- [Usage](docs/USAGE.md)
+- [Ownership](docs/OWNERSHIP.md)
+- [Callbacks And Async](docs/CALLBACKS_ASYNC.md)
+- [Raw Unsafe API](docs/RAW_UNSAFE.md)
+- [Benchmarking](docs/BENCHMARKING.md)
 
 ## Status
 
-- Project directory created
-- Production checklist created
-- TypeScript-first contract direction locked
-- Strict TypeScript runtime/generator foundation implemented
-- Ownership-aware runtime adapters implemented
-- Package-ready generated binding output implemented
-- Generated callback registration and disposal surface implemented
-- Generated typed callback handles and discovered package entrypoints implemented
-- Generated `repr(C)` layout declarations and consumer TS compile coverage implemented
-- Package artifact discovery and package-layout loading implemented
-- Native callback roundtrip integration test implemented
+The runtime and generator foundation are in a strong production state:
 
-See [CHECKLIST.md](/Users/deepsaint/Desktop/j2fz/CHECKLIST.md:1) for the actionable implementation plan.
-See [docs/ARCHITECTURE.md](/Users/deepsaint/Desktop/j2fz/docs/ARCHITECTURE.md:1) for the current implementation architecture.
+- typed safe runtime
+- raw unsafe runtime
+- async support
+- callback support
+- owned pointer lifecycle handling
+- `repr(C)` struct roundtrip coverage
+- generated package output
+- realistic benchmark coverage

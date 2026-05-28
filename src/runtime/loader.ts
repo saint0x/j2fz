@@ -9,6 +9,7 @@ import {
   AsyncInteropError,
   NativeBoundaryError,
   OwnershipError,
+  ResourceStateError,
   SymbolLoadError,
 } from "./errors.js";
 import { parseAbiManifest } from "./manifest.js";
@@ -21,7 +22,13 @@ import {
   type RegisteredCallbackHandle,
   type RuntimeTypeRegistry,
 } from "./koffi.js";
-import { adaptCallArgs, adaptResultValue } from "./ownership.js";
+import {
+  compileCallArgAdapter,
+  compileResultValueAdapter,
+  type CallArgAdapter,
+  type OwnedPointerReleaserMap,
+  type ResultValueAdapter,
+} from "./ownership.js";
 
 export interface LoadedFozzyModule {
   readonly manifest: FozzyAbiManifest;
@@ -44,30 +51,49 @@ export interface AsyncHandleRuntimeBinding {
   drop(handle: bigint | number): unknown;
 }
 
+interface ExportPlan {
+  readonly abi: AbiExport;
+  readonly callArgAdapter: CallArgAdapter;
+  readonly returnNormalizer: (value: unknown) => unknown;
+}
+
+interface ManifestPlan {
+  readonly manifest: FozzyAbiManifest;
+  readonly exports: ReadonlyMap<string, ExportPlan>;
+}
+
+const MANIFEST_PLAN_CACHE = new Map<string, ManifestPlan>();
+
 export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
   const emit = createDiagnosticEmitter(options.diagnostics);
-  emit({
-    kind: "module.load.start",
-    message: "Loading Fozzy module",
-    detail: {
-      sharedLibrary: options.paths.sharedLibrary,
-      abiManifest: options.paths.abiManifest,
-    },
-  });
+  const emitEnabled = emit.enabled;
+  if (emitEnabled) {
+    emit({
+      kind: "module.load.start",
+      message: "Loading Fozzy module",
+      detail: {
+        sharedLibrary: options.paths.sharedLibrary,
+        abiManifest: options.paths.abiManifest,
+      },
+    });
+  }
   ensureReadable(options.paths.abiManifest);
   ensureReadable(options.paths.sharedLibrary);
 
   const manifestText = readFileSync(options.paths.abiManifest, "utf8");
-  const manifest = parseAbiManifest(manifestText);
-  emit({
-    kind: "module.manifest.parsed",
-    message: "Parsed ABI manifest",
-    detail: {
-      packageName: manifest.package.name,
-      packageVersion: manifest.package.version,
-      exportCount: manifest.exports.length,
-    },
-  });
+  const manifestPlan = getOrCreateManifestPlan(manifestText);
+  const manifest = manifestPlan.manifest;
+  if (emitEnabled) {
+    emit({
+      kind: "module.manifest.parsed",
+      message: "Parsed ABI manifest",
+      detail: {
+        packageName: manifest.package.name,
+        packageVersion: manifest.package.version,
+        exportCount: manifest.exports.length,
+      },
+    });
+  }
   if (options.package) {
     if (manifest.package.name !== options.package.name) {
       throw new SymbolLoadError(
@@ -82,39 +108,49 @@ export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
   }
 
   const library = koffi.load(options.paths.sharedLibrary);
-  emit({
-    kind: "module.library.loaded",
-    message: "Loaded shared library",
-    detail: {
-      sharedLibrary: options.paths.sharedLibrary,
-    },
-  });
+  if (emitEnabled) {
+    emit({
+      kind: "module.library.loaded",
+      message: "Loaded shared library",
+      detail: {
+        sharedLibrary: options.paths.sharedLibrary,
+      },
+    });
+  }
   const registry = buildRuntimeTypeRegistry(manifest);
   const loadedExports = new Map<string, LoadedExport>();
   const activeCallbacks = new Set<RegisteredCallbackHandle>();
   const pollIntervalMs = options.pollIntervalMs ?? 5;
   const asyncTimeoutMs = options.asyncTimeoutMs ?? 5_000;
   const releasers = options.ownedPointerReleasers;
+  let disposed = false;
 
   for (const abiExport of manifest.exports) {
-    assertSupportedExportSubset(abiExport);
+    const exportPlan = manifestPlan.exports.get(abiExport.name);
+    if (!exportPlan) {
+      throw new SymbolLoadError(`missing compiled export plan for ${abiExport.name}`);
+    }
 
     let rawCall: ((...args: unknown[]) => unknown) | null = null;
     let asyncBinding: AsyncHandleRuntimeBinding | null = null;
+    let resultValueAdapter: ResultValueAdapter | null = null;
     try {
       rawCall = abiExport.async ? null : bindKoffiFunction(library, abiExport, registry);
       asyncBinding = abiExport.async
         ? bindAsyncHandleRuntimeBinding(abiExport, manifest, library, registry)
         : null;
-      emit({
-        kind: "module.export.bound",
-        message: "Bound export",
-        detail: {
-          exportName: abiExport.name,
-          async: abiExport.async,
-          callbackBindings: abiExport.contract.callbackBindings.length,
-        },
-      });
+      resultValueAdapter = compileResultValueAdapter(abiExport, library, registry, releasers);
+      if (emitEnabled) {
+        emit({
+          kind: "module.export.bound",
+          message: "Bound export",
+          detail: {
+            exportName: abiExport.name,
+            async: abiExport.async,
+            callbackBindings: abiExport.contract.callbackBindings.length,
+          },
+        });
+      }
     } catch (error) {
       if (error instanceof SymbolLoadError || error instanceof AsyncInteropError) {
         throw error;
@@ -124,53 +160,88 @@ export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
     const loaded: LoadedExport = {
       abi: abiExport,
       call(...args: unknown[]) {
+        if (disposed) {
+          throw new ResourceStateError(`loaded module ${manifest.package.name} is already disposed`);
+        }
         if (abiExport.async) {
           if (asyncBinding === null) {
             throw new AsyncInteropError(`async export ${abiExport.name} did not bind correctly`);
           }
-          return invokeAsyncHandleExport(
-            asyncBinding,
-            abiExport,
-            args,
-            pollIntervalMs,
-            asyncTimeoutMs,
-            emit,
-          );
+          if (resultValueAdapter === null) {
+            throw new NativeBoundaryError(`result adapter for ${abiExport.name} did not bind correctly`);
+          }
+          try {
+            const adaptedArgs = exportPlan.callArgAdapter(args);
+            return invokeAsyncHandleExport(
+              asyncBinding,
+              abiExport,
+              adaptedArgs,
+              pollIntervalMs,
+              asyncTimeoutMs,
+              resultValueAdapter,
+              exportPlan.returnNormalizer,
+              emitEnabled ? emit : undefined,
+            );
+          } catch (error) {
+            if (emitEnabled) {
+              emit({
+                kind: "async.failed",
+                message: "Async export failed before start",
+                detail: {
+                  exportName: abiExport.name,
+                },
+              });
+            }
+            throw new NativeBoundaryError(`native async call failed for ${abiExport.name}`, { cause: error });
+          }
         }
         if (rawCall === null) {
           throw new NativeBoundaryError(`sync export ${abiExport.name} did not bind correctly`);
         }
         try {
-          emit({
-            kind: "sync.call.started",
-            message: "Started sync export call",
-            detail: {
-              exportName: abiExport.name,
-            },
-          });
-          const adaptedArgs = adaptCallArgs(abiExport, args);
+          if (emitEnabled) {
+            emit({
+              kind: "sync.call.started",
+              message: "Started sync export call",
+              detail: {
+                exportName: abiExport.name,
+              },
+            });
+          }
+          const adaptedArgs = exportPlan.callArgAdapter(args);
           const result = rawCall(...adaptedArgs);
-          const adaptedResult = adaptResultValue(abiExport, result, library, registry, releasers);
-          emit({
-            kind: "sync.call.completed",
-            message: "Completed sync export call",
-            detail: {
-              exportName: abiExport.name,
-            },
-          });
-          return adaptedResult;
+          const adaptedResult = resultValueAdapter?.(result) ?? result;
+          const normalizedResult = exportPlan.returnNormalizer(adaptedResult);
+          if (emitEnabled) {
+            emit({
+              kind: "sync.call.completed",
+              message: "Completed sync export call",
+              detail: {
+                exportName: abiExport.name,
+              },
+            });
+          }
+          return normalizedResult;
         } catch (error) {
-          emit({
-            kind: "sync.call.failed",
-            message: "Sync export call failed",
-            detail: {
-              exportName: abiExport.name,
-            },
-          });
+          if (emitEnabled) {
+            emit({
+              kind: "sync.call.failed",
+              message: "Sync export call failed",
+              detail: {
+                exportName: abiExport.name,
+              },
+            });
+          }
           throw new NativeBoundaryError(`native call failed for ${abiExport.name}`, { cause: error });
         }
       },
       registerCallback(bindingId: string, fn: (...args: unknown[]) => unknown) {
+        if (disposed) {
+          throw new ResourceStateError(`loaded module ${manifest.package.name} is already disposed`);
+        }
+        if (typeof fn !== "function") {
+          throw new OwnershipError(`callback registration for ${abiExport.name} requires a function`);
+        }
         const binding = abiExport.contract.callbackBindings.find((item) => item.bindingId === bindingId);
         if (!binding) {
           throw new OwnershipError(`callback binding ${bindingId} does not exist on ${abiExport.name}`);
@@ -178,64 +249,82 @@ export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
         const handle = registerCallback(
           binding,
           (...callbackArgs: unknown[]) => {
-            emit({
-              kind: "callback.invoked",
-              message: "Invoked callback binding",
-              detail: {
-                exportName: abiExport.name,
-                bindingId,
-              },
-            });
+            if (emitEnabled) {
+              emit({
+                kind: "callback.invoked",
+                message: "Invoked callback binding",
+                detail: {
+                  exportName: abiExport.name,
+                  bindingId,
+                },
+              });
+            }
             try {
               const result = fn(...callbackArgs);
-              emit({
-                kind: "callback.completed",
-                message: "Completed callback binding",
-                detail: {
-                  exportName: abiExport.name,
-                  bindingId,
-                },
-              });
+              if (emitEnabled) {
+                emit({
+                  kind: "callback.completed",
+                  message: "Completed callback binding",
+                  detail: {
+                    exportName: abiExport.name,
+                    bindingId,
+                  },
+                });
+              }
               return result;
             } catch (error) {
-              emit({
-                kind: "callback.failed",
-                message: "Callback binding threw",
-                detail: {
-                  exportName: abiExport.name,
-                  bindingId,
-                },
-              });
+              if (emitEnabled) {
+                emit({
+                  kind: "callback.failed",
+                  message: "Callback binding threw",
+                  detail: {
+                    exportName: abiExport.name,
+                    bindingId,
+                  },
+                });
+              }
               throw error;
             }
           },
           registry,
         );
-        emit({
-          kind: "callback.registered",
-          message: "Registered callback binding",
-          detail: {
-            exportName: abiExport.name,
-            bindingId,
-            pointer: handle.pointer.toString(),
-          },
-        });
+        if (emitEnabled) {
+          emit({
+            kind: "callback.registered",
+            message: "Registered callback binding",
+            detail: {
+              exportName: abiExport.name,
+              bindingId,
+              pointer: handle.pointer.toString(),
+            },
+          });
+        }
         activeCallbacks.add(handle);
+        let callbackDisposed = false;
         return {
           pointer: handle.pointer,
           bindingId: handle.binding.bindingId,
           exportName: abiExport.name,
+          get disposed() {
+            return callbackDisposed;
+          },
           dispose() {
+            if (callbackDisposed) {
+              return;
+            }
+            callbackDisposed = true;
             handle.dispose();
             activeCallbacks.delete(handle);
-            emit({
-              kind: "callback.disposed",
-              message: "Disposed callback binding",
-              detail: {
-                exportName: abiExport.name,
-                bindingId,
-              },
-            });
+            if (emitEnabled) {
+              emit({
+                kind: "callback.disposed",
+                message: "Disposed callback binding",
+                detail: {
+                  exportName: abiExport.name,
+                  bindingId,
+                },
+              });
+            }
           },
         };
       },
@@ -249,18 +338,24 @@ export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
     registry,
     exports: loadedExports,
     dispose() {
+      if (disposed) {
+        return;
+      }
+      disposed = true;
       for (const handle of activeCallbacks) {
         handle.dispose();
       }
       activeCallbacks.clear();
       library.unload();
-      emit({
-        kind: "module.disposed",
-        message: "Disposed loaded module",
-        detail: {
-          packageName: manifest.package.name,
-        },
-      });
+      if (emitEnabled) {
+        emit({
+          kind: "module.disposed",
+          message: "Disposed loaded module",
+          detail: {
+            packageName: manifest.package.name,
+          },
+        });
+      }
     },
   };
 }
@@ -275,16 +370,86 @@ function invokeAsyncHandleExport(
   args: unknown[],
   pollIntervalMs: number,
   asyncTimeoutMs: number,
+  resultValueAdapter: ResultValueAdapter,
+  returnNormalizer: (value: unknown) => unknown,
   emit?: DiagnosticEmitter,
 ): Promise<unknown> {
   try {
-    return invokeAsyncHandleRuntimeBinding(binding, abiExport.name, args, pollIntervalMs, asyncTimeoutMs, emit);
+    return invokeAsyncHandleRuntimeBinding(binding, abiExport.name, args, pollIntervalMs, asyncTimeoutMs, emit).then(
+      (result) => {
+        const adaptedResult = resultValueAdapter(result);
+        return returnNormalizer(adaptedResult);
+      },
+    );
   } catch (error) {
     if (error instanceof AsyncInteropError) {
       throw error;
     }
     throw new SymbolLoadError(`failed binding async handle symbols for ${abiExport.name}`, { cause: error });
   }
+}
+
+function getOrCreateManifestPlan(manifestText: string): ManifestPlan {
+  const cached = MANIFEST_PLAN_CACHE.get(manifestText);
+  if (cached) {
+    return cached;
+  }
+
+  const manifest = parseAbiManifest(manifestText);
+  const exports = new Map<string, ExportPlan>();
+  for (const abiExport of manifest.exports) {
+    assertSupportedExportSubset(abiExport);
+    exports.set(abiExport.name, {
+      abi: abiExport,
+      callArgAdapter: compileCallArgAdapter(abiExport),
+      returnNormalizer: compileJsValueNormalizer(abiExport.return.c, manifest),
+    });
+  }
+
+  const plan: ManifestPlan = {
+    manifest,
+    exports,
+  };
+  MANIFEST_PLAN_CACHE.set(manifestText, plan);
+  return plan;
+}
+
+function compileJsValueNormalizer(
+  cType: string,
+  manifest: FozzyAbiManifest,
+): (value: unknown) => unknown {
+  const normalizedBaseType = cType.replace(/\bconst\b/g, "").replace(/\*/g, "").trim().replace(/\s+/g, " ");
+  if (
+    normalizedBaseType === "int64_t" ||
+    normalizedBaseType === "uint64_t" ||
+    normalizedBaseType === "size_t" ||
+    normalizedBaseType === "ssize_t" ||
+    normalizedBaseType === "fz_async_handle_t"
+  ) {
+    return (value: unknown) => (typeof value === "number" ? BigInt(value) : value);
+  }
+
+  const layout = manifest.reprCLayouts.find((item) => item.name === normalizedBaseType);
+  if (!layout || layout.kind !== "struct") {
+    return (value: unknown) => value;
+  }
+
+  const fieldNormalizers = (layout.fields ?? []).map((field) => ({
+    name: field.name,
+    normalize: compileJsValueNormalizer(field.c, manifest),
+  }));
+  return (value: unknown) => {
+    if (typeof value !== "object" || value === null || Array.isArray(value)) {
+      return value;
+    }
+
+    const input = value as Record<string, unknown>;
+    const output: Record<string, unknown> = {};
+    for (const field of fieldNormalizers) {
+      output[field.name] = field.normalize(input[field.name]);
+    }
+    return output;
+  };
 }
 
 function bindAsyncHandleRuntimeBinding(

@@ -83,6 +83,46 @@ const SAMPLE_MANIFEST = parseAbiManifest({
       },
     },
     {
+      name: "compute_async",
+      async: true,
+      symbolVersion: 1,
+      params: [
+        {
+          name: "value",
+          fzy: "i32",
+          c: "int32_t",
+          contract: {
+            ownership: "value",
+            nullability: "n/a",
+            mutability: "const",
+            lifetimeAnchor: null,
+            view: null,
+          },
+        },
+      ],
+      return: {
+        fzy: "i32",
+        c: "int32_t",
+        contract: {
+          ownership: "value",
+          nullability: "n/a",
+          mutability: "const",
+        },
+      },
+      contract: {
+        execution: "async-handle-v1",
+        callbackBindings: [],
+        asyncBoundary: {
+          model: "async-handle-v1",
+          startSymbol: "compute_async_start",
+          pollSymbol: "compute_async_poll",
+          awaitSymbol: "compute_async_await",
+          dropSymbol: "compute_async_drop",
+          resultType: "int32_t",
+        },
+      },
+    },
+    {
       name: "with_callback",
       async: false,
       symbolVersion: 1,
@@ -185,6 +225,7 @@ const state: TaskState = TaskState.Ready;
 declare const bindings: ReturnType<typeof createBindings>;
 declare const callbackHandle: with_callback_mainRegisteredCallbackHandle;
 declare const callbackContext: with_callback_mainCallbackContext;
+const asyncValue: Promise<number> = bindings.compute_async(42);
 
 bindings.dispose();
 bindings.with_callback(callbackHandle, callbackContext, 42);
@@ -194,6 +235,7 @@ bindings.register_with_callback_main((value, ctx) => {
 }).dispose();
 
 createDiscoveredBindings();
+void asyncValue;
 void rowId;
 void rowScore;
 void state;

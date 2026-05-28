@@ -147,12 +147,17 @@ Validated today:
 
 - unit tests for package artifact discovery
 - unit tests for manifest validation
+- unit tests for ownership adaptation edge cases
 - unit tests for generator rendering
 - consumer-style TypeScript compile test against generated bindings
 - unit tests for Koffi declaration synthesis
 - integration test using a compiled native fixture with callback roundtrip
 - integration coverage for owned-pointer disposal and out-buffer writes
 - integration coverage for package-layout loading via `loadFozzyPackage`
+- native async integration coverage for borrowed-input adaptation and owned async returns
+- runtime state guards for disposed modules and idempotent callback disposal
+- native `repr(C)` struct roundtrip coverage for value params and returns
+- local benchmark harness for safe and raw runtime overhead measurement
 
 Integration coverage lives in [tests/integration.test.ts](/Users/deepsaint/Desktop/j2fz/tests/integration.test.ts:1).
 
@@ -166,11 +171,12 @@ Integration coverage lives in [tests/integration.test.ts](/Users/deepsaint/Deskt
 
 This keeps the library free to evolve its Node-native substrate without changing the `j2fz` product model.
 
-## Next Major Areas
+## Operations Docs
 
-The next production slices to build are:
+The current operator-facing documentation lives in:
 
-- richer ownership adapters for owned/out/inout contracts
-- broader async fixture coverage
-- richer callback contract coverage
-- docs and release workflow hardening
+- [docs/USAGE.md](/Users/deepsaint/Desktop/j2fz/docs/USAGE.md:1)
+- [docs/OWNERSHIP.md](/Users/deepsaint/Desktop/j2fz/docs/OWNERSHIP.md:1)
+- [docs/CALLBACKS_ASYNC.md](/Users/deepsaint/Desktop/j2fz/docs/CALLBACKS_ASYNC.md:1)
+- [docs/RAW_UNSAFE.md](/Users/deepsaint/Desktop/j2fz/docs/RAW_UNSAFE.md:1)
+- [docs/BENCHMARKING.md](/Users/deepsaint/Desktop/j2fz/docs/BENCHMARKING.md:1)

@@ -21,6 +21,7 @@
     "skipLibCheck": true
   },
   "include": [
+    "bench/**/*.ts",
     "src/**/*.ts",
     "tests/**/*.ts"
   ]

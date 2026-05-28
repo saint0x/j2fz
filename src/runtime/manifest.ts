@@ -399,6 +399,11 @@ export function validateAbiManifest(manifest: FozzyAbiManifest): void {
     if (!abiExport.async && abiExport.contract.asyncBoundary !== null) {
       throw new AbiValidationError(`sync export ${abiExport.name} must not declare asyncBoundary`);
     }
+    if (abiExport.async && abiExport.contract.asyncBoundary?.resultType !== abiExport.return.c) {
+      throw new AbiValidationError(
+        `async export ${abiExport.name} asyncBoundary.resultType must match return type`,
+      );
+    }
 
     const paramNames = new Set<string>();
     for (const param of abiExport.params) {
@@ -416,14 +421,39 @@ export function validateAbiManifest(manifest: FozzyAbiManifest): void {
     );
 
     for (const binding of abiExport.contract.callbackBindings) {
-      if (!paramNames.has(binding.callbackParam)) {
+      const callbackParam = abiExport.params.find((param) => param.name === binding.callbackParam);
+      if (!callbackParam) {
         throw new AbiValidationError(
           `callback binding ${binding.bindingId} references missing param ${binding.callbackParam}`,
         );
       }
-      if (binding.contextParam !== null && !paramNames.has(binding.contextParam)) {
+      if (!callbackParam.c.includes("*")) {
+        throw new AbiValidationError(
+          `callback binding ${binding.bindingId} callback param ${binding.callbackParam} must be pointer-like`,
+        );
+      }
+      if (binding.contextParam === binding.callbackParam) {
+        throw new AbiValidationError(
+          `callback binding ${binding.bindingId} context param must differ from callback param`,
+        );
+      }
+      if (callbackParam.contract.nullability !== "non_null") {
+        throw new AbiValidationError(
+          `callback binding ${binding.bindingId} callback param ${binding.callbackParam} must be non_null`,
+        );
+      }
+      const contextParam =
+        binding.contextParam === null
+          ? null
+          : abiExport.params.find((param) => param.name === binding.contextParam) ?? null;
+      if (binding.contextParam !== null && contextParam === null) {
         throw new AbiValidationError(
           `callback binding ${binding.bindingId} references missing context param ${binding.contextParam}`,
+        );
+      }
+      if (contextParam !== null && !contextParam.c.includes("*")) {
+        throw new AbiValidationError(
+          `callback binding ${binding.bindingId} context param ${binding.contextParam} must be pointer-like`,
         );
       }
       validateCTypeReferences(
@@ -438,8 +468,31 @@ export function validateAbiManifest(manifest: FozzyAbiManifest): void {
           `callback binding ${binding.bindingId} param ${param.name}`,
         );
       }
+      if (contextParam === null) {
+        if (binding.signature.params.length > 0 && last(binding.signature.params)?.c === "void*") {
+          throw new AbiValidationError(
+            `callback binding ${binding.bindingId} callback signature includes context-like void* param without contextParam`,
+          );
+        }
+      } else {
+        const signatureContextParam = last(binding.signature.params);
+        if (!signatureContextParam) {
+          throw new AbiValidationError(
+            `callback binding ${binding.bindingId} must include a context signature param for ${binding.contextParam}`,
+          );
+        }
+        if (normalizeBaseCType(signatureContextParam.c) !== normalizeBaseCType(contextParam.c)) {
+          throw new AbiValidationError(
+            `callback binding ${binding.bindingId} context signature type must match context param ${binding.contextParam}`,
+          );
+        }
+      }
     }
   }
+}
+
+function last<T>(values: readonly T[]): T | undefined {
+  return values.length === 0 ? undefined : values[values.length - 1];
 }
 
 function validateCTypeReferences(cType: string, layoutNames: Set<string>, path: string): void {

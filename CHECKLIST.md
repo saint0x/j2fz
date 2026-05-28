@@ -19,6 +19,7 @@ This checklist is the full production implementation plan for `j2fz`, the JavaSc
   - marshaling core
   - callback bridge
   - async bridge
+  - benchmark harness
   - TypeScript output
   - TypeScript-first public SDK
   - tests
@@ -442,6 +443,12 @@ This checklist is the full production implementation plan for `j2fz`, the JavaSc
 - Write the packaging model.
 - Write the unsafe raw API warning docs.
 - Generate per-binding API docs from manifests.
+- Publish operator-facing docs for:
+  - runtime usage
+  - ownership and disposal
+  - callbacks and async behavior
+  - raw unsafe runtime usage
+  - local performance benchmarking
 - Include exact disposal expectations in every relevant doc path.
 
 ## Author Workflow
