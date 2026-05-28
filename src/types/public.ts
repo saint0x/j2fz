@@ -22,10 +22,16 @@ export interface LoadModuleOptions {
   package?: PackageIdentity;
   strict?: boolean;
   pollIntervalMs?: number;
+  asyncTimeoutMs?: number;
   ownedPointerReleasers?: Record<string, string>;
 }
 
 export interface GeneratedBindingOptions {
   runtimeImportPath?: string;
   exportName?: string;
+  packageName?: string;
+  packageVersion?: string;
+  packageDescription?: string;
+  emitManifestCopy?: boolean;
+  emitReadme?: boolean;
 }

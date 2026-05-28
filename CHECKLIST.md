@@ -135,6 +135,7 @@ This checklist is the full production implementation plan for `j2fz`, the JavaSc
   - raw unsafe interop API
 - Ensure the safe API never leaks raw pointers by default.
 - Ensure advanced APIs remain explicit about ownership and disposal.
+✅ Generate public binding packages and fixtures.
 
 ## TypeScript-First Contract Surface
 
@@ -290,11 +291,12 @@ This checklist is the full production implementation plan for `j2fz`, the JavaSc
 ## Generator
 
 - Build a manifest-driven code generator.
-- Generate JavaScript wrappers from ABI metadata.
-- Generate TypeScript declaration files.
-- Generate TypeScript source wrappers if selected as the primary output mode.
-- Generate owned-handle helpers.
-- Generate callback registration helpers where applicable.
+✅ Generate JavaScript wrappers from ABI metadata.
+✅ Generate TypeScript declaration files.
+✅ Generate TypeScript source wrappers if selected as the primary output mode.
+✅ Generate owned-handle helpers.
+✅ Generate callback registration helpers where applicable.
+✅ Generate package-ready binding directories with runtime entrypoint, declarations, manifest copy, and package metadata.
 - Generate async wrappers where applicable.
 - Generate docs metadata from ABI fields.
 - Guarantee strict-TypeScript-clean generated output.

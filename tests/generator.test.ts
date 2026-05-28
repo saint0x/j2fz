@@ -1,8 +1,18 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { mkdtempSync, readFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 import { parseAbiManifest } from "../src/runtime/manifest.js";
-import { renderBindingModule } from "../src/generator/render.js";
+import {
+  renderBindingJavaScript,
+  renderBindingModule,
+  renderBindingTypes,
+  renderGeneratedPackageJson,
+  renderGeneratedReadme,
+} from "../src/generator/render.js";
+import { writeGeneratedBindings } from "../src/generator/write.js";
 
 const SAMPLE_MANIFEST = parseAbiManifest({
   schemaVersion: "fozzylang.ffi_abi.v1",
@@ -115,6 +125,63 @@ const SAMPLE_MANIFEST = parseAbiManifest({
         asyncBoundary: null,
       },
     },
+    {
+      name: "with_callback",
+      async: false,
+      symbolVersion: 1,
+      params: [
+        {
+          name: "cb",
+          fzy: "fn(i32) -> i32",
+          c: "void*",
+          contract: {
+            ownership: "borrowed",
+            nullability: "non_null",
+            mutability: "const",
+            lifetimeAnchor: null,
+            view: null,
+          },
+        },
+        {
+          name: "value",
+          fzy: "i32",
+          c: "int32_t",
+          contract: {
+            ownership: "value",
+            nullability: "n/a",
+            mutability: "const",
+            lifetimeAnchor: null,
+            view: null,
+          },
+        },
+      ],
+      return: {
+        fzy: "i32",
+        c: "int32_t",
+        contract: {
+          ownership: "value",
+          nullability: "n/a",
+          mutability: "const",
+        },
+      },
+      contract: {
+        execution: "sync",
+        callbackBindings: [
+          {
+            callbackParam: "cb",
+            contextParam: null,
+            bindingId: "main",
+            obligation: "register a callback before use",
+            signature: {
+              returnCType: "int32_t",
+              params: [{ name: "value", c: "int32_t" }],
+            },
+            lifetime: "registered",
+          },
+        ],
+        asyncBoundary: null,
+      },
+    },
   ],
 });
 
@@ -128,5 +195,69 @@ test("renderBindingModule emits typed bindings", () => {
   assert.match(text, /export interface uint8_tOwnedHandle extends OpaqueHandle<"uint8_t">/);
   assert.match(text, /decodeBytes\(length: number\): Uint8Array;/);
   assert.match(text, /alloc_bytes\(len: bigint\): uint8_tOwnedHandle;/);
+  assert.match(text, /dispose\(\): void;/);
+  assert.match(text, /register_with_callback_main\(fn: \(value: number\) => number\): Disposable;/);
   assert.match(text, /module\.exports\.get\("hash32"\)/);
+});
+
+test("renderBindingJavaScript emits publishable runtime wrapper", () => {
+  const text = renderBindingJavaScript(SAMPLE_MANIFEST, {
+    runtimeImportPath: "j2fz",
+  });
+
+  assert.match(text, /import \{ loadFozzyModule \} from "j2fz";/);
+  assert.match(text, /export function createBindings\(options\)/);
+  assert.match(text, /return fn\.call\(ptr_borrowed, len\);/);
+  assert.match(text, /dispose\(\) \{/);
+  assert.match(text, /register_with_callback_main\(fn\) \{/);
+  assert.match(text, /registerCallback\("main", fn\)/);
+});
+
+test("renderBindingTypes emits declaration output", () => {
+  const text = renderBindingTypes(SAMPLE_MANIFEST, {
+    runtimeImportPath: "j2fz",
+  });
+
+  assert.match(text, /import type \{ Disposable, LoadModuleOptions, OpaqueHandle \} from "j2fz";/);
+  assert.match(text, /export interface demo_bridgeBindings/);
+  assert.match(text, /alloc_bytes\(len: bigint\): uint8_tOwnedHandle;/);
+  assert.match(text, /register_with_callback_main\(fn: \(value: number\) => number\): Disposable;/);
+});
+
+test("renderGeneratedPackageJson emits dependency-aware package metadata", () => {
+  const text = renderGeneratedPackageJson(SAMPLE_MANIFEST, {
+    runtimeImportPath: "j2fz",
+  });
+
+  assert.match(text, /"name": "demo\.bridge-j2fz"/);
+  assert.match(text, /"main": "\.\/index\.js"/);
+  assert.match(text, /"types": "\.\/index\.d\.ts"/);
+  assert.match(text, /"j2fz": "\*"/);
+});
+
+test("renderGeneratedReadme emits export inventory", () => {
+  const text = renderGeneratedReadme(SAMPLE_MANIFEST);
+
+  assert.match(text, /Generated j2fz bindings for the Fozzy package `demo\.bridge`\./);
+  assert.match(text, /`hash32\(`ptr_borrowed: Uint8Array \| Buffer`/);
+  assert.match(text, /## Callback Registrations/);
+  assert.match(text, /`register_with_callback_main\(fn: \(value: number\) => number\)`/);
+  assert.match(text, /const bindings = createBindings\(\{/);
+});
+
+test("writeGeneratedBindings writes a package-ready output directory", () => {
+  const outDir = mkdtempSync(join(tmpdir(), "j2fz-generated-"));
+  const result = writeGeneratedBindings(outDir, SAMPLE_MANIFEST, {
+    runtimeImportPath: "j2fz",
+  });
+
+  assert.equal(result.packageDir, outDir);
+  assert.equal(readFileSync(result.modulePath, "utf8").includes("loadFozzyModule"), true);
+  assert.equal(readFileSync(result.typesPath, "utf8").includes("OpaqueHandle"), true);
+  assert.equal(readFileSync(result.packageJsonPath, "utf8").includes('"main": "./index.js"'), true);
+  assert.equal(result.manifestPath !== null, true);
+  assert.equal(result.readmePath !== null, true);
+  assert.equal(readFileSync(result.manifestPath!, "utf8").includes('"schemaVersion"'), true);
+  assert.equal(readFileSync(result.readmePath!, "utf8").includes("## Usage"), true);
+  assert.equal(readFileSync(join(outDir, "index.ts"), "utf8").includes("LoadModuleOptions"), true);
 });

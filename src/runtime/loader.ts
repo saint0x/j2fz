@@ -60,6 +60,7 @@ export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
   const loadedExports = new Map<string, LoadedExport>();
   const activeCallbacks = new Set<RegisteredCallbackHandle>();
   const pollIntervalMs = options.pollIntervalMs ?? 5;
+  const asyncTimeoutMs = options.asyncTimeoutMs ?? 5_000;
   const releasers = options.ownedPointerReleasers;
 
   for (const abiExport of manifest.exports) {
@@ -70,7 +71,16 @@ export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
       abi: abiExport,
       call(...args: unknown[]) {
         if (abiExport.async) {
-          return invokeAsyncHandleExport(rawCall, abiExport, manifest, library, registry, args, pollIntervalMs);
+          return invokeAsyncHandleExport(
+            rawCall,
+            abiExport,
+            manifest,
+            library,
+            registry,
+            args,
+            pollIntervalMs,
+            asyncTimeoutMs,
+          );
         }
         try {
           const adaptedArgs = adaptCallArgs(abiExport, args);
@@ -126,6 +136,7 @@ function invokeAsyncHandleExport(
   registry: RuntimeTypeRegistry,
   args: unknown[],
   pollIntervalMs: number,
+  asyncTimeoutMs: number,
 ): Promise<unknown> {
   const boundary = abiExport.contract.asyncBoundary;
   if (boundary === null) {
@@ -133,19 +144,17 @@ function invokeAsyncHandleExport(
   }
 
   try {
-    const start = library.func(boundary.startSymbol, "int32_t", [
-      ...abiExport.params.map((param) => {
-        const parent = manifest.exports.find((item) => item.name === abiExport.name);
-        if (!parent) {
-          throw new SymbolLoadError(`missing parent export ${abiExport.name}`);
-        }
-        return bindParamSpec(parent, param.name, registry);
-      }),
-      koffi.out("uint64_t"),
-    ]);
-    const poll = library.func(boundary.pollSymbol, "int32_t", ["uint64_t", koffi.out("int32_t")]);
-    const awaitResult = library.func(boundary.awaitSymbol, "int32_t", ["uint64_t", koffi.out(boundary.resultType)]);
-    const drop = library.func(boundary.dropSymbol, "int32_t", ["uint64_t"]);
+    const start = library.func(
+      `int32_t ${boundary.startSymbol}(${[
+        ...abiExport.params.map((param) => renderPrototypeParam(abiExport, param.name, registry)),
+        "_Out_ uint64_t *handle_out",
+      ].join(", ")})`,
+    );
+    const poll = library.func(`int32_t ${boundary.pollSymbol}(uint64_t handle, _Out_ int32_t *done_out)`);
+    const awaitResult = library.func(
+      `int32_t ${boundary.awaitSymbol}(uint64_t handle, _Out_ ${boundary.resultType} *result_out)`,
+    );
+    const drop = library.func(`int32_t ${boundary.dropSymbol}(uint64_t handle)`);
 
     const handleOut: Array<bigint | number | null> = [null];
     const startCode = start(...args, handleOut);
@@ -158,35 +167,60 @@ function invokeAsyncHandleExport(
     }
 
     return new Promise((resolve, reject) => {
+      let settled = false;
+      let lastDoneValue: unknown = null;
+      const finish = (fn: () => void) => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        clearInterval(timer);
+        clearTimeout(timeout);
+        fn();
+      };
       const timer = setInterval(() => {
         try {
           const doneOut: Array<number | null> = [null];
           const pollCode = poll(handle, doneOut);
           if (typeof pollCode !== "number" || pollCode !== 0) {
-            clearInterval(timer);
-            tryDrop(drop, handle);
-            reject(new AsyncInteropError(`async poll failed for ${abiExport.name}: code=${String(pollCode)}`));
+            finish(() => {
+              tryDrop(drop, handle);
+              reject(new AsyncInteropError(`async poll failed for ${abiExport.name}: code=${String(pollCode)}`));
+            });
             return;
           }
-          if (doneOut[0] !== 1) {
+          lastDoneValue = doneOut[0];
+          if (!isCompletionSignal(doneOut[0])) {
             return;
           }
 
           const resultOut: Array<unknown> = [null];
           const awaitCode = awaitResult(handle, resultOut);
-          clearInterval(timer);
-          tryDrop(drop, handle);
-          if (typeof awaitCode !== "number" || awaitCode !== 0) {
-            reject(new AsyncInteropError(`async await failed for ${abiExport.name}: code=${String(awaitCode)}`));
-            return;
-          }
-          resolve(resultOut[0]);
+          finish(() => {
+            tryDrop(drop, handle);
+            if (typeof awaitCode !== "number" || awaitCode !== 0) {
+              reject(new AsyncInteropError(`async await failed for ${abiExport.name}: code=${String(awaitCode)}`));
+              return;
+            }
+            resolve(resultOut[0]);
+          });
         } catch (error) {
-          clearInterval(timer);
-          tryDrop(drop, handle);
-          reject(new AsyncInteropError(`async export failed for ${abiExport.name}`, { cause: error }));
+          finish(() => {
+            tryDrop(drop, handle);
+            reject(new AsyncInteropError(`async export failed for ${abiExport.name}`, { cause: error }));
+          });
         }
       }, pollIntervalMs);
+      const timeout = setTimeout(() => {
+        finish(() => {
+          tryDrop(drop, handle);
+          reject(
+            new AsyncInteropError(
+              `async export timed out for ${abiExport.name} after ${asyncTimeoutMs}ms (last done=${String(lastDoneValue)})`,
+            ),
+          );
+        });
+      }, asyncTimeoutMs);
     });
   } catch (error) {
     if (error instanceof AsyncInteropError) {
@@ -208,10 +242,33 @@ function bindParamSpec(
   return koffiTypeForParam(param, abiExport, registry);
 }
 
+function renderPrototypeParam(
+  abiExport: AbiExport,
+  paramName: string,
+  registry: RuntimeTypeRegistry,
+): string {
+  const param = abiExport.params.find((item) => item.name === paramName);
+  if (!param) {
+    throw new SymbolLoadError(`missing parameter ${paramName} on ${abiExport.name}`);
+  }
+  bindParamSpec(abiExport, paramName, registry);
+  const qualifier =
+    param.contract.ownership === "out"
+      ? "_Out_ "
+      : param.contract.ownership === "inout"
+        ? "_Inout_ "
+        : "";
+  return `${qualifier}${param.c} ${param.name}`;
+}
+
 function tryDrop(drop: (...args: unknown[]) => unknown, handle: bigint | number): void {
   try {
     drop(handle);
   } catch {
     // Best-effort cleanup.
   }
+}
+
+function isCompletionSignal(value: unknown): boolean {
+  return value === 1 || value === 1n || value === true;
 }

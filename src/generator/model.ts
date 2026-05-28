@@ -1,10 +1,11 @@
-import type { AbiExport, FozzyAbiManifest } from "../types/abi.js";
+import type { AbiCallbackBinding, AbiExport, FozzyAbiManifest } from "../types/abi.js";
 
 export interface GeneratedModuleModel {
   readonly packageName: string;
   readonly exportName: string;
   readonly exports: GeneratedExportModel[];
   readonly handleTypes: GeneratedHandleTypeModel[];
+  readonly callbacks: GeneratedCallbackModel[];
 }
 
 export interface GeneratedExportModel {
@@ -29,6 +30,13 @@ export interface GeneratedHandleTypeModel {
   readonly supportsStringDecode: boolean;
 }
 
+export interface GeneratedCallbackModel {
+  readonly exportAbiName: string;
+  readonly methodName: string;
+  readonly bindingId: string;
+  readonly callbackType: string;
+}
+
 export function buildGeneratedModuleModel(
   manifest: FozzyAbiManifest,
   exportName = "createBindings",
@@ -39,6 +47,7 @@ export function buildGeneratedModuleModel(
     exportName,
     exports: manifest.exports.map((abiExport) => buildGeneratedExportModel(abiExport)),
     handleTypes,
+    callbacks: collectCallbacks(manifest.exports),
   };
 }
 
@@ -152,4 +161,27 @@ function collectHandleTypes(exports: AbiExport[]): GeneratedHandleTypeModel[] {
 
 function ownedHandleTypeName(base: string): string {
   return `${sanitizeTypeReference(base)}OwnedHandle`;
+}
+
+function collectCallbacks(exports: AbiExport[]): GeneratedCallbackModel[] {
+  const callbacks: GeneratedCallbackModel[] = [];
+  for (const abiExport of exports) {
+    for (const binding of abiExport.contract.callbackBindings) {
+      callbacks.push({
+        exportAbiName: abiExport.name,
+        methodName: sanitizeIdentifier(`register_${abiExport.name}_${binding.bindingId}`),
+        bindingId: binding.bindingId,
+        callbackType: renderCallbackType(binding),
+      });
+    }
+  }
+  return callbacks;
+}
+
+function renderCallbackType(binding: AbiCallbackBinding): string {
+  const params = binding.signature.params
+    .map((param) => `${sanitizeIdentifier(param.name)}: ${renderTsTypeForCType(param.c, "value")}`)
+    .join(", ");
+  const returnType = renderTsTypeForCType(binding.signature.returnCType, "value");
+  return `(${params}) => ${returnType}`;
 }

@@ -103,9 +103,11 @@ Current generator responsibilities:
 
 - build a normalized generated-module model
 - map ABI types into TypeScript surface types
-- render typed binding module source
-- write generated module output
+- render package-ready JavaScript and declaration output
+- write generated package output
 - emit ownership-aware handle interfaces for owned pointer returns
+- emit typed callback registration helpers
+- emit binding-level disposal surface
 
 ## Current Runtime Contract
 
@@ -120,6 +122,9 @@ Implemented today:
 - owned-pointer result handles
 - callback registration support
 - manifest-driven TypeScript rendering
+- package-ready binding artifact generation
+- generated callback registration helpers
+- generated binding disposal
 
 Validated today:
 
@@ -146,7 +151,6 @@ This keeps the library free to evolve its Node-native substrate without changing
 The next production slices to build are:
 
 - richer ownership adapters for owned/out/inout contracts
-- generated public binding packages and fixtures
 - broader async fixture coverage
 - richer callback contract coverage
 - docs and release workflow hardening
