@@ -4,6 +4,10 @@
   "private": true,
   "description": "TypeScript-first bidirectional JavaScript bridge for Fozzy ABI libraries",
   "type": "module",
+  "exports": {
+    ".": "./dist/src/index.js",
+    "./runtime/raw": "./dist/src/runtime/raw.js"
+  },
   "engines": {
     "node": ">=22.0.0"
   },

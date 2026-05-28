@@ -30,6 +30,7 @@ The repo now includes a real production foundation rather than only planning doc
 - generated package-local discovered loaders for emitted binding packages
 - generated `repr(C)` struct and enum TypeScript declarations
 - load-time symbol preflight for manifest-declared exports
+- separate explicit raw/unsafe runtime module for expert consumers
 - callback registration and native callback roundtrip coverage
 - native integration testing against a compiled fixture shared library
 
@@ -82,6 +83,7 @@ It also exercises:
 - downstream consumer-style TypeScript compile validation
 - negative load-time symbol mismatch validation
 - structured diagnostics hooks for package discovery, module load, async lifecycle, callback disposal, and module disposal
+- explicit raw/unsafe symbol binding tests
 
 ## Status
 

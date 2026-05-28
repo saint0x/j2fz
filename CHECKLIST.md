@@ -319,9 +319,9 @@ This checklist is the full production implementation plan for `j2fz`, the JavaSc
 ## Raw Unsafe API
 
 - Decide the exact scope of any raw unsafe surface.
-- Require explicit opt-in for raw symbol calls.
-- Require explicit opt-in for raw pointer handling.
-- Keep raw unsafe APIs out of default imports.
+✅ Require explicit opt-in for raw symbol calls.
+✅ Require explicit opt-in for raw pointer handling.
+✅ Keep raw unsafe APIs out of default imports.
 - Mark raw APIs loudly in generated docs and type declarations.
 
 ## Packaging Modes

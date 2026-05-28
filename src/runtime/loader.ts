@@ -141,10 +141,32 @@ export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
           throw new NativeBoundaryError(`sync export ${abiExport.name} did not bind correctly`);
         }
         try {
+          emit({
+            kind: "sync.call.started",
+            message: "Started sync export call",
+            detail: {
+              exportName: abiExport.name,
+            },
+          });
           const adaptedArgs = adaptCallArgs(abiExport, args);
           const result = rawCall(...adaptedArgs);
-          return adaptResultValue(abiExport, result, library, registry, releasers);
+          const adaptedResult = adaptResultValue(abiExport, result, library, registry, releasers);
+          emit({
+            kind: "sync.call.completed",
+            message: "Completed sync export call",
+            detail: {
+              exportName: abiExport.name,
+            },
+          });
+          return adaptedResult;
         } catch (error) {
+          emit({
+            kind: "sync.call.failed",
+            message: "Sync export call failed",
+            detail: {
+              exportName: abiExport.name,
+            },
+          });
           throw new NativeBoundaryError(`native call failed for ${abiExport.name}`, { cause: error });
         }
       },
@@ -153,7 +175,42 @@ export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
         if (!binding) {
           throw new OwnershipError(`callback binding ${bindingId} does not exist on ${abiExport.name}`);
         }
-        const handle = registerCallback(binding, fn, registry);
+        const handle = registerCallback(
+          binding,
+          (...callbackArgs: unknown[]) => {
+            emit({
+              kind: "callback.invoked",
+              message: "Invoked callback binding",
+              detail: {
+                exportName: abiExport.name,
+                bindingId,
+              },
+            });
+            try {
+              const result = fn(...callbackArgs);
+              emit({
+                kind: "callback.completed",
+                message: "Completed callback binding",
+                detail: {
+                  exportName: abiExport.name,
+                  bindingId,
+                },
+              });
+              return result;
+            } catch (error) {
+              emit({
+                kind: "callback.failed",
+                message: "Callback binding threw",
+                detail: {
+                  exportName: abiExport.name,
+                  bindingId,
+                },
+              });
+              throw error;
+            }
+          },
+          registry,
+        );
         emit({
           kind: "callback.registered",
           message: "Registered callback binding",

@@ -330,6 +330,7 @@ test("loadFozzyModule binds a real native library and callback", () => {
   const root = mkdtempSync(join(tmpdir(), "j2fz-fixture-"));
   try {
     const { libraryPath, manifestPath } = compileFixtureLibrary(root);
+    const events: string[] = [];
     const module = loadFozzyModule({
       paths: {
         sharedLibrary: libraryPath,
@@ -341,6 +342,11 @@ test("loadFozzyModule binds a real native library and callback", () => {
       },
       ownedPointerReleasers: {
         alloc_bytes: "alloc_bytes_free",
+      },
+      diagnostics: {
+        onEvent(event) {
+          events.push(event.kind);
+        },
       },
     });
 
@@ -379,6 +385,12 @@ test("loadFozzyModule binds a real native library and callback", () => {
     assert.equal(owned.disposed, true);
 
     module.dispose();
+    assert.ok(events.includes("sync.call.started"));
+    assert.ok(events.includes("sync.call.completed"));
+    assert.ok(events.includes("callback.registered"));
+    assert.ok(events.includes("callback.invoked"));
+    assert.ok(events.includes("callback.completed"));
+    assert.ok(events.includes("callback.disposed"));
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

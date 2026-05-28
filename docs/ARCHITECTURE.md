@@ -117,6 +117,8 @@ Current generator responsibilities:
 - emit binding-level disposal surface
 - emit package-local discovered loader entrypoints
 
+Raw/unsafe access is intentionally separated into [src/runtime/raw.ts](/Users/deepsaint/Desktop/j2fz/src/runtime/raw.ts:1), which is not part of the default top-level export surface.
+
 ## Current Runtime Contract
 
 Implemented today:
@@ -138,6 +140,7 @@ Implemented today:
 - generated `repr(C)` layout declarations
 - generated binding disposal
 - generated package-local discovered loaders
+- separate raw/unsafe runtime access
 - structured diagnostics emitter hooks across discovery, load, callback, and async runtime paths
 
 Validated today:
