@@ -509,6 +509,8 @@ This checklist is the full production implementation plan for `j2fz`, the JavaSc
 ✅ Scaffold the TypeScript-first repository layout.
 ✅ Add strict TypeScript project configuration.
 ✅ Add manifest parsing and validation foundation.
+✅ Add ABI compatibility baseline comparison foundation.
 ✅ Add Koffi-backed native loader foundation.
 ✅ Add manifest-driven TypeScript binding generation foundation.
 ✅ Add native integration tests with a compiled shared-library fixture and callback roundtrip.
+✅ Add initial ownership-aware runtime adapters for borrowed, out, and owned contract paths.

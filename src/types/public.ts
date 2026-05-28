@@ -2,6 +2,10 @@ export interface Disposable {
   dispose(): void;
 }
 
+export interface OpaqueHandle<TBrand extends string> extends Disposable {
+  readonly __brand: TBrand;
+}
+
 export interface PackageIdentity {
   name: string;
   version: string;
@@ -18,6 +22,7 @@ export interface LoadModuleOptions {
   package?: PackageIdentity;
   strict?: boolean;
   pollIntervalMs?: number;
+  ownedPointerReleasers?: Record<string, string>;
 }
 
 export interface GeneratedBindingOptions {

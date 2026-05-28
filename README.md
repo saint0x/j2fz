@@ -22,6 +22,7 @@ The repo now includes a real production foundation rather than only planning doc
 - strict ABI manifest types and validation
 - Koffi-backed native loading and symbol declaration
 - manifest-driven TypeScript binding generation
+- ownership-aware argument and result adaptation
 - callback registration and native callback roundtrip coverage
 - native integration testing against a compiled fixture shared library
 
@@ -63,6 +64,11 @@ Current local validation:
 - `npm test`
 
 The integration suite builds a real native shared library fixture, loads it through `j2fz`, calls native exports, and round-trips a JavaScript callback through the ABI boundary.
+It also exercises:
+
+- borrowed buffer inputs
+- `out` buffer writes
+- owned native pointer handles with explicit disposal
 
 ## Status
 
@@ -70,6 +76,7 @@ The integration suite builds a real native shared library fixture, loads it thro
 - Production checklist created
 - TypeScript-first contract direction locked
 - Strict TypeScript runtime/generator foundation implemented
+- Ownership-aware runtime adapters implemented
 - Native callback roundtrip integration test implemented
 
 See [CHECKLIST.md](/Users/deepsaint/Desktop/j2fz/CHECKLIST.md:1) for the actionable implementation plan.

@@ -111,9 +111,12 @@ Current generator responsibilities:
 Implemented today:
 
 - strict ABI manifest parsing
+- ABI compatibility baseline comparison
 - repr(C) layout registration
 - sync export binding
 - async-handle export orchestration
+- ownership-aware argument adaptation
+- owned-pointer result handles
 - callback registration support
 - manifest-driven TypeScript rendering
 
@@ -123,6 +126,7 @@ Validated today:
 - unit tests for generator rendering
 - unit tests for Koffi declaration synthesis
 - integration test using a compiled native fixture with callback roundtrip
+- integration coverage for owned-pointer disposal and out-buffer writes
 
 Integration coverage lives in [tests/integration.test.ts](/Users/deepsaint/Desktop/j2fz/tests/integration.test.ts:1).
 
@@ -140,7 +144,6 @@ This keeps the library free to evolve its Node-native substrate without changing
 
 The next production slices to build are:
 
-- ABI compatibility baseline checking
 - richer ownership adapters for owned/out/inout contracts
 - generated public binding packages and fixtures
 - broader async fixture coverage

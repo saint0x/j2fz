@@ -9,7 +9,6 @@ import {
   NativeBoundaryError,
   OwnershipError,
   SymbolLoadError,
-  TypeMarshalingError,
 } from "./errors.js";
 import { parseAbiManifest } from "./manifest.js";
 import {
@@ -21,6 +20,7 @@ import {
   type RegisteredCallbackHandle,
   type RuntimeTypeRegistry,
 } from "./koffi.js";
+import { adaptCallArgs, adaptResultValue } from "./ownership.js";
 
 export interface LoadedFozzyModule {
   readonly manifest: FozzyAbiManifest;
@@ -60,6 +60,7 @@ export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
   const loadedExports = new Map<string, LoadedExport>();
   const activeCallbacks = new Set<RegisteredCallbackHandle>();
   const pollIntervalMs = options.pollIntervalMs ?? 5;
+  const releasers = options.ownedPointerReleasers;
 
   for (const abiExport of manifest.exports) {
     assertSupportedExportSubset(abiExport);
@@ -72,7 +73,9 @@ export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
           return invokeAsyncHandleExport(rawCall, abiExport, manifest, library, registry, args, pollIntervalMs);
         }
         try {
-          return rawCall(...args);
+          const adaptedArgs = adaptCallArgs(abiExport, args);
+          const result = rawCall(...adaptedArgs);
+          return adaptResultValue(abiExport, result, library, registry, releasers);
         } catch (error) {
           throw new NativeBoundaryError(`native call failed for ${abiExport.name}`, { cause: error });
         }
@@ -200,7 +203,7 @@ function bindParamSpec(
 ) {
   const param = abiExport.params.find((item) => item.name === paramName);
   if (!param) {
-    throw new TypeMarshalingError(`missing parameter ${paramName} on ${abiExport.name}`);
+    throw new SymbolLoadError(`missing parameter ${paramName} on ${abiExport.name}`);
   }
   return koffiTypeForParam(param, abiExport, registry);
 }

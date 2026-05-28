@@ -25,6 +25,7 @@ function compileFixtureLibrary(root: string): { libraryPath: string; manifestPat
 
   const source = `
 #include <stddef.h>
+#include <stdlib.h>
 #include <stdint.h>
 
 uint32_t hash32(const uint8_t *ptr, size_t len) {
@@ -39,6 +40,27 @@ uint32_t hash32(const uint8_t *ptr, size_t len) {
 int32_t invoke_i32_callback(int32_t value, int32_t (*cb)(int32_t, void *), void *cb_ctx) {
   if (cb == NULL) return -1;
   return cb(value, cb_ctx);
+}
+
+int32_t fill_bytes(uint8_t *buf_out, size_t len) {
+  for (size_t i = 0; i < len; i++) {
+    buf_out[i] = (uint8_t)(i + 1);
+  }
+  return (int32_t)len;
+}
+
+uint8_t *alloc_bytes(size_t len) {
+  uint8_t *buf = (uint8_t *)malloc(len + 1);
+  if (buf == NULL) return NULL;
+  for (size_t i = 0; i < len; i++) {
+    buf[i] = (uint8_t)('A' + (int)i);
+  }
+  buf[len] = 0;
+  return buf;
+}
+
+void alloc_bytes_free(uint8_t *ptr) {
+  free(ptr);
 }
 `;
   writeFileSync(sourcePath, source, "utf8");
@@ -182,6 +204,87 @@ int32_t invoke_i32_callback(int32_t value, int32_t (*cb)(int32_t, void *), void 
           asyncBoundary: null,
         },
       },
+      {
+        name: "fill_bytes",
+        async: false,
+        symbolVersion: 1,
+        params: [
+          {
+            name: "buf_out",
+            fzy: "*u8",
+            c: "uint8_t*",
+            contract: {
+              ownership: "out",
+              nullability: "non_null",
+              mutability: "mut",
+              lifetimeAnchor: "loan:buf",
+              view: {
+                kind: "ptr_len",
+                lengthParam: "len",
+              },
+            },
+          },
+          {
+            name: "len",
+            fzy: "usize",
+            c: "size_t",
+            contract: {
+              ownership: "value",
+              nullability: "n/a",
+              mutability: "const",
+              lifetimeAnchor: null,
+              view: null,
+            },
+          },
+        ],
+        return: {
+          fzy: "i32",
+          c: "int32_t",
+          contract: {
+            ownership: "value",
+            nullability: "n/a",
+            mutability: "const",
+          },
+        },
+        contract: {
+          execution: "sync",
+          callbackBindings: [],
+          asyncBoundary: null,
+        },
+      },
+      {
+        name: "alloc_bytes",
+        async: false,
+        symbolVersion: 1,
+        params: [
+          {
+            name: "len",
+            fzy: "usize",
+            c: "size_t",
+            contract: {
+              ownership: "value",
+              nullability: "n/a",
+              mutability: "const",
+              lifetimeAnchor: null,
+              view: null,
+            },
+          },
+        ],
+        return: {
+          fzy: "*u8",
+          c: "uint8_t*",
+          contract: {
+            ownership: "owned",
+            nullability: "non_null",
+            mutability: "mut",
+          },
+        },
+        contract: {
+          execution: "sync",
+          callbackBindings: [],
+          asyncBoundary: null,
+        },
+      },
     ],
   };
   writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), "utf8");
@@ -215,6 +318,9 @@ test("loadFozzyModule binds a real native library and callback", () => {
         name: "fixture.bridge",
         version: "0.0.1",
       },
+      ownedPointerReleasers: {
+        alloc_bytes: "alloc_bytes_free",
+      },
     });
 
     const hash32 = module.exports.get("hash32");
@@ -231,6 +337,26 @@ test("loadFozzyModule binds a real native library and callback", () => {
     const callbackValue = invoke.call(41, callback.pointer, 0);
     assert.equal(callbackValue, 42);
     callback.dispose();
+
+    const fill = module.exports.get("fill_bytes");
+    assert.ok(fill);
+    const out = Buffer.alloc(4);
+    const fillResult = fill.call(out, BigInt(out.length));
+    assert.equal(fillResult, 4);
+    assert.deepEqual([...out], [1, 2, 3, 4]);
+
+    const alloc = module.exports.get("alloc_bytes");
+    assert.ok(alloc);
+    const owned = alloc.call(BigInt(4)) as {
+      decodeBytes(length: number): Uint8Array;
+      dispose(): void;
+      disposed: boolean;
+    };
+    assert.deepEqual([...owned.decodeBytes(4)], [65, 66, 67, 68]);
+    assert.equal(owned.disposed, false);
+    owned.dispose();
+    assert.equal(owned.disposed, true);
+
     module.dispose();
   } finally {
     rmSync(root, { recursive: true, force: true });
