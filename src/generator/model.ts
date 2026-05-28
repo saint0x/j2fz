@@ -1,4 +1,4 @@
-import type { AbiCallbackBinding, AbiExport, FozzyAbiManifest } from "../types/abi.js";
+import type { AbiCallbackBinding, AbiExport, AbiReprCLayout, FozzyAbiManifest } from "../types/abi.js";
 
 export interface GeneratedModuleModel {
   readonly packageName: string;
@@ -6,6 +6,7 @@ export interface GeneratedModuleModel {
   readonly exports: GeneratedExportModel[];
   readonly handleTypes: GeneratedHandleTypeModel[];
   readonly callbacks: GeneratedCallbackModel[];
+  readonly layouts: GeneratedLayoutModel[];
 }
 
 export interface GeneratedExportModel {
@@ -41,6 +42,23 @@ export interface GeneratedCallbackModel {
   readonly contextTsType: string | null;
 }
 
+export interface GeneratedLayoutModel {
+  readonly typeName: string;
+  readonly kind: "struct" | "enum";
+  readonly fields: readonly GeneratedLayoutFieldModel[];
+  readonly variants: readonly GeneratedLayoutVariantModel[];
+}
+
+export interface GeneratedLayoutFieldModel {
+  readonly name: string;
+  readonly tsType: string;
+}
+
+export interface GeneratedLayoutVariantModel {
+  readonly name: string;
+  readonly value: string;
+}
+
 export function buildGeneratedModuleModel(
   manifest: FozzyAbiManifest,
   exportName = "createBindings",
@@ -52,6 +70,7 @@ export function buildGeneratedModuleModel(
     exports: manifest.exports.map((abiExport) => buildGeneratedExportModel(abiExport)),
     handleTypes,
     callbacks: collectCallbacks(manifest.exports),
+    layouts: collectLayouts(manifest.reprCLayouts),
   };
 }
 
@@ -240,4 +259,30 @@ function callbackHandleTypeName(exportName: string, bindingId: string): string {
 
 function callbackContextTypeName(exportName: string, bindingId: string): string {
   return `${sanitizeTypeReference(`${exportName}_${bindingId}`)}CallbackContext`;
+}
+
+function collectLayouts(layouts: AbiReprCLayout[]): GeneratedLayoutModel[] {
+  return layouts.map((layout) => {
+    if (layout.kind === "struct") {
+      return {
+        typeName: sanitizeTypeReference(layout.name),
+        kind: "struct",
+        fields: (layout.fields ?? []).map((field) => ({
+          name: field.name,
+          tsType: renderTsTypeForCType(field.c, "value"),
+        })),
+        variants: [],
+      };
+    }
+
+    return {
+      typeName: sanitizeTypeReference(layout.name),
+      kind: "enum",
+      fields: [],
+      variants: (layout.variants ?? []).map((variant) => ({
+        name: variant.name,
+        value: String(variant.value),
+      })),
+    };
+  });
 }

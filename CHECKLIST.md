@@ -70,7 +70,7 @@ This checklist is the full production implementation plan for `j2fz`, the JavaSc
 ✅ Support package-local default discovery rules.
 ✅ Support environment override rules where appropriate.
 - Validate that manifest package identity matches expected library identity.
-- Validate that all manifest-declared symbols resolve in the native library.
+✅ Validate that all manifest-declared symbols resolve in the native library.
 
 ## ABI Manifest Loader
 
@@ -197,8 +197,8 @@ This checklist is the full production implementation plan for `j2fz`, the JavaSc
 
 ## Type Mapping: `repr(C)` Structs and Enums
 
-- Generate runtime layout definitions from manifest metadata.
-- Generate TypeScript interfaces or equivalent type declarations.
+✅ Generate runtime layout definitions from manifest metadata.
+✅ Generate TypeScript interfaces or equivalent type declarations.
 - Decide the exact TypeScript representation policy for:
   - fieldless enums
   - payload enums
@@ -298,7 +298,7 @@ This checklist is the full production implementation plan for `j2fz`, the JavaSc
 ✅ Generate callback registration helpers where applicable.
 ✅ Generate package-ready binding directories with runtime entrypoint, declarations, manifest copy, and package metadata.
 ✅ Generate package-local discovered loader entrypoints for emitted packages.
-- Generate async wrappers where applicable.
+✅ Generate async wrappers where applicable.
 - Generate docs metadata from ABI fields.
 - Guarantee strict-TypeScript-clean generated output.
 - Guarantee generated output does not rely on `any`.
@@ -339,11 +339,11 @@ This checklist is the full production implementation plan for `j2fz`, the JavaSc
 - Distinguish nullable and non-nullable contracts.
 - Preserve `bigint` semantics for 64-bit integers.
 - Model disposable resources explicitly.
-- Add TS compile tests against generated output.
+✅ Add TS compile tests against generated output.
 - Run strict TypeScript in CI.
 - Enforce no implicit `any`, no unchecked indexed access, and exact optional property handling where feasible.
 - Add golden tests for generated TypeScript API shape.
-- Add consumer-style TypeScript fixture projects that import generated bindings.
+✅ Add consumer-style TypeScript fixture projects that import generated bindings.
 
 ## Observability
 

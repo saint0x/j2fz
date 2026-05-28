@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { copyFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
@@ -8,6 +8,7 @@ import { tmpdir } from "node:os";
 import { loadFozzyModule } from "../src/runtime/loader.js";
 import { loadFozzyPackage } from "../src/runtime/discovery.js";
 import { defaultSharedLibraryFileNameForPackage } from "../src/runtime/platform.js";
+import { SymbolLoadError } from "../src/runtime/errors.js";
 
 function sharedLibraryName(stem: string): string {
   switch (process.platform) {
@@ -412,6 +413,42 @@ test("loadFozzyPackage discovers generated package artifacts", () => {
     assert.equal(typeof hashValue, "number");
 
     module.dispose();
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("loadFozzyModule rejects manifest exports whose symbols are missing", () => {
+  const root = mkdtempSync(join(tmpdir(), "j2fz-missing-symbol-"));
+  try {
+    const { libraryPath, manifestPath } = compileFixtureLibrary(root);
+    const broken = JSON.parse(readFileSync(manifestPath, "utf8")) as Record<string, unknown>;
+    const exports = broken.exports as Array<Record<string, unknown>>;
+    const hashExport = exports.find((item) => item.name === "hash32");
+    if (!hashExport) {
+      throw new Error("expected hash32 export in fixture manifest");
+    }
+    hashExport.name = "missing_hash32";
+    writeFileSync(manifestPath, `${JSON.stringify(broken, null, 2)}\n`, "utf8");
+
+    assert.throws(
+      () =>
+        loadFozzyModule({
+          paths: {
+            sharedLibrary: libraryPath,
+            abiManifest: manifestPath,
+          },
+          package: {
+            name: "fixture.bridge",
+            version: "0.0.1",
+          },
+        }),
+      (error: unknown) => {
+        assert.ok(error instanceof SymbolLoadError);
+        assert.match(error.message, /failed binding export missing_hash32|failed to bind/i);
+        return true;
+      },
+    );
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

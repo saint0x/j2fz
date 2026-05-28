@@ -42,6 +42,17 @@ const SAMPLE_MANIFEST = parseAbiManifest({
         { name: "score", c: "uint32_t" },
       ],
     },
+    {
+      name: "TaskState",
+      kind: "enum",
+      size: 4,
+      align: 4,
+      variants: [
+        { name: "Ready", value: 1 },
+        { name: "Busy", value: 2 },
+      ],
+      storage: "int32_t",
+    },
   ],
   exports: [
     {
@@ -197,6 +208,46 @@ const SAMPLE_MANIFEST = parseAbiManifest({
         asyncBoundary: null,
       },
     },
+    {
+      name: "compute_async",
+      async: true,
+      symbolVersion: 1,
+      params: [
+        {
+          name: "value",
+          fzy: "i32",
+          c: "int32_t",
+          contract: {
+            ownership: "value",
+            nullability: "n/a",
+            mutability: "const",
+            lifetimeAnchor: null,
+            view: null,
+          },
+        },
+      ],
+      return: {
+        fzy: "i32",
+        c: "int32_t",
+        contract: {
+          ownership: "value",
+          nullability: "n/a",
+          mutability: "const",
+        },
+      },
+      contract: {
+        execution: "async-handle-v1",
+        callbackBindings: [],
+        asyncBoundary: {
+          model: "async-handle-v1",
+          startSymbol: "compute_async_start",
+          pollSymbol: "compute_async_poll",
+          awaitSymbol: "compute_async_await",
+          dropSymbol: "compute_async_drop",
+          resultType: "int32_t",
+        },
+      },
+    },
   ],
 });
 
@@ -208,7 +259,14 @@ test("renderBindingModule emits typed bindings", () => {
   assert.match(text, /import \{ fileURLToPath \} from "node:url";/);
   assert.match(text, /export function createBindings/);
   assert.match(text, /export function createDiscoveredBindings\(options: Omit<LoadPackageOptions, "discovery"> = \{\}\)/);
+  assert.match(text, /export interface UserRow \{/);
+  assert.match(text, /id: bigint;/);
+  assert.match(text, /score: number;/);
+  assert.match(text, /export const TaskState = \{/);
+  assert.match(text, /Ready: 1,/);
+  assert.match(text, /export type TaskState = \(typeof TaskState\)\[keyof typeof TaskState\];/);
   assert.match(text, /hash32\(ptr_borrowed: Uint8Array \| Buffer, len: bigint\): number;/);
+  assert.match(text, /compute_async\(value: number\): Promise<number>;/);
   assert.match(text, /export interface uint8_tOwnedHandle extends OpaqueHandle<"uint8_t">/);
   assert.match(text, /decodeBytes\(length: number\): Uint8Array;/);
   assert.match(text, /alloc_bytes\(len: bigint\): uint8_tOwnedHandle;/);
@@ -227,6 +285,7 @@ test("renderBindingJavaScript emits publishable runtime wrapper", () => {
 
   assert.match(text, /import \{ fileURLToPath \} from "node:url";/);
   assert.match(text, /import \{ loadFozzyModule, loadFozzyPackage \} from "j2fz";/);
+  assert.match(text, /export const TaskState = \{/);
   assert.match(text, /export function createBindings\(options\)/);
   assert.match(text, /export function createDiscoveredBindings\(options = \{\}\)/);
   assert.match(text, /loadFozzyPackage\(\{/);
@@ -243,8 +302,11 @@ test("renderBindingTypes emits declaration output", () => {
   });
 
   assert.match(text, /import type \{ CallbackContextValue, LoadModuleOptions, LoadPackageOptions, OpaqueHandle, RegisteredCallbackHandle \} from "j2fz";/);
+  assert.match(text, /export interface UserRow \{/);
+  assert.match(text, /export const TaskState = \{/);
   assert.match(text, /export interface demo_bridgeBindings/);
   assert.match(text, /alloc_bytes\(len: bigint\): uint8_tOwnedHandle;/);
+  assert.match(text, /compute_async\(value: number\): Promise<number>;/);
   assert.match(text, /with_callback\(cb: with_callback_mainRegisteredCallbackHandle, cb_ctx: CallbackContextValue<"void">, value: number\): number;/);
   assert.match(text, /register_with_callback_main\(fn: \(value: number, ctx: OpaqueHandle<"void">\) => number\): with_callback_mainRegisteredCallbackHandle;/);
   assert.match(text, /export function createDiscoveredBindings\(options\?: Omit<LoadPackageOptions, "discovery">\): demo_bridgeBindings;/);
@@ -266,6 +328,7 @@ test("renderGeneratedReadme emits export inventory", () => {
 
   assert.match(text, /Generated j2fz bindings for the Fozzy package `demo\.bridge`\./);
   assert.match(text, /`hash32\(`ptr_borrowed: Uint8Array \| Buffer`/);
+  assert.match(text, /compute_async\(`value: number`\) => Promise<number>/);
   assert.match(text, /## Callback Registrations/);
   assert.match(text, /`register_with_callback_main\(fn: \(value: number, ctx: OpaqueHandle<"void">\) => number\)`/);
   assert.match(text, /import \{ createBindings, createDiscoveredBindings \} from "\.";/);

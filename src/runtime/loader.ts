@@ -73,21 +73,36 @@ export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
   for (const abiExport of manifest.exports) {
     assertSupportedExportSubset(abiExport);
 
-    const rawCall = bindKoffiFunction(library, abiExport, registry);
+    let rawCall: ((...args: unknown[]) => unknown) | null = null;
+    let asyncBinding: AsyncHandleRuntimeBinding | null = null;
+    try {
+      rawCall = abiExport.async ? null : bindKoffiFunction(library, abiExport, registry);
+      asyncBinding = abiExport.async
+        ? bindAsyncHandleRuntimeBinding(abiExport, manifest, library, registry)
+        : null;
+    } catch (error) {
+      if (error instanceof SymbolLoadError || error instanceof AsyncInteropError) {
+        throw error;
+      }
+      throw new SymbolLoadError(`failed binding export ${abiExport.name}`, { cause: error });
+    }
     const loaded: LoadedExport = {
       abi: abiExport,
       call(...args: unknown[]) {
         if (abiExport.async) {
+          if (asyncBinding === null) {
+            throw new AsyncInteropError(`async export ${abiExport.name} did not bind correctly`);
+          }
           return invokeAsyncHandleExport(
-            rawCall,
+            asyncBinding,
             abiExport,
-            manifest,
-            library,
-            registry,
             args,
             pollIntervalMs,
             asyncTimeoutMs,
           );
+        }
+        if (rawCall === null) {
+          throw new NativeBoundaryError(`sync export ${abiExport.name} did not bind correctly`);
         }
         try {
           const adaptedArgs = adaptCallArgs(abiExport, args);
@@ -138,27 +153,45 @@ function ensureReadable(path: string): void {
 }
 
 function invokeAsyncHandleExport(
-  _rawCall: (...args: unknown[]) => unknown,
+  binding: AsyncHandleRuntimeBinding,
   abiExport: AbiExport,
-  manifest: FozzyAbiManifest,
-  library: LibraryHandle,
-  registry: RuntimeTypeRegistry,
   args: unknown[],
   pollIntervalMs: number,
   asyncTimeoutMs: number,
 ): Promise<unknown> {
+  try {
+    return invokeAsyncHandleRuntimeBinding(binding, abiExport.name, args, pollIntervalMs, asyncTimeoutMs);
+  } catch (error) {
+    if (error instanceof AsyncInteropError) {
+      throw error;
+    }
+    throw new SymbolLoadError(`failed binding async handle symbols for ${abiExport.name}`, { cause: error });
+  }
+}
+
+function bindAsyncHandleRuntimeBinding(
+  abiExport: AbiExport,
+  manifest: FozzyAbiManifest,
+  library: LibraryHandle,
+  registry: RuntimeTypeRegistry,
+): AsyncHandleRuntimeBinding {
   const boundary = abiExport.contract.asyncBoundary;
   if (boundary === null) {
     throw new AsyncInteropError(`async export ${abiExport.name} is missing async boundary`);
   }
 
+  const parent = manifest.exports.find((item) => item.name === abiExport.name);
+  if (!parent) {
+    throw new SymbolLoadError(`missing parent export ${abiExport.name}`);
+  }
+
   try {
-    const binding: AsyncHandleRuntimeBinding = {
+    return {
       start: library.func(
-      `int32_t ${boundary.startSymbol}(${[
-        ...abiExport.params.map((param) => renderPrototypeParam(abiExport, param.name, registry)),
-        "_Out_ uint64_t *handle_out",
-      ].join(", ")})`,
+        `int32_t ${boundary.startSymbol}(${[
+          ...parent.params.map((param) => renderPrototypeParam(parent, param.name, registry)),
+          "_Out_ uint64_t *handle_out",
+        ].join(", ")})`,
       ),
       poll: library.func(`int32_t ${boundary.pollSymbol}(uint64_t handle, _Out_ int32_t *done_out)`),
       awaitResult: library.func(
@@ -166,12 +199,7 @@ function invokeAsyncHandleExport(
       ),
       drop: library.func(`int32_t ${boundary.dropSymbol}(uint64_t handle)`),
     };
-
-    return invokeAsyncHandleRuntimeBinding(binding, abiExport.name, args, pollIntervalMs, asyncTimeoutMs);
   } catch (error) {
-    if (error instanceof AsyncInteropError) {
-      throw error;
-    }
     throw new SymbolLoadError(`failed binding async handle symbols for ${abiExport.name}`, { cause: error });
   }
 }

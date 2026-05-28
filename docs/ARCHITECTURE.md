@@ -87,6 +87,7 @@ The loader composes:
 - package identity checks
 - native shared library loading
 - runtime type registry creation
+- load-time export and async-boundary symbol preflight
 - export binding
 - callback registration
 - async-handle orchestration
@@ -110,6 +111,7 @@ Current generator responsibilities:
 - render package-ready JavaScript and declaration output
 - write generated package output
 - emit ownership-aware handle interfaces for owned pointer returns
+- emit `repr(C)` struct and enum TypeScript declarations
 - emit typed callback registration helpers
 - emit typed callback handle interfaces and context-bearing callback argument types
 - emit binding-level disposal surface
@@ -122,6 +124,7 @@ Implemented today:
 - package artifact discovery and package-layout loading
 - strict ABI manifest parsing
 - ABI compatibility baseline comparison
+- load-time manifest symbol validation
 - repr(C) layout registration
 - sync export binding
 - async-handle export orchestration
@@ -132,6 +135,7 @@ Implemented today:
 - package-ready binding artifact generation
 - generated callback registration helpers
 - generated typed callback handle surfaces
+- generated `repr(C)` layout declarations
 - generated binding disposal
 - generated package-local discovered loaders
 
@@ -140,6 +144,7 @@ Validated today:
 - unit tests for package artifact discovery
 - unit tests for manifest validation
 - unit tests for generator rendering
+- consumer-style TypeScript compile test against generated bindings
 - unit tests for Koffi declaration synthesis
 - integration test using a compiled native fixture with callback roundtrip
 - integration coverage for owned-pointer disposal and out-buffer writes

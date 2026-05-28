@@ -27,6 +27,9 @@ export function renderBindingModule(
     lines.push("}");
     lines.push("");
   }
+  for (const layout of model.layouts) {
+    renderLayoutDeclarations(lines, layout, "ts");
+  }
   for (const callback of model.callbacks) {
     lines.push(`export interface ${callback.handleTypeName} extends RegisteredCallbackHandle<${JSON.stringify(callback.bindingId)}> {}`);
     if (callback.contextTypeName !== null && callback.contextTsType !== null) {
@@ -102,6 +105,9 @@ export function renderBindingJavaScript(
   lines.push(`import { fileURLToPath } from "node:url";`);
   lines.push(`import { loadFozzyModule, loadFozzyPackage } from "${runtimeImportPath}";`);
   lines.push("");
+  for (const layout of model.layouts) {
+    renderLayoutDeclarations(lines, layout, "js");
+  }
   lines.push(`export function ${exportName}(options) {`);
   lines.push("  const module = loadFozzyModule(options);");
   lines.push("  return createBindingsFromLoadedModule(module);");
@@ -166,6 +172,9 @@ export function renderBindingTypes(
     }
     lines.push("}");
     lines.push("");
+  }
+  for (const layout of model.layouts) {
+    renderLayoutDeclarations(lines, layout, "dts");
   }
   for (const callback of model.callbacks) {
     lines.push(`export interface ${callback.handleTypeName} extends RegisteredCallbackHandle<${JSON.stringify(callback.bindingId)}> {}`);
@@ -281,4 +290,32 @@ function sanitizeIdentifier(value: string): string {
 
 function defaultGeneratedPackageName(packageName: string): string {
   return `${packageName.replace(/[^A-Za-z0-9._-]/g, "-")}-j2fz`;
+}
+
+function renderLayoutDeclarations(
+  lines: string[],
+  layout: ReturnType<typeof buildGeneratedModuleModel>["layouts"][number],
+  mode: "ts" | "js" | "dts",
+): void {
+  if (layout.kind === "struct") {
+    if (mode !== "js") {
+      lines.push(`export interface ${layout.typeName} {`);
+      for (const field of layout.fields) {
+        lines.push(`  ${field.name}: ${field.tsType};`);
+      }
+      lines.push("}");
+      lines.push("");
+    }
+    return;
+  }
+
+  lines.push(`export const ${layout.typeName} = {`);
+  for (const variant of layout.variants) {
+    lines.push(`  ${variant.name}: ${variant.value},`);
+  }
+  lines.push("} as const;");
+  if (mode !== "js") {
+    lines.push(`export type ${layout.typeName} = (typeof ${layout.typeName})[keyof typeof ${layout.typeName}];`);
+  }
+  lines.push("");
 }
