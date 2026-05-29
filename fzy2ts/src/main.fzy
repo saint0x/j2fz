@@ -1,0 +1,14 @@
+use core.mem;
+
+mod api;
+mod model;
+mod runtime;
+mod tests;
+
+fn main() -> i32 {
+    api.touch()
+    model.touch()
+    runtime.touch()
+    tests.touch()
+    return 0
+}

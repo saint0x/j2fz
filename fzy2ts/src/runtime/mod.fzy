@@ -1,0 +1,6 @@
+mod js;
+
+fn touch() -> i32 {
+    js.touch()
+    return 0
+}

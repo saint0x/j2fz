@@ -1,0 +1,6 @@
+mod types;
+
+fn touch() -> i32 {
+    types.touch()
+    return 0
+}

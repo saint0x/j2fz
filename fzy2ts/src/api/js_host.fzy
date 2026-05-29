@@ -1,0 +1,35 @@
+pub const JS_OK: i32 = 0;
+pub const JS_ERR: i32 = -1;
+pub const JS_PENDING: i32 = 1;
+
+ext unsafe c fn j2fz_js_module_open(spec_borrowed: *u8, len: usize, module_out: *u64, module_ctx: *u8) -> i32;
+ext unsafe c fn j2fz_js_module_close(module_handle: u64) -> i32;
+
+ext unsafe c fn j2fz_js_export_get(module_handle: u64, export_borrowed: *u8, len: usize, export_out: *u64, export_ctx: *u8) -> i32;
+ext unsafe c fn j2fz_js_export_release(export_handle: u64) -> i32;
+
+ext unsafe c fn j2fz_js_value_release(value_handle: u64) -> i32;
+ext unsafe c fn j2fz_js_value_null(value_out: *u64, value_len: usize) -> i32;
+ext unsafe c fn j2fz_js_value_bool(value: i32, value_out: *u64, value_len: usize) -> i32;
+ext unsafe c fn j2fz_js_value_i32(value: i32, value_out: *u64, value_len: usize) -> i32;
+ext unsafe c fn j2fz_js_value_u64(value: u64, value_out: *u64, value_len: usize) -> i32;
+ext unsafe c fn j2fz_js_value_f64(value: f64, value_out: *u64, value_len: usize) -> i32;
+ext unsafe c fn j2fz_js_value_str(value_borrowed: *u8, len: usize, value_out: *u64, value_len: usize) -> i32;
+ext unsafe c fn j2fz_js_value_bytes(ptr_borrowed: *u8, len: usize, value_out: *u64, value_len: usize) -> i32;
+
+ext unsafe c fn j2fz_js_value_as_bool(value_handle: u64, value_out: *i32, value_len: usize) -> i32;
+ext unsafe c fn j2fz_js_value_as_i32(value_handle: u64, value_out: *i32, value_len: usize) -> i32;
+ext unsafe c fn j2fz_js_value_as_u64(value_handle: u64, value_out: *u64, value_len: usize) -> i32;
+ext unsafe c fn j2fz_js_value_as_f64(value_handle: u64, value_out: *f64, value_len: usize) -> i32;
+ext unsafe c fn j2fz_js_value_as_utf8(value_handle: u64, utf8_ptr_out: *u64, utf8_ptr_len: usize, utf8_len_out: *usize, utf8_len_len: usize) -> i32;
+ext unsafe c fn j2fz_js_value_copy_utf8(value_handle: u64, ptr_out: *u8, len: usize) -> i32;
+
+ext unsafe c fn j2fz_js_call(function_handle: u64, argv_borrowed: *u64, argv_len: usize, result_out: *u64, result_len: usize) -> i32;
+ext unsafe c fn j2fz_js_await(value_handle: u64, result_out: *u64, result_len: usize) -> i32;
+
+ext unsafe c fn j2fz_js_host_register_i32_i32(name_borrowed: *u8, len: usize, cb: fn(i32) -> i32, cb_ctx: *u8, registration_out: *u64, registration_ctx: *u8) -> i32;
+ext unsafe c fn j2fz_js_host_registration_release(registration_handle: u64) -> i32;
+
+fn touch() -> i32 {
+    return 0
+}

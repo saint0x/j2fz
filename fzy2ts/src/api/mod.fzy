@@ -1,0 +1,5 @@
+mod js_host;
+
+fn touch() -> i32 {
+    return 0
+}

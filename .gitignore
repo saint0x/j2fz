@@ -1,3 +1,6 @@
-dist
-node_modules
-*.log
+artifacts/
+dist/
+ts2fzy/dist/
+ts2fzy/.fozzy/
+fzy2ts/.fz/
+fzy2ts/fozzy.lock

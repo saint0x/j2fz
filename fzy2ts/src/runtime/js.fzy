@@ -1,0 +1,15 @@
+use model.types;
+use api.js_host;
+
+fn is_ok(code: i32) -> i32 {
+    return types.js_ok(code)
+}
+
+fn is_pending(code: i32) -> i32 {
+    return types.js_pending(code)
+}
+
+fn touch() -> i32 {
+    js_host.touch()
+    return 0
+}

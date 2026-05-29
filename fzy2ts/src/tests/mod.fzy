@@ -1,0 +1,6 @@
+mod smoke;
+
+fn touch() -> i32 {
+    smoke.touch()
+    return 0
+}

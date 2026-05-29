@@ -1,0 +1,31 @@
+#[repr(C)] struct JsValueSpan {
+    ptr: u64,
+    len: usize,
+}
+
+#[repr(C)] struct JsArgv {
+    ptr: u64,
+    len: usize,
+}
+
+const JS_STATUS_OK: i32 = 0;
+const JS_STATUS_ERR: i32 = -1;
+const JS_STATUS_PENDING: i32 = 1;
+
+fn js_ok(code: i32) -> i32 {
+    if code == JS_STATUS_OK {
+        return 1
+    }
+    return 0
+}
+
+fn js_pending(code: i32) -> i32 {
+    if code == JS_STATUS_PENDING {
+        return 1
+    }
+    return 0
+}
+
+fn touch() -> i32 {
+    return 0
+}

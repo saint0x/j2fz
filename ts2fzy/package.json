@@ -19,6 +19,7 @@
   "scripts": {
     "bench": "npm run build && node --expose-gc dist/bench/runtime-bench.js",
     "build": "tsc -p tsconfig.json",
+    "build:host-shim": "bash ./scripts/build-host-shim.sh",
     "check": "tsc -p tsconfig.json --noEmit",
     "clean": "rm -rf dist",
     "test": "npm run build && node --test dist/tests/**/*.test.js"
