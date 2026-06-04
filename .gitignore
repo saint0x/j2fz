@@ -7,3 +7,6 @@ ts2fzy/.fozzy/
 fzy2ts/.fz/
 fzy2ts/fozzy.lock
 fzy2ts/vendor/
+examples/*/dist/
+examples/*/node_modules/
+examples/*/native/.fz/
