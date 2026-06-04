@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>j2fz Bidirectional Click Bridge</title>
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body>
+    <div class="shell">
+      <main class="card">
+        <p class="eyebrow">Vite + ts2fzy + fzy2ts</p>
+        <h1>Bidirectional Click Bridge</h1>
+        <p class="lede">
+          Each click crosses from the browser into Node, through a Fzy native library, out to a JavaScript module,
+          then back through a native Fzy transform before the response returns to the page.
+        </p>
+        <button id="click-button" class="launch">Run Bridge Click</button>
+        <div id="status" class="status">Ready</div>
+        <section class="grid">
+          <article>
+            <h2>Input</h2>
+            <p id="input-count">0</p>
+          </article>
+          <article>
+            <h2>JS Promise Result</h2>
+            <p id="js-doubled">0</p>
+          </article>
+          <article>
+            <h2>Fzy Lifted Result</h2>
+            <p id="native-lifted">0</p>
+          </article>
+          <article>
+            <h2>Handshake Score</h2>
+            <p id="handshake-score">0</p>
+          </article>
+        </section>
+        <pre id="payload" class="payload"></pre>
+      </main>
+    </div>
+  </body>
+</html>

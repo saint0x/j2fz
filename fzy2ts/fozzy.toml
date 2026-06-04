@@ -2,12 +2,24 @@
 name = "fzy2ts"
 version = "0.1.0"
 
+[target.lib]
+name = "fzy2ts"
+path = "src/lib.fzy"
+
 [[target.bin]]
 name = "fzy2ts"
 path = "src/main.fzy"
+
+[link]
+libs = ["j2fz_host_shim"]
+search = ["/Users/deepsaint/Desktop/j2fz/ts2fzy/dist/native"]
+
+[ffi]
+panic_boundary = "abort"
 
 [unsafe]
 contracts = "compiler"
 enforce_dev = false
 enforce_verify = true
 enforce_release = true
+allow_unsafe_in = ["runtime::*", "tests::*", "main", "lib", "bridge_easy"]

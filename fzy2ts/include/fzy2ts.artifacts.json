@@ -1,0 +1,24 @@
+{
+  "abiManifest": "fzy2ts.abi.json",
+  "artifactManifest": "fzy2ts.artifacts.json",
+  "buildMode": "lib",
+  "exports": [],
+  "header": "fzy2ts.h",
+  "hostLifecycle": {
+    "cleanup": "fz_host_cleanup",
+    "init": "fz_host_init",
+    "invokeCallbackI32": "fz_host_invoke_callback_i32",
+    "lastErrorClass": "fz_host_last_error_class",
+    "lastErrorCode": "fz_host_last_error_code",
+    "lastErrorMessage": "fz_host_last_error_message",
+    "registerCallbackI32": "fz_host_register_callback_i32",
+    "shutdown": "fz_host_shutdown"
+  },
+  "module": "lib",
+  "profile": "dev",
+  "projectRoot": "..",
+  "schemaVersion": "fozzylang.interop_artifacts.v1",
+  "sharedLib": "../.fz/build/libfzy2ts.dylib",
+  "source": "../src/lib.fzy",
+  "staticLib": "../.fz/build/libfzy2ts.a"
+}

@@ -24,11 +24,11 @@ At runtime, those imports are satisfied by the `ts2fzy` native host shim and JS 
 ## Package Layout
 
 - `src/api/js_host.fzy`
-  Raw host ABI declarations
+  ABI symbol inventory and naming reference for the JS host boundary
 - `src/runtime/js.fzy`
-  Pure Fzy helpers over status/model logic and the raw host ABI namespace
+  The only active unsafe island: imported JS host ABI plus immediate safe Fzy facades
 - `src/model/types.fzy`
-  Shared handle and ABI-shaped data types
+  Shared handle, status, argv, and UTF-8 view types used by Fzy callers
 
 ## Current Scope
 

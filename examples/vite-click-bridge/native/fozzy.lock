@@ -1,0 +1,25 @@
+{
+  "dependencyGraphHash": "a2f41974368e294d3e7b6252ebc5a5aa4138c16c98ea9378cbd50a3be308a5fb",
+  "graph": {
+    "deps": [
+      {
+        "canonicalPath": "/Users/deepsaint/Desktop/j2fz/fzy2ts",
+        "manifestHash": "d7b0c8b65a27076fe44cb20802092f3ae73aecfc3fd4e226358150769d02b440",
+        "name": "fzy2ts",
+        "package": {
+          "name": "fzy2ts",
+          "version": "0.1.0"
+        },
+        "path": "../../../fzy2ts",
+        "sourceHash": "ef517346512c9127b95c7675a49faed6571923032a27dee257981130a17e4ee3",
+        "sourceType": "path"
+      }
+    ],
+    "package": {
+      "manifestHash": "1015e530ba136823b53caaf1e42917a43131864b6d0d51b56d41fece96eb658f",
+      "name": "j2fz_vite_click_bridge",
+      "version": "0.1.0"
+    }
+  },
+  "schemaVersion": "fozzylang.lock.v0"
+}

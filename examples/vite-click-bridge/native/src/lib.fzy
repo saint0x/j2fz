@@ -1,0 +1,29 @@
+use fzy2ts;
+
+fn env_or(key: str, fallback: str) -> str {
+    let value = env.get(key)
+    if value == "" {
+        return fallback
+    }
+    return value
+}
+
+fn ok_flag(handle: u64) -> i32 {
+    let zero: u64 = 0
+    return if handle > zero { 1 } else { 0 }
+}
+
+#[ffi_panic(abort)]
+pubext c fn bridge_click(count: i32) -> i32 {
+    let module_spec = env_or("J2FZ_EXAMPLE_MODULE", "")
+    let module_handle = fzy2ts.module_open(module_spec)
+    let double_export = fzy2ts.export_get(module_handle, "doubleLater")
+    let input_handle = fzy2ts.value_i32(count)
+    let pending_handle = fzy2ts.call1(double_export, input_handle)
+    let settled_handle = fzy2ts.await_value(pending_handle)
+    let doubled = fzy2ts.value_as_i32(settled_handle, -1)
+    let lifted = doubled + 10
+    let handshake_score = ok_flag(module_handle) + ok_flag(double_export) + ok_flag(input_handle) + ok_flag(pending_handle) + ok_flag(settled_handle)
+
+    return lifted + (handshake_score << 16)
+}

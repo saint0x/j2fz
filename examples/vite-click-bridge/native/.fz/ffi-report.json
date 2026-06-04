@@ -1,0 +1,1320 @@
+{
+  "asyncExports": [],
+  "asyncImportViolationCount": 0,
+  "callbackContextAnchorViolationCount": 0,
+  "exports": [
+    {
+      "async": false,
+      "ffiStableOk": true,
+      "linkName": "bridge_click",
+      "name": "bridge_click",
+      "panicBoundary": "abort",
+      "panicBoundaryDeclared": true,
+      "params": [
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "count",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "i32"
+        }
+      ],
+      "returnType": "i32",
+      "unstableTypes": []
+    }
+  ],
+  "ffiStableTypeViolationCount": 0,
+  "imports": [
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_module_open",
+      "name": "fzy2ts.api.js_host.j2fz_js_module_open",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "spec_borrowed",
+          "ownershipTag": "borrowed",
+          "pointerLike": true,
+          "type": "*u8"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "module_out",
+          "ownershipTag": "out",
+          "pointerLike": true,
+          "type": "*u64"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": true,
+          "name": "module_ctx",
+          "ownershipTag": null,
+          "pointerLike": true,
+          "type": "*u8"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": false,
+      "linkName": "j2fz_js_module_close",
+      "name": "fzy2ts.api.js_host.j2fz_js_module_close",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "module_handle",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "u64"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_export_get",
+      "name": "fzy2ts.api.js_host.j2fz_js_export_get",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "module_handle",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "u64"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "export_borrowed",
+          "ownershipTag": "borrowed",
+          "pointerLike": true,
+          "type": "*u8"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "export_out",
+          "ownershipTag": "out",
+          "pointerLike": true,
+          "type": "*u64"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": true,
+          "name": "export_ctx",
+          "ownershipTag": null,
+          "pointerLike": true,
+          "type": "*u8"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": false,
+      "linkName": "j2fz_js_export_release",
+      "name": "fzy2ts.api.js_host.j2fz_js_export_release",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "export_handle",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "u64"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": false,
+      "linkName": "j2fz_js_value_release",
+      "name": "fzy2ts.api.js_host.j2fz_js_value_release",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_handle",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "u64"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_value_null",
+      "name": "fzy2ts.api.js_host.j2fz_js_value_null",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_out",
+          "ownershipTag": "out",
+          "pointerLike": true,
+          "type": "*u64"
+        },
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_value_bool",
+      "name": "fzy2ts.api.js_host.j2fz_js_value_bool",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "i32"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_out",
+          "ownershipTag": "out",
+          "pointerLike": true,
+          "type": "*u64"
+        },
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_value_i32",
+      "name": "fzy2ts.api.js_host.j2fz_js_value_i32",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "i32"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_out",
+          "ownershipTag": "out",
+          "pointerLike": true,
+          "type": "*u64"
+        },
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_value_u64",
+      "name": "fzy2ts.api.js_host.j2fz_js_value_u64",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "u64"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_out",
+          "ownershipTag": "out",
+          "pointerLike": true,
+          "type": "*u64"
+        },
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_value_f64",
+      "name": "fzy2ts.api.js_host.j2fz_js_value_f64",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "f64"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_out",
+          "ownershipTag": "out",
+          "pointerLike": true,
+          "type": "*u64"
+        },
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_value_str",
+      "name": "fzy2ts.api.js_host.j2fz_js_value_str",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_borrowed",
+          "ownershipTag": "borrowed",
+          "pointerLike": true,
+          "type": "*u8"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_out",
+          "ownershipTag": "out",
+          "pointerLike": true,
+          "type": "*u64"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_value_bytes",
+      "name": "fzy2ts.api.js_host.j2fz_js_value_bytes",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "ptr_borrowed",
+          "ownershipTag": "borrowed",
+          "pointerLike": true,
+          "type": "*u8"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_out",
+          "ownershipTag": "out",
+          "pointerLike": true,
+          "type": "*u64"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_value_as_bool",
+      "name": "fzy2ts.api.js_host.j2fz_js_value_as_bool",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_handle",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "u64"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_out",
+          "ownershipTag": "out",
+          "pointerLike": true,
+          "type": "*i32"
+        },
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_value_as_i32",
+      "name": "fzy2ts.api.js_host.j2fz_js_value_as_i32",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_handle",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "u64"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_out",
+          "ownershipTag": "out",
+          "pointerLike": true,
+          "type": "*i32"
+        },
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_value_as_u64",
+      "name": "fzy2ts.api.js_host.j2fz_js_value_as_u64",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_handle",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "u64"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_out",
+          "ownershipTag": "out",
+          "pointerLike": true,
+          "type": "*u64"
+        },
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_value_as_f64",
+      "name": "fzy2ts.api.js_host.j2fz_js_value_as_f64",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_handle",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "u64"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_out",
+          "ownershipTag": "out",
+          "pointerLike": true,
+          "type": "*f64"
+        },
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_value_as_utf8",
+      "name": "fzy2ts.api.js_host.j2fz_js_value_as_utf8",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_handle",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "u64"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "utf8_ptr_out",
+          "ownershipTag": "out",
+          "pointerLike": true,
+          "type": "*u64"
+        },
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "utf8_ptr_len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "utf8_len_out",
+          "ownershipTag": "out",
+          "pointerLike": true,
+          "type": "*usize"
+        },
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "utf8_len_len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_value_copy_utf8",
+      "name": "fzy2ts.api.js_host.j2fz_js_value_copy_utf8",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_handle",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "u64"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "ptr_out",
+          "ownershipTag": "out",
+          "pointerLike": true,
+          "type": "*u8"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_call",
+      "name": "fzy2ts.api.js_host.j2fz_js_call",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "function_handle",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "u64"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "argv_borrowed",
+          "ownershipTag": "borrowed",
+          "pointerLike": true,
+          "type": "*u64"
+        },
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "argv_len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "result_out",
+          "ownershipTag": "out",
+          "pointerLike": true,
+          "type": "*u64"
+        },
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "result_len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_await",
+      "name": "fzy2ts.api.js_host.j2fz_js_await",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_handle",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "u64"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "result_out",
+          "ownershipTag": "out",
+          "pointerLike": true,
+          "type": "*u64"
+        },
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "result_len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_host_register_i32_i32",
+      "name": "fzy2ts.api.js_host.j2fz_js_host_register_i32_i32",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "name_borrowed",
+          "ownershipTag": "borrowed",
+          "pointerLike": true,
+          "type": "*u8"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": true,
+          "isContextAnchor": false,
+          "name": "cb",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "fn(i32) -> i32"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": true,
+          "name": "cb_ctx",
+          "ownershipTag": null,
+          "pointerLike": true,
+          "type": "*u8"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "registration_out",
+          "ownershipTag": "out",
+          "pointerLike": true,
+          "type": "*u64"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": true,
+          "name": "registration_ctx",
+          "ownershipTag": null,
+          "pointerLike": true,
+          "type": "*u8"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": false,
+      "linkName": "j2fz_js_host_registration_release",
+      "name": "fzy2ts.api.js_host.j2fz_js_host_registration_release",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "registration_handle",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "u64"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_easy_module_open",
+      "name": "fzy2ts.bridge_easy.j2fz_js_easy_module_open",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "spec_borrowed",
+          "ownershipTag": "borrowed",
+          "pointerLike": true,
+          "type": "*u8"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "u64",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_easy_export_get",
+      "name": "fzy2ts.bridge_easy.j2fz_js_easy_export_get",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "module_handle",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "u64"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "export_borrowed",
+          "ownershipTag": "borrowed",
+          "pointerLike": true,
+          "type": "*u8"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "u64",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": false,
+      "linkName": "j2fz_js_easy_value_i32",
+      "name": "fzy2ts.bridge_easy.j2fz_js_easy_value_i32",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "i32"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "u64",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": false,
+      "linkName": "j2fz_js_easy_call1",
+      "name": "fzy2ts.bridge_easy.j2fz_js_easy_call1",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "function_handle",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "u64"
+        },
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "arg0_handle",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "u64"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "u64",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": false,
+      "linkName": "j2fz_js_easy_await",
+      "name": "fzy2ts.bridge_easy.j2fz_js_easy_await",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_handle",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "u64"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "u64",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": false,
+      "linkName": "j2fz_js_easy_value_as_i32",
+      "name": "fzy2ts.bridge_easy.j2fz_js_easy_value_as_i32",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "value_handle",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "u64"
+        },
+        {
+          "hasLenPair": false,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "fallback",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "i32"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "i32",
+      "unsafe": true,
+      "unstableTypes": []
+    },
+    {
+      "async": false,
+      "asyncImportForbidden": false,
+      "callbackContextAnchorOk": true,
+      "callbackContextAnchorViolation": null,
+      "ffiStableOk": true,
+      "hasPointerLikeSurface": true,
+      "linkName": "j2fz_js_easy_host_register_i32_i32",
+      "name": "fzy2ts.bridge_easy.j2fz_js_easy_host_register_i32_i32",
+      "panicBoundary": null,
+      "params": [
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "name_borrowed",
+          "ownershipTag": "borrowed",
+          "pointerLike": true,
+          "type": "*u8"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": false,
+          "name": "len",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": true,
+          "isContextAnchor": false,
+          "name": "cb",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "fn(i32) -> i32"
+        },
+        {
+          "hasLenPair": true,
+          "isCallback": false,
+          "isContextAnchor": true,
+          "name": "cb_ctx",
+          "ownershipTag": null,
+          "pointerLike": false,
+          "type": "usize"
+        }
+      ],
+      "pointerContractOk": true,
+      "pointerContractViolation": null,
+      "returnType": "u64",
+      "unsafe": true,
+      "unstableTypes": []
+    }
+  ],
+  "missingPanicBoundaryCount": 0,
+  "pointerContractViolationCount": 0,
+  "schemaVersion": "fozzylang.ffi_report.v2",
+  "versions": {
+    "diagnosticCatalogVersion": "fozzylang.diagnostic_catalog.v1",
+    "languageVersion": "fozzylang.language.v1",
+    "manifestSchemaVersion": "fozzy.run_manifest.v1",
+    "nativeImportTableVersion": "fozzylang.native_runtime_contracts.v1",
+    "runtimeAbiVersion": "fozzylang.runtime.v0",
+    "traceSchemaVersion": "fozzy-trace.v4"
+  }
+}

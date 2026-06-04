@@ -1,0 +1,34 @@
+{
+  "cancel_policies": [],
+  "deadline_policies": [],
+  "payload_contracts": [],
+  "resource_cleanup": [],
+  "rpc_frames": [
+    "rpc_send",
+    "rpc_recv",
+    "rpc_deadline",
+    "rpc_cancel",
+    "rpc_resource_open",
+    "rpc_resource_close",
+    "rpc_resource_leak_rejected"
+  ],
+  "rpc_methods": [],
+  "schemaVersion": "fozzylang.rpc_safety.v1",
+  "strictRequirements": {
+    "deadlinePerCall": true,
+    "frameTraceability": true,
+    "handlerCancelCleanup": "required",
+    "methodNameStable": true,
+    "payloadTypesSupported": true,
+    "requestOwnershipExplicit": true,
+    "responseOwnershipExplicit": true
+  },
+  "versions": {
+    "diagnosticCatalogVersion": "fozzylang.diagnostic_catalog.v1",
+    "languageVersion": "fozzylang.language.v1",
+    "manifestSchemaVersion": "fozzy.run_manifest.v1",
+    "nativeImportTableVersion": "fozzylang.native_runtime_contracts.v1",
+    "runtimeAbiVersion": "fozzylang.runtime.v0",
+    "traceSchemaVersion": "fozzy-trace.v4"
+  }
+}

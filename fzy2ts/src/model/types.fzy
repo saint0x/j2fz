@@ -1,31 +1,72 @@
-#[repr(C)] struct JsValueSpan {
+#[repr(C)] struct JsModuleHandle {
+    raw: u64,
+}
+
+#[repr(C)] struct JsExportHandle {
+    raw: u64,
+}
+
+#[repr(C)] struct JsValueHandle {
+    raw: u64,
+}
+
+#[repr(C)] struct JsRegistrationHandle {
+    raw: u64,
+}
+
+#[repr(C)] struct JsUtf8View {
     ptr: u64,
     len: usize,
 }
 
 #[repr(C)] struct JsArgv {
-    ptr: u64,
+    ptr_borrowed: *u64,
     len: usize,
 }
 
-const JS_STATUS_OK: i32 = 0;
-const JS_STATUS_ERR: i32 = -1;
-const JS_STATUS_PENDING: i32 = 1;
+const JS_STATUS_OK: i32 = 0
+const JS_STATUS_ERR: i32 = -1
+const JS_STATUS_PENDING: i32 = 1
 
-fn js_ok(code: i32) -> i32 {
-    if code == JS_STATUS_OK {
-        return 1
-    }
-    return 0
+fn module_handle(raw: u64) -> JsModuleHandle {
+    return JsModuleHandle { raw: raw }
 }
 
-fn js_pending(code: i32) -> i32 {
-    if code == JS_STATUS_PENDING {
-        return 1
-    }
-    return 0
+fn export_handle(raw: u64) -> JsExportHandle {
+    return JsExportHandle { raw: raw }
 }
+
+fn value_handle(raw: u64) -> JsValueHandle {
+    return JsValueHandle { raw: raw }
+}
+
+fn registration_handle(raw: u64) -> JsRegistrationHandle {
+    return JsRegistrationHandle { raw: raw }
+}
+
+fn module_raw(handle: JsModuleHandle) -> u64 { return handle.raw }
+fn export_raw(handle: JsExportHandle) -> u64 { return handle.raw }
+fn value_raw(handle: JsValueHandle) -> u64 { return handle.raw }
+fn registration_raw(handle: JsRegistrationHandle) -> u64 { return handle.raw }
+
+fn utf8_view(ptr: u64, len: usize) -> JsUtf8View {
+    return JsUtf8View { ptr: ptr, len: len }
+}
+
+fn utf8_ptr(view: JsUtf8View) -> u64 { return view.ptr }
+fn utf8_len(view: JsUtf8View) -> usize { return view.len }
+
+fn argv(ptr_borrowed: *u64, len: usize) -> JsArgv {
+    return JsArgv { ptr_borrowed: ptr_borrowed, len: len }
+}
+
+fn argv_ptr(args: JsArgv) -> *u64 { return args.ptr_borrowed }
+fn argv_len(args: JsArgv) -> usize { return args.len }
+
+fn status_ok(code: i32) -> i32 { return if code == JS_STATUS_OK { 1 } else { 0 } }
+fn status_err(code: i32) -> i32 { return if code == JS_STATUS_ERR { 1 } else { 0 } }
+fn status_pending(code: i32) -> i32 { return if code == JS_STATUS_PENDING { 1 } else { 0 } }
 
 fn touch() -> i32 {
-    return 0
+    return status_ok(JS_STATUS_OK) + status_pending(JS_STATUS_PENDING) + status_err(JS_STATUS_ERR)
 }

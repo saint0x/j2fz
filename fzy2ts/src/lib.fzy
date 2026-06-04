@@ -1,0 +1,37 @@
+mod api;
+mod bridge_easy;
+mod model;
+
+pub fn touch() -> i32 {
+    discard api.touch()
+    discard model.touch()
+    return bridge_easy.touch()
+}
+
+pub fn module_open(spec: str) -> u64 {
+    return bridge_easy.module_open(spec)
+}
+
+pub fn export_get(module_handle: u64, export_name: str) -> u64 {
+    return bridge_easy.export_get(module_handle, export_name)
+}
+
+pub fn value_i32(value: i32) -> u64 {
+    return bridge_easy.value_i32(value)
+}
+
+pub fn call1(function_handle: u64, arg0_handle: u64) -> u64 {
+    return bridge_easy.call1(function_handle, arg0_handle)
+}
+
+pub fn await_value(value_handle: u64) -> u64 {
+    return bridge_easy.await_value(value_handle)
+}
+
+pub fn value_as_i32(value_handle: u64, fallback: i32) -> i32 {
+    return bridge_easy.value_as_i32(value_handle, fallback)
+}
+
+pub fn host_register_i32_i32(name: str, cb: fn(i32) -> i32) -> u64 {
+    return bridge_easy.host_register_i32_i32(name, cb)
+}

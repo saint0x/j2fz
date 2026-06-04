@@ -732,6 +732,89 @@ int32_t j2fz_js_host_registration_release(uint64_t registration_handle) {
   return rc == 0 ? 0 : -1;
 }
 
+uint64_t j2fz_js_easy_module_open(const uint8_t *spec_borrowed, size_t len) {
+  uint64_t module_handle = 0;
+  if (j2fz_js_module_open(spec_borrowed, len, &module_handle, NULL) != 0) {
+    return 0;
+  }
+  return module_handle;
+}
+
+int32_t j2fz_js_easy_module_close(uint64_t module_handle) {
+  return j2fz_js_module_close(module_handle);
+}
+
+uint64_t j2fz_js_easy_export_get(uint64_t module_handle, const uint8_t *export_borrowed, size_t len) {
+  uint64_t export_handle = 0;
+  if (j2fz_js_export_get(module_handle, export_borrowed, len, &export_handle, NULL) != 0) {
+    return 0;
+  }
+  return export_handle;
+}
+
+int32_t j2fz_js_easy_export_release(uint64_t export_handle) {
+  return j2fz_js_export_release(export_handle);
+}
+
+uint64_t j2fz_js_easy_value_i32(int32_t value) {
+  uint64_t value_handle = 0;
+  if (j2fz_js_value_i32(value, &value_handle, 1) != 0) {
+    return 0;
+  }
+  return value_handle;
+}
+
+int32_t j2fz_js_easy_value_release(uint64_t value_handle) {
+  return j2fz_js_value_release(value_handle);
+}
+
+uint64_t j2fz_js_easy_call1(uint64_t function_handle, uint64_t arg0_handle) {
+  const uint64_t argv[1] = {arg0_handle};
+  uint64_t result_handle = 0;
+  if (j2fz_js_call(function_handle, argv, 1, &result_handle, 1) != 0) {
+    return 0;
+  }
+  return result_handle;
+}
+
+uint64_t j2fz_js_easy_await(uint64_t value_handle) {
+  uint64_t result_handle = 0;
+  if (j2fz_js_await(value_handle, &result_handle, 1) != 0) {
+    return 0;
+  }
+  return result_handle;
+}
+
+int32_t j2fz_js_easy_value_as_i32(uint64_t value_handle, int32_t fallback) {
+  int32_t value = fallback;
+  if (j2fz_js_value_as_i32(value_handle, &value, 1) != 0) {
+    return fallback;
+  }
+  return value;
+}
+
+uint64_t j2fz_js_easy_host_register_i32_i32(
+    const uint8_t *name_borrowed,
+    size_t len,
+    j2fz_callback_i32_i32_t cb,
+    void *cb_ctx) {
+  uint64_t registration_handle = 0;
+  if (j2fz_js_host_register_i32_i32(
+          name_borrowed,
+          len,
+          cb,
+          cb_ctx,
+          &registration_handle,
+          NULL) != 0) {
+    return 0;
+  }
+  return registration_handle;
+}
+
+int32_t j2fz_js_easy_host_registration_release(uint64_t registration_handle) {
+  return j2fz_js_host_registration_release(registration_handle);
+}
+
 int32_t j2fz_test_add_three_i32(int32_t value) {
   return value + 3;
 }

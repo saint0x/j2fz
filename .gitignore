@@ -1,6 +1,9 @@
+.DS_Store
+.fozzy/
 artifacts/
 dist/
 ts2fzy/dist/
 ts2fzy/.fozzy/
 fzy2ts/.fz/
 fzy2ts/fozzy.lock
+fzy2ts/vendor/

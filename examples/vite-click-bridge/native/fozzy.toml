@@ -1,0 +1,17 @@
+[package]
+name = "j2fz_vite_click_bridge"
+version = "0.1.0"
+
+[target.lib]
+name = "j2fz_vite_click_bridge"
+path = "src/lib.fzy"
+
+[deps]
+fzy2ts = { path = "../../../fzy2ts" }
+
+[link]
+libs = ["j2fz_host_shim"]
+search = ["/Users/deepsaint/Desktop/j2fz/ts2fzy/dist/native"]
+
+[ffi]
+panic_boundary = "abort"

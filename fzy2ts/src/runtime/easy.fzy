@@ -1,0 +1,81 @@
+ext unsafe c fn j2fz_js_easy_module_open(spec_borrowed: *u8, len: usize) -> u64;
+ext unsafe c fn j2fz_js_easy_module_close(module_handle: u64) -> i32;
+ext unsafe c fn j2fz_js_easy_export_get(module_handle: u64, export_borrowed: *u8, len: usize) -> u64;
+ext unsafe c fn j2fz_js_easy_export_release(export_handle: u64) -> i32;
+ext unsafe c fn j2fz_js_easy_value_i32(value: i32) -> u64;
+ext unsafe c fn j2fz_js_easy_value_release(value_handle: u64) -> i32;
+ext unsafe c fn j2fz_js_easy_call1(function_handle: u64, arg0_handle: u64) -> u64;
+ext unsafe c fn j2fz_js_easy_await(value_handle: u64) -> u64;
+ext unsafe c fn j2fz_js_easy_value_as_i32(value_handle: u64, fallback: i32) -> i32;
+ext unsafe c fn j2fz_js_easy_host_register_i32_i32(name_borrowed: *u8, len: usize, cb: fn(i32) -> i32, cb_ctx: *u8) -> u64;
+ext unsafe c fn j2fz_js_easy_host_registration_release(registration_handle: u64) -> i32;
+
+fn module_open(spec: str) -> u64 {
+    unsafe {
+        return j2fz_js_easy_module_open(spec, str.len(spec))
+    }
+}
+
+fn export_get(module_handle: u64, export_name: str) -> u64 {
+    unsafe {
+        return j2fz_js_easy_export_get(module_handle, export_name, str.len(export_name))
+    }
+}
+
+fn module_close(module_handle: u64) -> i32 {
+    unsafe {
+        return j2fz_js_easy_module_close(module_handle)
+    }
+}
+
+fn export_release(export_handle: u64) -> i32 {
+    unsafe {
+        return j2fz_js_easy_export_release(export_handle)
+    }
+}
+
+fn value_i32(value: i32) -> u64 {
+    unsafe {
+        return j2fz_js_easy_value_i32(value)
+    }
+}
+
+fn value_release(value_handle: u64) -> i32 {
+    unsafe {
+        return j2fz_js_easy_value_release(value_handle)
+    }
+}
+
+fn call1(function_handle: u64, arg0_handle: u64) -> u64 {
+    unsafe {
+        return j2fz_js_easy_call1(function_handle, arg0_handle)
+    }
+}
+
+fn await_value(value_handle: u64) -> u64 {
+    unsafe {
+        return j2fz_js_easy_await(value_handle)
+    }
+}
+
+fn value_as_i32(value_handle: u64, fallback: i32) -> i32 {
+    unsafe {
+        return j2fz_js_easy_value_as_i32(value_handle, fallback)
+    }
+}
+
+fn host_register_i32_i32(name: str, cb: fn(i32) -> i32) -> u64 {
+    unsafe {
+        return j2fz_js_easy_host_register_i32_i32(name, str.len(name), cb, 0)
+    }
+}
+
+fn host_registration_release(registration_handle: u64) -> i32 {
+    unsafe {
+        return j2fz_js_easy_host_registration_release(registration_handle)
+    }
+}
+
+fn touch() -> i32 {
+    return 0
+}

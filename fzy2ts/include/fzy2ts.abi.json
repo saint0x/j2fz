@@ -1,0 +1,1845 @@
+{
+  "abiRevision": 1,
+  "callbackAbi": "signature-typed-v1",
+  "compilerIdentityHash": "2f94649a8a371971b258cab36540b6e23fb8dcfa574a9ad138f357b1aaa1c1d7",
+  "contractSchema": "fozzylang.ffi_contracts.v1",
+  "dataLayoutHash": "4ef19cf377b4271c24656e2451536d23b76c8d7e35289fdb42706f8eff5d7afa",
+  "exports": [],
+  "hostApi": {
+    "callbacks": {
+      "invokeI32": "fz_host_invoke_callback_i32",
+      "registerI32": "fz_host_register_callback_i32"
+    },
+    "lastError": {
+      "class": "fz_host_last_error_class",
+      "code": "fz_host_last_error_code",
+      "message": "fz_host_last_error_message"
+    },
+    "lifecycle": {
+      "cleanup": "fz_host_cleanup",
+      "init": "fz_host_init",
+      "shutdown": "fz_host_shutdown"
+    }
+  },
+  "imports": [
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_module_open",
+      "params": [
+        {
+          "c": "const uint8_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:spec",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "len"
+            }
+          },
+          "fzy": "*u8",
+          "name": "spec_borrowed"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "len"
+        },
+        {
+          "c": "const uint64_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:module",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "len"
+            }
+          },
+          "fzy": "*u64",
+          "name": "module_out"
+        },
+        {
+          "c": "const uint8_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:module_ctx",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "len"
+            }
+          },
+          "fzy": "*u8",
+          "name": "module_ctx"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_module_close",
+      "params": [
+        {
+          "c": "uint64_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "u64",
+          "name": "module_handle"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_export_get",
+      "params": [
+        {
+          "c": "uint64_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "u64",
+          "name": "module_handle"
+        },
+        {
+          "c": "const uint8_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:export",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "len"
+            }
+          },
+          "fzy": "*u8",
+          "name": "export_borrowed"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "len"
+        },
+        {
+          "c": "const uint64_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:export",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "len"
+            }
+          },
+          "fzy": "*u64",
+          "name": "export_out"
+        },
+        {
+          "c": "const uint8_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:export_ctx",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "len"
+            }
+          },
+          "fzy": "*u8",
+          "name": "export_ctx"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_export_release",
+      "params": [
+        {
+          "c": "uint64_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "u64",
+          "name": "export_handle"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_value_release",
+      "params": [
+        {
+          "c": "uint64_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "u64",
+          "name": "value_handle"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_value_null",
+      "params": [
+        {
+          "c": "const uint64_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:value",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "value_len"
+            }
+          },
+          "fzy": "*u64",
+          "name": "value_out"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "value_len"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_value_bool",
+      "params": [
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "value"
+        },
+        {
+          "c": "const uint64_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:value",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "value_len"
+            }
+          },
+          "fzy": "*u64",
+          "name": "value_out"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "value_len"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_value_i32",
+      "params": [
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "value"
+        },
+        {
+          "c": "const uint64_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:value",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "value_len"
+            }
+          },
+          "fzy": "*u64",
+          "name": "value_out"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "value_len"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_value_u64",
+      "params": [
+        {
+          "c": "uint64_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "u64",
+          "name": "value"
+        },
+        {
+          "c": "const uint64_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:value",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "value_len"
+            }
+          },
+          "fzy": "*u64",
+          "name": "value_out"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "value_len"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_value_f64",
+      "params": [
+        {
+          "c": "double",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "f64",
+          "name": "value"
+        },
+        {
+          "c": "const uint64_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:value",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "value_len"
+            }
+          },
+          "fzy": "*u64",
+          "name": "value_out"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "value_len"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_value_str",
+      "params": [
+        {
+          "c": "const uint8_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:value",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "value_len"
+            }
+          },
+          "fzy": "*u8",
+          "name": "value_borrowed"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "len"
+        },
+        {
+          "c": "const uint64_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:value",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "value_len"
+            }
+          },
+          "fzy": "*u64",
+          "name": "value_out"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "value_len"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_value_bytes",
+      "params": [
+        {
+          "c": "const uint8_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:ptr",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "len"
+            }
+          },
+          "fzy": "*u8",
+          "name": "ptr_borrowed"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "len"
+        },
+        {
+          "c": "const uint64_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:value",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "value_len"
+            }
+          },
+          "fzy": "*u64",
+          "name": "value_out"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "value_len"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_value_as_bool",
+      "params": [
+        {
+          "c": "uint64_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "u64",
+          "name": "value_handle"
+        },
+        {
+          "c": "const int32_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:value",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "value_len"
+            }
+          },
+          "fzy": "*i32",
+          "name": "value_out"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "value_len"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_value_as_i32",
+      "params": [
+        {
+          "c": "uint64_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "u64",
+          "name": "value_handle"
+        },
+        {
+          "c": "const int32_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:value",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "value_len"
+            }
+          },
+          "fzy": "*i32",
+          "name": "value_out"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "value_len"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_value_as_u64",
+      "params": [
+        {
+          "c": "uint64_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "u64",
+          "name": "value_handle"
+        },
+        {
+          "c": "const uint64_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:value",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "value_len"
+            }
+          },
+          "fzy": "*u64",
+          "name": "value_out"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "value_len"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_value_as_f64",
+      "params": [
+        {
+          "c": "uint64_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "u64",
+          "name": "value_handle"
+        },
+        {
+          "c": "const double*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:value",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "value_len"
+            }
+          },
+          "fzy": "*f64",
+          "name": "value_out"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "value_len"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_value_as_utf8",
+      "params": [
+        {
+          "c": "uint64_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "u64",
+          "name": "value_handle"
+        },
+        {
+          "c": "const uint64_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:utf8_ptr",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "utf8_ptr_len"
+            }
+          },
+          "fzy": "*u64",
+          "name": "utf8_ptr_out"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "utf8_ptr_len"
+        },
+        {
+          "c": "const size_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:utf8_len",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "utf8_len_len"
+            }
+          },
+          "fzy": "*usize",
+          "name": "utf8_len_out"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "utf8_len_len"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_value_copy_utf8",
+      "params": [
+        {
+          "c": "uint64_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "u64",
+          "name": "value_handle"
+        },
+        {
+          "c": "const uint8_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:ptr",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "len"
+            }
+          },
+          "fzy": "*u8",
+          "name": "ptr_out"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "len"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_call",
+      "params": [
+        {
+          "c": "uint64_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "u64",
+          "name": "function_handle"
+        },
+        {
+          "c": "const uint64_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:argv",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "argv_len"
+            }
+          },
+          "fzy": "*u64",
+          "name": "argv_borrowed"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "argv_len"
+        },
+        {
+          "c": "const uint64_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:result",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "result_len"
+            }
+          },
+          "fzy": "*u64",
+          "name": "result_out"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "result_len"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_await",
+      "params": [
+        {
+          "c": "uint64_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "u64",
+          "name": "value_handle"
+        },
+        {
+          "c": "const uint64_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:result",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "result_len"
+            }
+          },
+          "fzy": "*u64",
+          "name": "result_out"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "result_len"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [
+          {
+            "bindingId": "cbctx:cb",
+            "callbackParam": "cb",
+            "contextParam": "cb_ctx",
+            "obligation": "context_outlives_callback_registration",
+            "signature": "fn(i32) -> i32",
+            "typedef": "fz_callback_sig0_v0"
+          }
+        ],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_host_register_i32_i32",
+      "params": [
+        {
+          "c": "const uint8_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:name",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "len"
+            }
+          },
+          "fzy": "*u8",
+          "name": "name_borrowed"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "len"
+        },
+        {
+          "c": "fz_callback_sig0_v0",
+          "contract": {
+            "callback": {
+              "signature": "fn(i32) -> i32",
+              "typedef": "fz_callback_sig0_v0"
+            },
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "callback",
+            "view": null
+          },
+          "fzy": "fn(i32) -> i32",
+          "name": "cb"
+        },
+        {
+          "c": "const uint8_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:cb_ctx",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "len"
+            }
+          },
+          "fzy": "*u8",
+          "name": "cb_ctx"
+        },
+        {
+          "c": "const uint64_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:registration",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "len"
+            }
+          },
+          "fzy": "*u64",
+          "name": "registration_out"
+        },
+        {
+          "c": "const uint8_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:registration_ctx",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "len"
+            }
+          },
+          "fzy": "*u8",
+          "name": "registration_ctx"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_host_registration_release",
+      "params": [
+        {
+          "c": "uint64_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "u64",
+          "name": "registration_handle"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_easy_module_open",
+      "params": [
+        {
+          "c": "const uint8_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:spec",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "len"
+            }
+          },
+          "fzy": "*u8",
+          "name": "spec_borrowed"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "len"
+        }
+      ],
+      "return": {
+        "c": "uint64_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "u64"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_easy_export_get",
+      "params": [
+        {
+          "c": "uint64_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "u64",
+          "name": "module_handle"
+        },
+        {
+          "c": "const uint8_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:export",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "len"
+            }
+          },
+          "fzy": "*u8",
+          "name": "export_borrowed"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "len"
+        }
+      ],
+      "return": {
+        "c": "uint64_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "u64"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_easy_value_i32",
+      "params": [
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "value"
+        }
+      ],
+      "return": {
+        "c": "uint64_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "u64"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_easy_call1",
+      "params": [
+        {
+          "c": "uint64_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "u64",
+          "name": "function_handle"
+        },
+        {
+          "c": "uint64_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "u64",
+          "name": "arg0_handle"
+        }
+      ],
+      "return": {
+        "c": "uint64_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "u64"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_easy_await",
+      "params": [
+        {
+          "c": "uint64_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "u64",
+          "name": "value_handle"
+        }
+      ],
+      "return": {
+        "c": "uint64_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "u64"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_easy_value_as_i32",
+      "params": [
+        {
+          "c": "uint64_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "u64",
+          "name": "value_handle"
+        },
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "fallback"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "unsafe": true
+    },
+    {
+      "contract": {
+        "callbackBindings": [
+          {
+            "bindingId": "cbctx:cb",
+            "callbackParam": "cb",
+            "contextParam": "cb_ctx",
+            "obligation": "context_outlives_callback_registration",
+            "signature": "fn(i32) -> i32",
+            "typedef": "fz_callback_sig0_v0"
+          }
+        ],
+        "execution": "sync"
+      },
+      "name": "j2fz_js_easy_host_register_i32_i32",
+      "params": [
+        {
+          "c": "const uint8_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:name",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "len"
+            }
+          },
+          "fzy": "*u8",
+          "name": "name_borrowed"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "len"
+        },
+        {
+          "c": "fz_callback_sig0_v0",
+          "contract": {
+            "callback": {
+              "signature": "fn(i32) -> i32",
+              "typedef": "fz_callback_sig0_v0"
+            },
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "callback",
+            "view": null
+          },
+          "fzy": "fn(i32) -> i32",
+          "name": "cb"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "cb_ctx"
+        }
+      ],
+      "return": {
+        "c": "uint64_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "u64"
+      },
+      "unsafe": true
+    }
+  ],
+  "layoutPolicy": {
+    "nonReprCUnstable": true,
+    "reprCStableOnly": true
+  },
+  "package": {
+    "name": "fzy2ts",
+    "version": "0.1.0"
+  },
+  "panicBoundary": "abort",
+  "reprCLayouts": [
+    {
+      "align": 8,
+      "cName": "model_types_JsModuleHandle",
+      "kind": "struct",
+      "name": "model.types.JsModuleHandle",
+      "size": 8
+    },
+    {
+      "align": 8,
+      "cName": "model_types_JsExportHandle",
+      "kind": "struct",
+      "name": "model.types.JsExportHandle",
+      "size": 8
+    },
+    {
+      "align": 8,
+      "cName": "model_types_JsValueHandle",
+      "kind": "struct",
+      "name": "model.types.JsValueHandle",
+      "size": 8
+    },
+    {
+      "align": 8,
+      "cName": "model_types_JsRegistrationHandle",
+      "kind": "struct",
+      "name": "model.types.JsRegistrationHandle",
+      "size": 8
+    },
+    {
+      "align": 8,
+      "cName": "model_types_JsUtf8View",
+      "kind": "struct",
+      "name": "model.types.JsUtf8View",
+      "size": 16
+    },
+    {
+      "align": 8,
+      "cName": "model_types_JsArgv",
+      "kind": "struct",
+      "name": "model.types.JsArgv",
+      "size": 16
+    }
+  ],
+  "schemaVersion": "fozzylang.ffi_abi.v1",
+  "symbolVersioning": "strict-name-signature-v1",
+  "targetTriple": "aarch64-apple-darwin"
+}

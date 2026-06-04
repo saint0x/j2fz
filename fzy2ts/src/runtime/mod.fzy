@@ -1,6 +1,8 @@
 mod js;
+mod easy;
 
 fn touch() -> i32 {
     js.touch()
+    easy.touch()
     return 0
 }

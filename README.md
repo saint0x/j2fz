@@ -45,5 +45,7 @@ It now has two explicit product roots:
 
 - [ts2fzy](ts2fzy)
 - [fzy2ts](fzy2ts)
+- [examples/vite-click-bridge](examples/vite-click-bridge)
+  A one-page Vite demo where Node calls a Fzy shared library through `ts2fzy`, and the Fzy side calls back into a real JavaScript module through `fzy2ts`.
 
 Each direction is intentionally separate so the host model, docs, tests, and future packaging can evolve without collapsing back into a one-sided bridge.

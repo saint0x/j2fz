@@ -1,0 +1,2185 @@
+{
+  "borrows": [],
+  "freeze_phases": [
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "env_or"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "ok_flag"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "bridge_click"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_module_open"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_module_close"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_export_get"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_export_release"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_value_release"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_value_null"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_value_bool"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_value_i32"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_value_u64"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_value_f64"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_value_str"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_value_bytes"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_value_as_bool"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_value_as_i32"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_value_as_u64"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_value_as_f64"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_value_as_utf8"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_value_copy_utf8"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_call"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_await"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_host_register_i32_i32"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.j2fz_js_host_registration_release"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.js_host.touch"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.api.touch"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.bridge_easy.j2fz_js_easy_module_open"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.bridge_easy.j2fz_js_easy_export_get"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.bridge_easy.j2fz_js_easy_value_i32"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.bridge_easy.j2fz_js_easy_call1"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.bridge_easy.j2fz_js_easy_await"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.bridge_easy.j2fz_js_easy_value_as_i32"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.bridge_easy.j2fz_js_easy_host_register_i32_i32"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.bridge_easy.module_open"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.bridge_easy.export_get"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.bridge_easy.value_i32"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.bridge_easy.call1"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.bridge_easy.await_value"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.bridge_easy.value_as_i32"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.bridge_easy.host_register_i32_i32"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.bridge_easy.touch"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.model.types.module_handle"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.model.types.export_handle"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.model.types.value_handle"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.model.types.registration_handle"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.model.types.module_raw"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.model.types.export_raw"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.model.types.value_raw"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.model.types.registration_raw"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.model.types.utf8_view"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.model.types.utf8_ptr"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.model.types.utf8_len"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.model.types.argv"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.model.types.argv_ptr"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.model.types.argv_len"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.model.types.status_ok"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.model.types.status_err"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.model.types.status_pending"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.model.types.touch"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.model.touch"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.touch"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.module_open"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.export_get"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.value_i32"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.call1"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.await_value"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.value_as_i32"
+    },
+    {
+      "entryFrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": true,
+        "mayExitUnfrozen": false
+      },
+      "entryUnfrozen": {
+        "allocWhileFrozen": false,
+        "mayExitFrozen": false,
+        "mayExitUnfrozen": true
+      },
+      "function": "fzy2ts.host_register_i32_i32"
+    }
+  ],
+  "functions": [
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "env_or",
+      "params": [
+        {
+          "name": "key",
+          "type": "str"
+        },
+        {
+          "name": "fallback",
+          "type": "str"
+        }
+      ],
+      "returnType": "str"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "ok_flag",
+      "params": [
+        {
+          "name": "handle",
+          "type": "u64"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "bridge_click",
+      "params": [
+        {
+          "name": "count",
+          "type": "i32"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_module_open",
+      "params": [
+        {
+          "name": "spec_borrowed",
+          "type": "*u8"
+        },
+        {
+          "name": "len",
+          "type": "usize"
+        },
+        {
+          "name": "module_out",
+          "type": "*u64"
+        },
+        {
+          "name": "module_ctx",
+          "type": "*u8"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_module_close",
+      "params": [
+        {
+          "name": "module_handle",
+          "type": "u64"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_export_get",
+      "params": [
+        {
+          "name": "module_handle",
+          "type": "u64"
+        },
+        {
+          "name": "export_borrowed",
+          "type": "*u8"
+        },
+        {
+          "name": "len",
+          "type": "usize"
+        },
+        {
+          "name": "export_out",
+          "type": "*u64"
+        },
+        {
+          "name": "export_ctx",
+          "type": "*u8"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_export_release",
+      "params": [
+        {
+          "name": "export_handle",
+          "type": "u64"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_value_release",
+      "params": [
+        {
+          "name": "value_handle",
+          "type": "u64"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_value_null",
+      "params": [
+        {
+          "name": "value_out",
+          "type": "*u64"
+        },
+        {
+          "name": "value_len",
+          "type": "usize"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_value_bool",
+      "params": [
+        {
+          "name": "value",
+          "type": "i32"
+        },
+        {
+          "name": "value_out",
+          "type": "*u64"
+        },
+        {
+          "name": "value_len",
+          "type": "usize"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_value_i32",
+      "params": [
+        {
+          "name": "value",
+          "type": "i32"
+        },
+        {
+          "name": "value_out",
+          "type": "*u64"
+        },
+        {
+          "name": "value_len",
+          "type": "usize"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_value_u64",
+      "params": [
+        {
+          "name": "value",
+          "type": "u64"
+        },
+        {
+          "name": "value_out",
+          "type": "*u64"
+        },
+        {
+          "name": "value_len",
+          "type": "usize"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_value_f64",
+      "params": [
+        {
+          "name": "value",
+          "type": "f64"
+        },
+        {
+          "name": "value_out",
+          "type": "*u64"
+        },
+        {
+          "name": "value_len",
+          "type": "usize"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_value_str",
+      "params": [
+        {
+          "name": "value_borrowed",
+          "type": "*u8"
+        },
+        {
+          "name": "len",
+          "type": "usize"
+        },
+        {
+          "name": "value_out",
+          "type": "*u64"
+        },
+        {
+          "name": "value_len",
+          "type": "usize"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_value_bytes",
+      "params": [
+        {
+          "name": "ptr_borrowed",
+          "type": "*u8"
+        },
+        {
+          "name": "len",
+          "type": "usize"
+        },
+        {
+          "name": "value_out",
+          "type": "*u64"
+        },
+        {
+          "name": "value_len",
+          "type": "usize"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_value_as_bool",
+      "params": [
+        {
+          "name": "value_handle",
+          "type": "u64"
+        },
+        {
+          "name": "value_out",
+          "type": "*i32"
+        },
+        {
+          "name": "value_len",
+          "type": "usize"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_value_as_i32",
+      "params": [
+        {
+          "name": "value_handle",
+          "type": "u64"
+        },
+        {
+          "name": "value_out",
+          "type": "*i32"
+        },
+        {
+          "name": "value_len",
+          "type": "usize"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_value_as_u64",
+      "params": [
+        {
+          "name": "value_handle",
+          "type": "u64"
+        },
+        {
+          "name": "value_out",
+          "type": "*u64"
+        },
+        {
+          "name": "value_len",
+          "type": "usize"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_value_as_f64",
+      "params": [
+        {
+          "name": "value_handle",
+          "type": "u64"
+        },
+        {
+          "name": "value_out",
+          "type": "*f64"
+        },
+        {
+          "name": "value_len",
+          "type": "usize"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_value_as_utf8",
+      "params": [
+        {
+          "name": "value_handle",
+          "type": "u64"
+        },
+        {
+          "name": "utf8_ptr_out",
+          "type": "*u64"
+        },
+        {
+          "name": "utf8_ptr_len",
+          "type": "usize"
+        },
+        {
+          "name": "utf8_len_out",
+          "type": "*usize"
+        },
+        {
+          "name": "utf8_len_len",
+          "type": "usize"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_value_copy_utf8",
+      "params": [
+        {
+          "name": "value_handle",
+          "type": "u64"
+        },
+        {
+          "name": "ptr_out",
+          "type": "*u8"
+        },
+        {
+          "name": "len",
+          "type": "usize"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_call",
+      "params": [
+        {
+          "name": "function_handle",
+          "type": "u64"
+        },
+        {
+          "name": "argv_borrowed",
+          "type": "*u64"
+        },
+        {
+          "name": "argv_len",
+          "type": "usize"
+        },
+        {
+          "name": "result_out",
+          "type": "*u64"
+        },
+        {
+          "name": "result_len",
+          "type": "usize"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_await",
+      "params": [
+        {
+          "name": "value_handle",
+          "type": "u64"
+        },
+        {
+          "name": "result_out",
+          "type": "*u64"
+        },
+        {
+          "name": "result_len",
+          "type": "usize"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_host_register_i32_i32",
+      "params": [
+        {
+          "name": "name_borrowed",
+          "type": "*u8"
+        },
+        {
+          "name": "len",
+          "type": "usize"
+        },
+        {
+          "name": "cb",
+          "type": "fn(i32) -> i32"
+        },
+        {
+          "name": "cb_ctx",
+          "type": "*u8"
+        },
+        {
+          "name": "registration_out",
+          "type": "*u64"
+        },
+        {
+          "name": "registration_ctx",
+          "type": "*u8"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.api.js_host.j2fz_js_host_registration_release",
+      "params": [
+        {
+          "name": "registration_handle",
+          "type": "u64"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.api.js_host.touch",
+      "params": [],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.api.touch",
+      "params": [],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.bridge_easy.j2fz_js_easy_module_open",
+      "params": [
+        {
+          "name": "spec_borrowed",
+          "type": "*u8"
+        },
+        {
+          "name": "len",
+          "type": "usize"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.bridge_easy.j2fz_js_easy_export_get",
+      "params": [
+        {
+          "name": "module_handle",
+          "type": "u64"
+        },
+        {
+          "name": "export_borrowed",
+          "type": "*u8"
+        },
+        {
+          "name": "len",
+          "type": "usize"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.bridge_easy.j2fz_js_easy_value_i32",
+      "params": [
+        {
+          "name": "value",
+          "type": "i32"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.bridge_easy.j2fz_js_easy_call1",
+      "params": [
+        {
+          "name": "function_handle",
+          "type": "u64"
+        },
+        {
+          "name": "arg0_handle",
+          "type": "u64"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.bridge_easy.j2fz_js_easy_await",
+      "params": [
+        {
+          "name": "value_handle",
+          "type": "u64"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.bridge_easy.j2fz_js_easy_value_as_i32",
+      "params": [
+        {
+          "name": "value_handle",
+          "type": "u64"
+        },
+        {
+          "name": "fallback",
+          "type": "i32"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": true,
+      "name": "fzy2ts.bridge_easy.j2fz_js_easy_host_register_i32_i32",
+      "params": [
+        {
+          "name": "name_borrowed",
+          "type": "*u8"
+        },
+        {
+          "name": "len",
+          "type": "usize"
+        },
+        {
+          "name": "cb",
+          "type": "fn(i32) -> i32"
+        },
+        {
+          "name": "cb_ctx",
+          "type": "usize"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.bridge_easy.module_open",
+      "params": [
+        {
+          "name": "spec",
+          "type": "str"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.bridge_easy.export_get",
+      "params": [
+        {
+          "name": "module_handle",
+          "type": "u64"
+        },
+        {
+          "name": "export_name",
+          "type": "str"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.bridge_easy.value_i32",
+      "params": [
+        {
+          "name": "value",
+          "type": "i32"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.bridge_easy.call1",
+      "params": [
+        {
+          "name": "function_handle",
+          "type": "u64"
+        },
+        {
+          "name": "arg0_handle",
+          "type": "u64"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.bridge_easy.await_value",
+      "params": [
+        {
+          "name": "value_handle",
+          "type": "u64"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.bridge_easy.value_as_i32",
+      "params": [
+        {
+          "name": "value_handle",
+          "type": "u64"
+        },
+        {
+          "name": "fallback",
+          "type": "i32"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.bridge_easy.host_register_i32_i32",
+      "params": [
+        {
+          "name": "name",
+          "type": "str"
+        },
+        {
+          "name": "cb",
+          "type": "fn(i32) -> i32"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.bridge_easy.touch",
+      "params": [],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.model.types.module_handle",
+      "params": [
+        {
+          "name": "raw",
+          "type": "u64"
+        }
+      ],
+      "returnType": "fzy2ts.model.types.JsModuleHandle"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.model.types.export_handle",
+      "params": [
+        {
+          "name": "raw",
+          "type": "u64"
+        }
+      ],
+      "returnType": "fzy2ts.model.types.JsExportHandle"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.model.types.value_handle",
+      "params": [
+        {
+          "name": "raw",
+          "type": "u64"
+        }
+      ],
+      "returnType": "fzy2ts.model.types.JsValueHandle"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.model.types.registration_handle",
+      "params": [
+        {
+          "name": "raw",
+          "type": "u64"
+        }
+      ],
+      "returnType": "fzy2ts.model.types.JsRegistrationHandle"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.model.types.module_raw",
+      "params": [
+        {
+          "name": "handle",
+          "type": "fzy2ts.model.types.JsModuleHandle"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.model.types.export_raw",
+      "params": [
+        {
+          "name": "handle",
+          "type": "fzy2ts.model.types.JsExportHandle"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.model.types.value_raw",
+      "params": [
+        {
+          "name": "handle",
+          "type": "fzy2ts.model.types.JsValueHandle"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.model.types.registration_raw",
+      "params": [
+        {
+          "name": "handle",
+          "type": "fzy2ts.model.types.JsRegistrationHandle"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.model.types.utf8_view",
+      "params": [
+        {
+          "name": "ptr",
+          "type": "u64"
+        },
+        {
+          "name": "len",
+          "type": "usize"
+        }
+      ],
+      "returnType": "fzy2ts.model.types.JsUtf8View"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.model.types.utf8_ptr",
+      "params": [
+        {
+          "name": "view",
+          "type": "fzy2ts.model.types.JsUtf8View"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.model.types.utf8_len",
+      "params": [
+        {
+          "name": "view",
+          "type": "fzy2ts.model.types.JsUtf8View"
+        }
+      ],
+      "returnType": "usize"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.model.types.argv",
+      "params": [
+        {
+          "name": "ptr_borrowed",
+          "type": "*u64"
+        },
+        {
+          "name": "len",
+          "type": "usize"
+        }
+      ],
+      "returnType": "fzy2ts.model.types.JsArgv"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.model.types.argv_ptr",
+      "params": [
+        {
+          "name": "args",
+          "type": "fzy2ts.model.types.JsArgv"
+        }
+      ],
+      "returnType": "*u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.model.types.argv_len",
+      "params": [
+        {
+          "name": "args",
+          "type": "fzy2ts.model.types.JsArgv"
+        }
+      ],
+      "returnType": "usize"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.model.types.status_ok",
+      "params": [
+        {
+          "name": "code",
+          "type": "i32"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.model.types.status_err",
+      "params": [
+        {
+          "name": "code",
+          "type": "i32"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.model.types.status_pending",
+      "params": [
+        {
+          "name": "code",
+          "type": "i32"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.model.types.touch",
+      "params": [],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.model.touch",
+      "params": [],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.touch",
+      "params": [],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.module_open",
+      "params": [
+        {
+          "name": "spec",
+          "type": "str"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.export_get",
+      "params": [
+        {
+          "name": "module_handle",
+          "type": "u64"
+        },
+        {
+          "name": "export_name",
+          "type": "str"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.value_i32",
+      "params": [
+        {
+          "name": "value",
+          "type": "i32"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.call1",
+      "params": [
+        {
+          "name": "function_handle",
+          "type": "u64"
+        },
+        {
+          "name": "arg0_handle",
+          "type": "u64"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.await_value",
+      "params": [
+        {
+          "name": "value_handle",
+          "type": "u64"
+        }
+      ],
+      "returnType": "u64"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.value_as_i32",
+      "params": [
+        {
+          "name": "value_handle",
+          "type": "u64"
+        },
+        {
+          "name": "fallback",
+          "type": "i32"
+        }
+      ],
+      "returnType": "i32"
+    },
+    {
+      "isAsync": false,
+      "isUnsafe": false,
+      "name": "fzy2ts.host_register_i32_i32",
+      "params": [
+        {
+          "name": "name",
+          "type": "str"
+        },
+        {
+          "name": "cb",
+          "type": "fn(i32) -> i32"
+        }
+      ],
+      "returnType": "u64"
+    }
+  ],
+  "linear_resources": [
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_module_open",
+      "name": "spec_borrowed",
+      "origin": "param",
+      "type": "*u8"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_module_open",
+      "name": "module_out",
+      "origin": "param",
+      "type": "*u64"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_module_open",
+      "name": "module_ctx",
+      "origin": "param",
+      "type": "*u8"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_export_get",
+      "name": "export_borrowed",
+      "origin": "param",
+      "type": "*u8"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_export_get",
+      "name": "export_out",
+      "origin": "param",
+      "type": "*u64"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_export_get",
+      "name": "export_ctx",
+      "origin": "param",
+      "type": "*u8"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_value_null",
+      "name": "value_out",
+      "origin": "param",
+      "type": "*u64"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_value_bool",
+      "name": "value_out",
+      "origin": "param",
+      "type": "*u64"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_value_i32",
+      "name": "value_out",
+      "origin": "param",
+      "type": "*u64"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_value_u64",
+      "name": "value_out",
+      "origin": "param",
+      "type": "*u64"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_value_f64",
+      "name": "value_out",
+      "origin": "param",
+      "type": "*u64"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_value_str",
+      "name": "value_borrowed",
+      "origin": "param",
+      "type": "*u8"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_value_str",
+      "name": "value_out",
+      "origin": "param",
+      "type": "*u64"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_value_bytes",
+      "name": "ptr_borrowed",
+      "origin": "param",
+      "type": "*u8"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_value_bytes",
+      "name": "value_out",
+      "origin": "param",
+      "type": "*u64"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_value_as_bool",
+      "name": "value_out",
+      "origin": "param",
+      "type": "*i32"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_value_as_i32",
+      "name": "value_out",
+      "origin": "param",
+      "type": "*i32"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_value_as_u64",
+      "name": "value_out",
+      "origin": "param",
+      "type": "*u64"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_value_as_f64",
+      "name": "value_out",
+      "origin": "param",
+      "type": "*f64"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_value_as_utf8",
+      "name": "utf8_ptr_out",
+      "origin": "param",
+      "type": "*u64"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_value_as_utf8",
+      "name": "utf8_len_out",
+      "origin": "param",
+      "type": "*usize"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_value_copy_utf8",
+      "name": "ptr_out",
+      "origin": "param",
+      "type": "*u8"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_call",
+      "name": "argv_borrowed",
+      "origin": "param",
+      "type": "*u64"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_call",
+      "name": "result_out",
+      "origin": "param",
+      "type": "*u64"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_await",
+      "name": "result_out",
+      "origin": "param",
+      "type": "*u64"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_host_register_i32_i32",
+      "name": "name_borrowed",
+      "origin": "param",
+      "type": "*u8"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_host_register_i32_i32",
+      "name": "cb_ctx",
+      "origin": "param",
+      "type": "*u8"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_host_register_i32_i32",
+      "name": "registration_out",
+      "origin": "param",
+      "type": "*u64"
+    },
+    {
+      "function": "fzy2ts.api.js_host.j2fz_js_host_register_i32_i32",
+      "name": "registration_ctx",
+      "origin": "param",
+      "type": "*u8"
+    },
+    {
+      "function": "fzy2ts.bridge_easy.j2fz_js_easy_module_open",
+      "name": "spec_borrowed",
+      "origin": "param",
+      "type": "*u8"
+    },
+    {
+      "function": "fzy2ts.bridge_easy.j2fz_js_easy_export_get",
+      "name": "export_borrowed",
+      "origin": "param",
+      "type": "*u8"
+    },
+    {
+      "function": "fzy2ts.bridge_easy.j2fz_js_easy_host_register_i32_i32",
+      "name": "name_borrowed",
+      "origin": "param",
+      "type": "*u8"
+    },
+    {
+      "function": "fzy2ts.model.types.argv",
+      "name": "ptr_borrowed",
+      "origin": "param",
+      "type": "*u64"
+    },
+    {
+      "function": "fzy2ts.model.types.argv",
+      "name": "ptr_borrowed",
+      "origin": "local",
+      "type": "*u64"
+    }
+  ],
+  "moves": [],
+  "owned_handles": [],
+  "owners": [],
+  "schemaVersion": "fozzylang.memory_report.v1",
+  "versions": {
+    "diagnosticCatalogVersion": "fozzylang.diagnostic_catalog.v1",
+    "languageVersion": "fozzylang.language.v1",
+    "manifestSchemaVersion": "fozzy.run_manifest.v1",
+    "nativeImportTableVersion": "fozzylang.native_runtime_contracts.v1",
+    "runtimeAbiVersion": "fozzylang.runtime.v0",
+    "traceSchemaVersion": "fozzy-trace.v4"
+  },
+  "violations": []
+}

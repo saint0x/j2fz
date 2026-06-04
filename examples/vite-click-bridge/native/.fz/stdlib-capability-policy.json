@@ -1,0 +1,137 @@
+{
+  "capabilityPolicy": {
+    "missingCapabilityPolicy": "error",
+    "missingTokenPolicy": "error",
+    "propagation": "explicit_compiler_checked",
+    "tokenDelegation": "compiler_enforced_subset_only"
+  },
+  "jsonBoundaryRule": {
+    "boundary": "json_at_boundaries",
+    "inside": "typed_structs_and_enums",
+    "strictRawPolicy": "warn_on_composite_or_dynamic_json_raw"
+  },
+  "modules": [
+    {
+      "capability": "mem",
+      "cleanupRequirement": "cleanup with `free(...)` or `defer free(...)`",
+      "errorBehavior": "runtime status + verifier ownership diagnostics",
+      "linearHandles": "heap pointers and owned allocations are linear",
+      "module": "core.mem",
+      "ownershipBehavior": "owned values + explicit alloc/free lifecycle",
+      "threadAsyncSafety": "thread-safe only through owned handoff; not raw-borrow safe across async/task boundaries"
+    },
+    {
+      "capability": "http",
+      "cleanupRequirement": "cleanup with `close(...)`, `http.stream_close(...)`, or `http.websocket_close(...)`",
+      "errorBehavior": "parse vs timeout vs transport errors remain distinct",
+      "linearHandles": "HttpHandle/HttpStreamHandle/WebSocketHandle are linear",
+      "module": "core.http",
+      "ownershipBehavior": "request/response bodies and network handles are owned",
+      "threadAsyncSafety": "not send-safe; async-stable for owned handles only"
+    },
+    {
+      "capability": "proc",
+      "cleanupRequirement": "cleanup with `proc.close(...)`; builders must be consumed by spawn/run",
+      "errorBehavior": "runtime status + last-error boundary",
+      "linearHandles": "ProcessArgv/ProcessEnv/ProcessHandle are linear",
+      "module": "core.proc",
+      "ownershipBehavior": "argv/env builders and process handles are owned",
+      "threadAsyncSafety": "process handles are async-stable but not send-safe; builders are neither"
+    },
+    {
+      "capability": "fs",
+      "cleanupRequirement": "cleanup with `fs.close(...)`; durable writes prefer `fs.atomic_write(...)`",
+      "errorBehavior": "runtime status + host error mapping",
+      "linearHandles": "FileHandle is linear",
+      "module": "core.fs",
+      "ownershipBehavior": "file handles are owned; path arguments are borrowed",
+      "threadAsyncSafety": "file handles are async-stable but not send-safe"
+    },
+    {
+      "capability": "thread",
+      "cleanupRequirement": "terminate with `join`, `detach`, `cancel_task`, `task.group_join_all`, or `task.group_cancel`",
+      "errorBehavior": "task result / cancellation / timeout policy is explicit",
+      "linearHandles": "TaskHandle and TaskGroupHandle are linear",
+      "module": "core.thread",
+      "ownershipBehavior": "task handles and task groups are owned linear resources",
+      "threadAsyncSafety": "send-safe task handles/groups only; borrowed values may not cross task boundaries"
+    },
+    {
+      "capability": "time",
+      "cleanupRequirement": "no explicit cleanup required",
+      "errorBehavior": "status-free deterministic time/runtime APIs",
+      "linearHandles": "no linear handles",
+      "module": "core.time",
+      "ownershipBehavior": "time values are plain owned data",
+      "threadAsyncSafety": "thread-safe and async-safe"
+    },
+    {
+      "capability": "rng",
+      "cleanupRequirement": "no explicit cleanup required",
+      "errorBehavior": "decode and runtime-status failures are explicit",
+      "linearHandles": "no linear handles",
+      "module": "core.crypto",
+      "ownershipBehavior": "crypto outputs are owned plain values",
+      "threadAsyncSafety": "thread-safe and async-safe; secret comparisons should use constant-time helpers"
+    },
+    {
+      "capability": "http|fs|proc boundary payloads",
+      "cleanupRequirement": "no explicit cleanup; avoid `json.raw(...)` except for primitive/raw boundary escapes",
+      "errorBehavior": "parse failures stay explicit; raw injection is policy-checked",
+      "linearHandles": "JsonHandle/ListHandle/MapHandle are owned non-linear handles",
+      "module": "core.json",
+      "ownershipBehavior": "JSON stays at boundaries; typed structs/enums stay inside",
+      "threadAsyncSafety": "send-safe and async-stable owned collection handles"
+    },
+    {
+      "capability": "log",
+      "cleanupRequirement": "no explicit cleanup required",
+      "errorBehavior": "runtime status for sink/config failures",
+      "linearHandles": "no linear handles",
+      "module": "core.log",
+      "ownershipBehavior": "log payload maps/strings are owned values",
+      "threadAsyncSafety": "thread-safe and async-safe logging facade"
+    }
+  ],
+  "schemaVersion": "fozzylang.stdlib_capability_policy.v1",
+  "strictHazards": [
+    {
+      "kind": "json_raw_composite_or_dynamic_injection",
+      "policy": "prefer `json.object`, `json.array`, or `json.str` over `json.raw(...)` for composite or user-shaped payloads",
+      "severity": "warning"
+    },
+    {
+      "kind": "path_traversal_literal",
+      "policy": "literal filesystem paths containing `..` are rejected as traversal-prone in strict mode",
+      "severity": "warning"
+    },
+    {
+      "kind": "shell_process_builder",
+      "policy": "shell command construction through `sh`/`bash` and `-c` is flagged in strict mode; prefer direct argv builders",
+      "severity": "warning"
+    },
+    {
+      "kind": "tempfile_non_atomic_write",
+      "policy": "writing directly into `/tmp` or `/var/tmp` is flagged when a durable atomic write is expected",
+      "severity": "warning"
+    },
+    {
+      "kind": "http_header_non_normalized",
+      "policy": "HTTP headers should be lowercase normalized tokens in strict mode",
+      "severity": "warning"
+    },
+    {
+      "kind": "crypto_secret_eq",
+      "policy": "secret-bearing comparisons should use `crypto.constant_time_eq` or `security.secure_eq`",
+      "severity": "warning"
+    }
+  ],
+  "versions": {
+    "diagnosticCatalogVersion": "fozzylang.diagnostic_catalog.v1",
+    "languageVersion": "fozzylang.language.v1",
+    "manifestSchemaVersion": "fozzy.run_manifest.v1",
+    "nativeImportTableVersion": "fozzylang.native_runtime_contracts.v1",
+    "runtimeAbiVersion": "fozzylang.runtime.v0",
+    "traceSchemaVersion": "fozzy-trace.v4"
+  }
+}
