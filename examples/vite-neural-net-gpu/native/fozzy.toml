@@ -1,0 +1,10 @@
+[package]
+name = "j2fz_vite_neural_ink_garden"
+version = "0.1.0"
+
+[target.lib]
+name = "j2fz_vite_neural_ink_garden"
+path = "src/lib.fzy"
+
+[ffi]
+panic_boundary = "abort"

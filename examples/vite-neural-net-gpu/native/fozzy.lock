@@ -1,0 +1,12 @@
+{
+  "dependencyGraphHash": "425d1d69d3ee6aef4ce922d59852486839c7e098a5b0353964cbfaf95c088417",
+  "graph": {
+    "deps": [],
+    "package": {
+      "manifestHash": "4e51c0f1947ca1c0b7fb7d3ba24a57733e4fb80cb79a7cca4bac895e32264af1",
+      "name": "j2fz_vite_neural_ink_garden",
+      "version": "0.1.0"
+    }
+  },
+  "schemaVersion": "fozzylang.lock.v0"
+}

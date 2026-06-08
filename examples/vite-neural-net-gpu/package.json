@@ -1,0 +1,15 @@
+{
+  "name": "j2fz-vite-neural-ink-garden",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx server/app.ts",
+    "build:web": "vite build",
+    "preview": "NODE_ENV=production tsx server/app.ts"
+  },
+  "dependencies": {
+    "tsx": "^4.20.6",
+    "vite": "^7.2.1"
+  }
+}

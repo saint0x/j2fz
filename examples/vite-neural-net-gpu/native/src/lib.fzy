@@ -1,0 +1,708 @@
+use core.gpu;
+use core.simd;
+
+const CLASS_COUNT: i32 = 3
+const HIDDEN_COUNT: i32 = 8
+const WEIGHT_COUNT: i32 = 51
+const MODE_CLASS: i32 = 0
+const MODE_ASCII: i32 = 1
+const MODE_NEURON: i32 = 2
+
+fn clamp_i32(value: i32, low: i32, high: i32) -> i32 {
+    if value < low { return low }
+    if value > high { return high }
+    return value
+}
+
+fn clamp_f32(value: f32, low: f32, high: f32) -> f32 {
+    if value < low { return low }
+    if value > high { return high }
+    return value
+}
+
+fn fast_tanh(value: f32) -> f32 {
+    let clipped = clamp_f32(value, -3.0f32, 3.0f32)
+    let square = clipped * clipped
+    return (clipped * (27.0f32 + square)) / (27.0f32 + (9.0f32 * square))
+}
+
+fn fast_exp(value: f32) -> f32 {
+    let x = clamp_f32(value, -5.0f32, 5.0f32)
+    let x2 = x * x
+    let x3 = x2 * x
+    let x4 = x3 * x
+    return 1.0f32 + x + (x2 * 0.5f32) + (x3 * 0.16666667f32) + (x4 * 0.04166667f32)
+}
+
+fn fast_log(value: f32) -> f32 {
+    let x = clamp_f32(value, 0.0001f32, 1.0f32)
+    let y = x - 1.0f32
+    let y2 = y * y
+    let y3 = y2 * y
+    let y4 = y3 * y
+    return y - (y2 * 0.5f32) + (y3 * 0.33333334f32) - (y4 * 0.25f32)
+}
+
+fn lcg_next(seed: i32) -> i32 {
+    return (seed * 1664525) + 1013904223
+}
+
+fn seed_to_weight(seed: i32) -> f32 {
+    let bucket = seed - ((seed / 12) * 12)
+    if bucket == 0 { return -0.75f32 }
+    if bucket == 1 { return -0.55f32 }
+    if bucket == 2 { return -0.35f32 }
+    if bucket == 3 { return -0.20f32 }
+    if bucket == 4 { return -0.08f32 }
+    if bucket == 5 { return 0.08f32 }
+    if bucket == 6 { return 0.20f32 }
+    if bucket == 7 { return 0.35f32 }
+    if bucket == 8 { return 0.55f32 }
+    if bucket == 9 { return 0.75f32 }
+    if bucket == 10 { return 0.48f32 }
+    return -0.48f32
+}
+
+fn argmax3(a: f32, b: f32, c: f32) -> i32 {
+    if a >= b && a >= c { return 0 }
+    if b >= c { return 1 }
+    return 2
+}
+
+fn max3(a: f32, b: f32, c: f32) -> f32 {
+    let mut out = a
+    if b > out { out = b }
+    if c > out { out = c }
+    return out
+}
+
+fn second3(a: f32, b: f32, c: f32) -> f32 {
+    if a >= b && a >= c {
+        if b >= c { return b }
+        return c
+    }
+    if b >= a && b >= c {
+        if a >= c { return a }
+        return c
+    }
+    if a >= b { return a }
+    return b
+}
+
+fn target_for_class(class_id: i32, candidate: i32) -> f32 {
+    if class_id == candidate { return 1.0f32 }
+    return 0.0f32
+}
+
+fn encode_rgba(r: i32, g: i32, b: i32, a: i32) -> u32 {
+    let rr = clamp_i32(r, 0, 255)
+    let gg = clamp_i32(g, 0, 255)
+    let bb = clamp_i32(b, 0, 255)
+    let aa = clamp_i32(a, 0, 255)
+    return rr + (gg << 8) + (bb << 16) + (aa << 24)
+}
+
+fn confidence_band(confidence: f32) -> i32 {
+    if confidence < 0.08f32 { return 0 }
+    if confidence < 0.16f32 { return 1 }
+    if confidence < 0.24f32 { return 2 }
+    if confidence < 0.32f32 { return 3 }
+    if confidence < 0.40f32 { return 4 }
+    if confidence < 0.50f32 { return 5 }
+    if confidence < 0.62f32 { return 6 }
+    if confidence < 0.74f32 { return 7 }
+    if confidence < 0.86f32 { return 8 }
+    return 9
+}
+
+fn field_color(class_id: i32, confidence: f32, pulse: i32) -> u32 {
+    let band = confidence_band(confidence)
+    let shimmer = (pulse * 7) - ((pulse / 5) * 35)
+    if class_id == 0 {
+        return encode_rgba(110 + (band * 13), 44 + (band * 4), 74 + shimmer, 255)
+    }
+    if class_id == 1 {
+        return encode_rgba(44 + shimmer, 104 + (band * 6), 130 + (band * 12), 255)
+    }
+    return encode_rgba(186 + (band * 6), 144 + (band * 7), 54 + shimmer, 255)
+}
+
+fn neuron_color(activation: f32) -> u32 {
+    let mut band = 0
+    if activation > -0.75f32 { band = 1 }
+    if activation > -0.50f32 { band = 2 }
+    if activation > -0.25f32 { band = 3 }
+    if activation > 0.00f32 { band = 4 }
+    if activation > 0.25f32 { band = 5 }
+    if activation > 0.50f32 { band = 6 }
+    if activation > 0.70f32 { band = 7 }
+    if activation > 0.82f32 { band = 8 }
+    if activation > 0.92f32 { band = 9 }
+    return encode_rgba(26 + ((9 - band) * 18), 34 + (band * 20), 210, 255)
+}
+
+fn validate_weights(weight_count: i32) -> i32 {
+    if weight_count != WEIGHT_COUNT { return 11 }
+    return 0
+}
+
+fn validate_stats_buffer(stats_count: i32) -> i32 {
+    if stats_count < 4 { return 21 }
+    return 0
+}
+
+fn validate_point_buffers(point_count: i32, class_count: i32) -> i32 {
+    if point_count < 0 { return 31 }
+    if class_count != point_count { return 32 }
+    return 0
+}
+
+fn launch_grid(count: i32, block: i32) -> i32 {
+    return (count + (block - 1)) / block
+}
+
+fn write_stats(stats_out: *f32, loss: f32, accuracy: f32, step_count: f32, point_count: f32) -> void {
+    stats_out[0] = loss
+    stats_out[1] = accuracy
+    stats_out[2] = step_count
+    stats_out[3] = point_count
+}
+
+fn load_hidden(weights: *f32, x: f32, y: f32, out_hidden: *f32) -> void {
+    let x_vec = simd.f32x4_splat(x)
+    let y_vec = simd.f32x4_splat(y)
+
+    let left = simd.f32x4_store(simd.f32x4_add(
+        simd.f32x4_add(
+            simd.f32x4_mul(x_vec, simd.f32x4_load([weights[0], weights[1], weights[2], weights[3]])),
+            simd.f32x4_mul(y_vec, simd.f32x4_load([weights[8], weights[9], weights[10], weights[11]])),
+        ),
+        simd.f32x4_load([weights[16], weights[17], weights[18], weights[19]]),
+    ))
+    let right = simd.f32x4_store(simd.f32x4_add(
+        simd.f32x4_add(
+            simd.f32x4_mul(x_vec, simd.f32x4_load([weights[4], weights[5], weights[6], weights[7]])),
+            simd.f32x4_mul(y_vec, simd.f32x4_load([weights[12], weights[13], weights[14], weights[15]])),
+        ),
+        simd.f32x4_load([weights[20], weights[21], weights[22], weights[23]]),
+    ))
+
+    out_hidden[0] = fast_tanh(left[0])
+    out_hidden[1] = fast_tanh(left[1])
+    out_hidden[2] = fast_tanh(left[2])
+    out_hidden[3] = fast_tanh(left[3])
+    out_hidden[4] = fast_tanh(right[0])
+    out_hidden[5] = fast_tanh(right[1])
+    out_hidden[6] = fast_tanh(right[2])
+    out_hidden[7] = fast_tanh(right[3])
+}
+
+fn logits_for_hidden(weights: *f32, hidden: *f32, out_logits: *f32) -> void {
+    let mut class_id = 0
+    while class_id < CLASS_COUNT {
+        let offset = 24 + (class_id * HIDDEN_COUNT)
+        let left = simd.f32x4_load([
+            hidden[0] * weights[offset],
+            hidden[1] * weights[offset + 1],
+            hidden[2] * weights[offset + 2],
+            hidden[3] * weights[offset + 3],
+        ])
+        let right = simd.f32x4_load([
+            hidden[4] * weights[offset + 4],
+            hidden[5] * weights[offset + 5],
+            hidden[6] * weights[offset + 6],
+            hidden[7] * weights[offset + 7],
+        ])
+        out_logits[class_id] = simd.f32x4_reduce_add(left) + simd.f32x4_reduce_add(right) + weights[48 + class_id]
+        class_id = class_id + 1
+    }
+}
+
+fn softmax_logits(logits: *f32, out_probs: *f32) -> void {
+    let anchor = max3(logits[0], logits[1], logits[2])
+    let e0 = fast_exp(logits[0] - anchor)
+    let e1 = fast_exp(logits[1] - anchor)
+    let e2 = fast_exp(logits[2] - anchor)
+    let denom = e0 + e1 + e2 + 0.0001f32
+    out_probs[0] = e0 / denom
+    out_probs[1] = e1 / denom
+    out_probs[2] = e2 / denom
+}
+
+fn forward_point(weights: *f32, x: f32, y: f32, hidden: *f32, logits: *f32, probs: *f32) -> i32 {
+    load_hidden(weights, x, y, hidden)
+    logits_for_hidden(weights, hidden, logits)
+    softmax_logits(logits, probs)
+    return argmax3(logits[0], logits[1], logits[2])
+}
+
+fn loss_for_class(probs: *f32, class_id: i32) -> f32 {
+    return 0.0f32 - fast_log(clamp_f32(probs[class_id], 0.0001f32, 0.9999f32))
+}
+
+device fn d_clamp_i32(value: i32, low: i32, high: i32) -> i32 {
+    if value < low { return low }
+    if value > high { return high }
+    return value
+}
+
+device fn d_clamp_f32(value: f32, low: f32, high: f32) -> f32 {
+    if value < low { return low }
+    if value > high { return high }
+    return value
+}
+
+device fn d_fast_tanh(value: f32) -> f32 {
+    let clipped = d_clamp_f32(value, -3.0f32, 3.0f32)
+    let square = clipped * clipped
+    return (clipped * (27.0f32 + square)) / (27.0f32 + (9.0f32 * square))
+}
+
+device fn d_fast_exp(value: f32) -> f32 {
+    let x = d_clamp_f32(value, -5.0f32, 5.0f32)
+    let x2 = x * x
+    let x3 = x2 * x
+    let x4 = x3 * x
+    return 1.0f32 + x + (x2 * 0.5f32) + (x3 * 0.16666667f32) + (x4 * 0.04166667f32)
+}
+
+device fn d_argmax3(a: f32, b: f32, c: f32) -> i32 {
+    if a >= b && a >= c { return 0 }
+    if b >= c { return 1 }
+    return 2
+}
+
+device fn d_max3(a: f32, b: f32, c: f32) -> f32 {
+    let mut out = a
+    if b > out { out = b }
+    if c > out { out = c }
+    return out
+}
+
+device fn d_second3(a: f32, b: f32, c: f32) -> f32 {
+    if a >= b && a >= c {
+        if b >= c { return b }
+        return c
+    }
+    if b >= a && b >= c {
+        if a >= c { return a }
+        return c
+    }
+    if a >= b { return a }
+    return b
+}
+
+device fn d_encode_rgba(r: i32, g: i32, b: i32, a: i32) -> u32 {
+    let rr = d_clamp_i32(r, 0, 255)
+    let gg = d_clamp_i32(g, 0, 255)
+    let bb = d_clamp_i32(b, 0, 255)
+    let aa = d_clamp_i32(a, 0, 255)
+    return rr + (gg << 8) + (bb << 16) + (aa << 24)
+}
+
+device fn d_confidence_band(confidence: f32) -> i32 {
+    if confidence < 0.08f32 { return 0 }
+    if confidence < 0.16f32 { return 1 }
+    if confidence < 0.24f32 { return 2 }
+    if confidence < 0.32f32 { return 3 }
+    if confidence < 0.40f32 { return 4 }
+    if confidence < 0.50f32 { return 5 }
+    if confidence < 0.62f32 { return 6 }
+    if confidence < 0.74f32 { return 7 }
+    if confidence < 0.86f32 { return 8 }
+    return 9
+}
+
+device fn d_field_color(class_id: i32, confidence: f32, pulse: i32) -> u32 {
+    let band = d_confidence_band(confidence)
+    let shimmer = (pulse * 7) - ((pulse / 5) * 35)
+    if class_id == 0 {
+        return d_encode_rgba(110 + (band * 13), 44 + (band * 4), 74 + shimmer, 255)
+    }
+    if class_id == 1 {
+        return d_encode_rgba(44 + shimmer, 104 + (band * 6), 130 + (band * 12), 255)
+    }
+    return d_encode_rgba(186 + (band * 6), 144 + (band * 7), 54 + shimmer, 255)
+}
+
+device fn d_neuron_color(activation: f32) -> u32 {
+    let mut band = 0
+    if activation > -0.75f32 { band = 1 }
+    if activation > -0.50f32 { band = 2 }
+    if activation > -0.25f32 { band = 3 }
+    if activation > 0.00f32 { band = 4 }
+    if activation > 0.25f32 { band = 5 }
+    if activation > 0.50f32 { band = 6 }
+    if activation > 0.70f32 { band = 7 }
+    if activation > 0.82f32 { band = 8 }
+    if activation > 0.92f32 { band = 9 }
+    return d_encode_rgba(26 + ((9 - band) * 18), 34 + (band * 20), 210, 255)
+}
+
+device fn d_ascii_color(class_id: i32, confidence: f32, pulse: i32) -> u32 {
+    let tint = 18 + (d_confidence_band(confidence) * 16)
+    if class_id == 0 {
+        return d_encode_rgba(28 + pulse, tint, tint + 16, 255)
+    }
+    if class_id == 1 {
+        return d_encode_rgba(tint, 36 + pulse, tint + 40, 255)
+    }
+    return d_encode_rgba(tint + 24, tint + 12, 24 + pulse, 255)
+}
+
+device fn d_load_hidden(weights: GpuSlice<f32>, x: f32, y: f32, out_hidden: *f32) -> void {
+    let x_vec = simd.f32x4_splat(x)
+    let y_vec = simd.f32x4_splat(y)
+
+    let left = simd.f32x4_store(simd.f32x4_add(
+        simd.f32x4_add(
+            simd.f32x4_mul(x_vec, simd.f32x4_load([
+                gpu.load_f32(weights, 0),
+                gpu.load_f32(weights, 1),
+                gpu.load_f32(weights, 2),
+                gpu.load_f32(weights, 3),
+            ])),
+            simd.f32x4_mul(y_vec, simd.f32x4_load([
+                gpu.load_f32(weights, 8),
+                gpu.load_f32(weights, 9),
+                gpu.load_f32(weights, 10),
+                gpu.load_f32(weights, 11),
+            ])),
+        ),
+        simd.f32x4_load([
+            gpu.load_f32(weights, 16),
+            gpu.load_f32(weights, 17),
+            gpu.load_f32(weights, 18),
+            gpu.load_f32(weights, 19),
+        ]),
+    ))
+    let right = simd.f32x4_store(simd.f32x4_add(
+        simd.f32x4_add(
+            simd.f32x4_mul(x_vec, simd.f32x4_load([
+                gpu.load_f32(weights, 4),
+                gpu.load_f32(weights, 5),
+                gpu.load_f32(weights, 6),
+                gpu.load_f32(weights, 7),
+            ])),
+            simd.f32x4_mul(y_vec, simd.f32x4_load([
+                gpu.load_f32(weights, 12),
+                gpu.load_f32(weights, 13),
+                gpu.load_f32(weights, 14),
+                gpu.load_f32(weights, 15),
+            ])),
+        ),
+        simd.f32x4_load([
+            gpu.load_f32(weights, 20),
+            gpu.load_f32(weights, 21),
+            gpu.load_f32(weights, 22),
+            gpu.load_f32(weights, 23),
+        ]),
+    ))
+
+    out_hidden[0] = d_fast_tanh(left[0])
+    out_hidden[1] = d_fast_tanh(left[1])
+    out_hidden[2] = d_fast_tanh(left[2])
+    out_hidden[3] = d_fast_tanh(left[3])
+    out_hidden[4] = d_fast_tanh(right[0])
+    out_hidden[5] = d_fast_tanh(right[1])
+    out_hidden[6] = d_fast_tanh(right[2])
+    out_hidden[7] = d_fast_tanh(right[3])
+}
+
+device fn d_logits_for_hidden(weights: GpuSlice<f32>, hidden: *f32, out_logits: *f32) -> void {
+    let mut class_id = 0
+    while class_id < CLASS_COUNT {
+        let offset = 24 + (class_id * HIDDEN_COUNT)
+        let left = simd.f32x4_load([
+            hidden[0] * gpu.load_f32(weights, offset),
+            hidden[1] * gpu.load_f32(weights, offset + 1),
+            hidden[2] * gpu.load_f32(weights, offset + 2),
+            hidden[3] * gpu.load_f32(weights, offset + 3),
+        ])
+        let right = simd.f32x4_load([
+            hidden[4] * gpu.load_f32(weights, offset + 4),
+            hidden[5] * gpu.load_f32(weights, offset + 5),
+            hidden[6] * gpu.load_f32(weights, offset + 6),
+            hidden[7] * gpu.load_f32(weights, offset + 7),
+        ])
+        out_logits[class_id] = simd.f32x4_reduce_add(left) + simd.f32x4_reduce_add(right) + gpu.load_f32(weights, 48 + class_id)
+        class_id = class_id + 1
+    }
+}
+
+device fn d_softmax_logits(logits: *f32, out_probs: *f32) -> void {
+    let anchor = d_max3(logits[0], logits[1], logits[2])
+    let e0 = d_fast_exp(logits[0] - anchor)
+    let e1 = d_fast_exp(logits[1] - anchor)
+    let e2 = d_fast_exp(logits[2] - anchor)
+    let denom = e0 + e1 + e2 + 0.0001f32
+    out_probs[0] = e0 / denom
+    out_probs[1] = e1 / denom
+    out_probs[2] = e2 / denom
+}
+
+kernel fn forward_field(
+    coords: GpuSlice<f32>,
+    weights: GpuSlice<f32>,
+    output: GpuSlice<u32>,
+    config_packed: i32,
+) -> void {
+    let i = gpu.global_id_x()
+    let total = gpu.slice_len(output)
+    if i < total {
+        let x = gpu.load_f32(coords, i * 2)
+        let y = gpu.load_f32(coords, (i * 2) + 1)
+        let mode = config_packed & 255
+        let selected_neuron = (config_packed >> 8) & 255
+        let pulse = (config_packed >> 16) & 255
+
+        let mut hidden = [0.0f32, 0.0f32, 0.0f32, 0.0f32, 0.0f32, 0.0f32, 0.0f32, 0.0f32]
+        let mut logits = [0.0f32, 0.0f32, 0.0f32]
+        let mut probs = [0.0f32, 0.0f32, 0.0f32]
+
+        d_load_hidden(weights, x, y, hidden)
+        d_logits_for_hidden(weights, hidden, logits)
+        d_softmax_logits(logits, probs)
+
+        let class_id = d_argmax3(logits[0], logits[1], logits[2])
+        let confidence = d_clamp_f32(
+            d_max3(probs[0], probs[1], probs[2]) - d_second3(probs[0], probs[1], probs[2]),
+            0.0f32,
+            1.0f32,
+        )
+        let neuron_index = d_clamp_i32(selected_neuron, 0, HIDDEN_COUNT - 1)
+
+        if mode == MODE_NEURON {
+            output[i] = d_neuron_color(hidden[neuron_index])
+        } else if mode == MODE_ASCII {
+            output[i] = d_ascii_color(class_id, confidence, pulse)
+        } else {
+            output[i] = d_field_color(class_id, confidence, pulse)
+        }
+    }
+}
+
+#[ffi_panic(abort)]
+pubext c fn randomize_model(
+    weights_borrowed: *f32,
+    weights_len: usize,
+    weight_count: i32,
+    seed: i32,
+) -> i32 {
+    discard weights_len
+    let rc = validate_weights(weight_count)
+    if rc != 0 { return rc }
+    let mut next = seed
+    let mut idx = 0
+    while idx < WEIGHT_COUNT {
+        next = lcg_next(next)
+        weights_borrowed[idx] = seed_to_weight(next)
+        idx = idx + 1
+    }
+    return 0
+}
+
+#[ffi_panic(abort)]
+pubext c fn evaluate_model(
+    weights_borrowed: *f32,
+    weights_len: usize,
+    weight_count: i32,
+    points_xy_borrowed: *f32,
+    points_xy_len: usize,
+    point_count: i32,
+    point_classes_borrowed: *i32,
+    point_classes_len: usize,
+    class_count: i32,
+    stats_out_out: *f32,
+    stats_out_len: usize,
+    stats_count: i32,
+) -> i32 {
+    discard weights_len
+    discard points_xy_len
+    discard point_classes_len
+    discard stats_out_len
+    let weight_rc = validate_weights(weight_count)
+    if weight_rc != 0 { return weight_rc }
+    let point_rc = validate_point_buffers(point_count, class_count)
+    if point_rc != 0 { return point_rc }
+    let stats_rc = validate_stats_buffer(stats_count)
+    if stats_rc != 0 { return stats_rc }
+    if point_count == 0 {
+        write_stats(stats_out_out, 0.0f32, 0.0f32, 0.0f32, 0.0f32)
+        return 0
+    }
+
+    let mut total_loss = 0.0f32
+    let mut correct_f = 0.0f32
+    let mut count_f = 0.0f32
+    let mut idx = 0
+    while idx < point_count {
+        let mut hidden = [0.0f32, 0.0f32, 0.0f32, 0.0f32, 0.0f32, 0.0f32, 0.0f32, 0.0f32]
+        let mut logits = [0.0f32, 0.0f32, 0.0f32]
+        let mut probs = [0.0f32, 0.0f32, 0.0f32]
+        let class_id = clamp_i32(point_classes_borrowed[idx], 0, CLASS_COUNT - 1)
+        let x = points_xy_borrowed[idx * 2]
+        let y = points_xy_borrowed[(idx * 2) + 1]
+        let prediction = forward_point(weights_borrowed, x, y, hidden, logits, probs)
+        total_loss = total_loss + loss_for_class(probs, class_id)
+        count_f = count_f + 1.0f32
+        if prediction == class_id {
+            correct_f = correct_f + 1.0f32
+        }
+        idx = idx + 1
+    }
+
+    write_stats(stats_out_out, total_loss / count_f, correct_f / count_f, 0.0f32, count_f)
+    return 0
+}
+
+#[ffi_panic(abort)]
+pubext c fn train_steps(
+    weights_inout: *f32,
+    weights_len: usize,
+    weight_count: i32,
+    points_xy_borrowed: *f32,
+    points_xy_len: usize,
+    point_count: i32,
+    point_classes_borrowed: *i32,
+    point_classes_len: usize,
+    class_count: i32,
+    steps: i32,
+    learning_rate: f32,
+    stats_out_out: *f32,
+    stats_out_len: usize,
+    stats_count: i32,
+) -> i32 {
+    discard weights_len
+    discard points_xy_len
+    discard point_classes_len
+    discard stats_out_len
+    let weight_rc = validate_weights(weight_count)
+    if weight_rc != 0 { return weight_rc }
+    let point_rc = validate_point_buffers(point_count, class_count)
+    if point_rc != 0 { return point_rc }
+    let stats_rc = validate_stats_buffer(stats_count)
+    if stats_rc != 0 { return stats_rc }
+    if point_count == 0 {
+        write_stats(stats_out_out, 0.0f32, 0.0f32, 0.0f32, 0.0f32)
+        return 0
+    }
+
+    let lr = clamp_f32(learning_rate, 0.0005f32, 0.5f32)
+    let mut step_idx = 0
+    while step_idx < steps {
+        let point_idx = step_idx - ((step_idx / point_count) * point_count)
+        let class_id = clamp_i32(point_classes_borrowed[point_idx], 0, CLASS_COUNT - 1)
+        let x = points_xy_borrowed[point_idx * 2]
+        let y = points_xy_borrowed[(point_idx * 2) + 1]
+        let mut hidden = [0.0f32, 0.0f32, 0.0f32, 0.0f32, 0.0f32, 0.0f32, 0.0f32, 0.0f32]
+        let mut logits = [0.0f32, 0.0f32, 0.0f32]
+        let mut probs = [0.0f32, 0.0f32, 0.0f32]
+        discard forward_point(weights_inout, x, y, hidden, logits, probs)
+
+        let old_red = [weights_inout[24], weights_inout[25], weights_inout[26], weights_inout[27], weights_inout[28], weights_inout[29], weights_inout[30], weights_inout[31]]
+        let old_blue = [weights_inout[32], weights_inout[33], weights_inout[34], weights_inout[35], weights_inout[36], weights_inout[37], weights_inout[38], weights_inout[39]]
+        let old_gold = [weights_inout[40], weights_inout[41], weights_inout[42], weights_inout[43], weights_inout[44], weights_inout[45], weights_inout[46], weights_inout[47]]
+
+        let mut dlogits = [0.0f32, 0.0f32, 0.0f32]
+        let mut class_iter = 0
+        while class_iter < CLASS_COUNT {
+            dlogits[class_iter] = probs[class_iter] - target_for_class(class_id, class_iter)
+            class_iter = class_iter + 1
+        }
+
+        class_iter = 0
+        while class_iter < CLASS_COUNT {
+            let offset = 24 + (class_iter * HIDDEN_COUNT)
+            let mut hidden_idx = 0
+            while hidden_idx < HIDDEN_COUNT {
+                weights_inout[offset + hidden_idx] = weights_inout[offset + hidden_idx] - (lr * dlogits[class_iter] * hidden[hidden_idx])
+                hidden_idx = hidden_idx + 1
+            }
+            weights_inout[48 + class_iter] = weights_inout[48 + class_iter] - (lr * dlogits[class_iter])
+            class_iter = class_iter + 1
+        }
+
+        let mut hidden_idx = 0
+        while hidden_idx < HIDDEN_COUNT {
+            let dh = (dlogits[0] * old_red[hidden_idx]) + (dlogits[1] * old_blue[hidden_idx]) + (dlogits[2] * old_gold[hidden_idx])
+            let dz = dh * (1.0f32 - (hidden[hidden_idx] * hidden[hidden_idx]))
+            weights_inout[hidden_idx] = weights_inout[hidden_idx] - (lr * dz * x)
+            weights_inout[8 + hidden_idx] = weights_inout[8 + hidden_idx] - (lr * dz * y)
+            weights_inout[16 + hidden_idx] = weights_inout[16 + hidden_idx] - (lr * dz)
+            hidden_idx = hidden_idx + 1
+        }
+
+        step_idx = step_idx + 1
+    }
+
+    return evaluate_model(
+        weights_inout,
+        weights_len,
+        weight_count,
+        points_xy_borrowed,
+        points_xy_len,
+        point_count,
+        point_classes_borrowed,
+        point_classes_len,
+        class_count,
+        stats_out_out,
+        stats_out_len,
+        stats_count,
+    )
+}
+
+#[ffi_panic(abort)]
+pubext c fn render_field(
+    coords_borrowed: *f32,
+    coords_len: usize,
+    coord_count: i32,
+    weights_borrowed: *f32,
+    weights_len: usize,
+    weight_count: i32,
+    mode: i32,
+    selected_neuron: i32,
+    time_tick: i32,
+    out_rgba_out: *u32,
+    out_rgba_len: usize,
+    out_count: i32,
+) -> i32 {
+    discard coords_len
+    discard weights_len
+    discard out_rgba_len
+    let weight_rc = validate_weights(weight_count)
+    if weight_rc != 0 { return weight_rc }
+    if out_count < 8 { return 41 }
+    if coord_count != out_count * 2 { return 42 }
+
+    let dev = gpu.default_device()
+    let coords_buf: GpuBuffer<f32> = gpu.upload_f32(dev, coords_borrowed)
+    defer gpu.free(coords_buf)
+    let weights_buf: GpuBuffer<f32> = gpu.upload_f32(dev, weights_borrowed)
+    defer gpu.free(weights_buf)
+    let output_buf: GpuBuffer<u32> = gpu.alloc_u32(dev, out_count)
+    defer gpu.free(output_buf)
+
+    let pulse = time_tick - ((time_tick / 32) * 32)
+    let config_packed = clamp_i32(mode, 0, 2) + (clamp_i32(selected_neuron, 0, HIDDEN_COUNT - 1) << 8) + (pulse << 16)
+    let block = 64
+    let event = gpu.launch4(
+        forward_field,
+        launch_grid(out_count, block),
+        block,
+        gpu.slice(coords_buf, 0, coord_count),
+        gpu.slice(weights_buf, 0, weight_count),
+        gpu.slice(output_buf, 0, out_count),
+        config_packed,
+    )
+    let wait_status = gpu.wait(event)
+    if wait_status != 0 { return 43 }
+
+    let pixels: Vec<u32> = gpu.download_u32(output_buf)
+    let mut idx = 0
+    while idx < out_count {
+        out_rgba_out[idx] = pixels[idx]
+        idx = idx + 1
+    }
+    return 0
+}

@@ -1,0 +1,705 @@
+{
+  "abiRevision": 1,
+  "callbackAbi": "signature-typed-v1",
+  "compilerIdentityHash": "2f94649a8a371971b258cab36540b6e23fb8dcfa574a9ad138f357b1aaa1c1d7",
+  "contractSchema": "fozzylang.ffi_contracts.v1",
+  "dataLayoutHash": "4ef19cf377b4271c24656e2451536d23b76c8d7e35289fdb42706f8eff5d7afa",
+  "exports": [
+    {
+      "async": false,
+      "contract": {
+        "asyncBoundary": null,
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "randomize_model",
+      "params": [
+        {
+          "c": "const float*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:weights",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "weights_len"
+            }
+          },
+          "fzy": "*f32",
+          "name": "weights_borrowed"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "weights_len"
+        },
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "weight_count"
+        },
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "seed"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "symbolVersion": 1
+    },
+    {
+      "async": false,
+      "contract": {
+        "asyncBoundary": null,
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "evaluate_model",
+      "params": [
+        {
+          "c": "const float*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:weights",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "weights_len"
+            }
+          },
+          "fzy": "*f32",
+          "name": "weights_borrowed"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "weights_len"
+        },
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "weight_count"
+        },
+        {
+          "c": "const float*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:points_xy",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "points_xy_len"
+            }
+          },
+          "fzy": "*f32",
+          "name": "points_xy_borrowed"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "points_xy_len"
+        },
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "point_count"
+        },
+        {
+          "c": "const int32_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:point_classes",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "point_classes_len"
+            }
+          },
+          "fzy": "*i32",
+          "name": "point_classes_borrowed"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "point_classes_len"
+        },
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "class_count"
+        },
+        {
+          "c": "const float*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:stats_out",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "stats_out_len"
+            }
+          },
+          "fzy": "*f32",
+          "name": "stats_out_out"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "stats_out_len"
+        },
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "stats_count"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "symbolVersion": 1
+    },
+    {
+      "async": false,
+      "contract": {
+        "asyncBoundary": null,
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "train_steps",
+      "params": [
+        {
+          "c": "const float*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:weights",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "inout",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "weights_len"
+            }
+          },
+          "fzy": "*f32",
+          "name": "weights_inout"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "weights_len"
+        },
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "weight_count"
+        },
+        {
+          "c": "const float*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:points_xy",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "points_xy_len"
+            }
+          },
+          "fzy": "*f32",
+          "name": "points_xy_borrowed"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "points_xy_len"
+        },
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "point_count"
+        },
+        {
+          "c": "const int32_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:point_classes",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "point_classes_len"
+            }
+          },
+          "fzy": "*i32",
+          "name": "point_classes_borrowed"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "point_classes_len"
+        },
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "class_count"
+        },
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "steps"
+        },
+        {
+          "c": "float",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "f32",
+          "name": "learning_rate"
+        },
+        {
+          "c": "const float*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:stats_out",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "stats_out_len"
+            }
+          },
+          "fzy": "*f32",
+          "name": "stats_out_out"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "stats_out_len"
+        },
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "stats_count"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "symbolVersion": 1
+    },
+    {
+      "async": false,
+      "contract": {
+        "asyncBoundary": null,
+        "callbackBindings": [],
+        "execution": "sync"
+      },
+      "name": "render_field",
+      "params": [
+        {
+          "c": "const float*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:coords",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "coords_len"
+            }
+          },
+          "fzy": "*f32",
+          "name": "coords_borrowed"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "coords_len"
+        },
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "coord_count"
+        },
+        {
+          "c": "const float*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:weights",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "borrowed",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "weights_len"
+            }
+          },
+          "fzy": "*f32",
+          "name": "weights_borrowed"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "weights_len"
+        },
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "weight_count"
+        },
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "mode"
+        },
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "selected_neuron"
+        },
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "time_tick"
+        },
+        {
+          "c": "const uint32_t*",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": "loan:out_rgba",
+            "mutability": "const",
+            "nullability": "non_null",
+            "ownership": "out",
+            "view": {
+              "kind": "ptr_len",
+              "lengthParam": "out_rgba_len"
+            }
+          },
+          "fzy": "*u32",
+          "name": "out_rgba_out"
+        },
+        {
+          "c": "size_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "usize",
+          "name": "out_rgba_len"
+        },
+        {
+          "c": "int32_t",
+          "contract": {
+            "callback": null,
+            "lifetimeAnchor": null,
+            "mutability": "const",
+            "nullability": "n/a",
+            "ownership": "value",
+            "view": null
+          },
+          "fzy": "i32",
+          "name": "out_count"
+        }
+      ],
+      "return": {
+        "c": "int32_t",
+        "contract": {
+          "mutability": "const",
+          "nullability": "n/a",
+          "ownership": "value"
+        },
+        "fzy": "i32"
+      },
+      "symbolVersion": 1
+    }
+  ],
+  "hostApi": {
+    "callbacks": {
+      "invokeI32": "fz_host_invoke_callback_i32",
+      "registerI32": "fz_host_register_callback_i32"
+    },
+    "lastError": {
+      "class": "fz_host_last_error_class",
+      "code": "fz_host_last_error_code",
+      "message": "fz_host_last_error_message"
+    },
+    "lifecycle": {
+      "cleanup": "fz_host_cleanup",
+      "init": "fz_host_init",
+      "shutdown": "fz_host_shutdown"
+    }
+  },
+  "imports": [],
+  "layoutPolicy": {
+    "nonReprCUnstable": true,
+    "reprCStableOnly": true
+  },
+  "package": {
+    "name": "j2fz_vite_neural_ink_garden",
+    "version": "0.1.0"
+  },
+  "panicBoundary": "abort",
+  "reprCLayouts": [],
+  "schemaVersion": "fozzylang.ffi_abi.v1",
+  "symbolVersioning": "strict-name-signature-v1",
+  "targetTriple": "aarch64-apple-darwin"
+}

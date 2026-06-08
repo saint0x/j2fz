@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "name": "vite-neural-net-gpu-native-smoke",
+  "steps": [
+    {
+      "type": "proc_when",
+      "cmd": "bash",
+      "args": [
+        "./examples/vite-neural-net-gpu/tests/native-smoke.sh"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"before\":{\"loss\":1.16788,\"accuracy\":0.333333,\"pointCount\":6},\"afterTrain\":{\"loss\":0.769713,\"accuracy\":1,\"step\":0,\"pointCount\":6},\"afterEval\":{\"loss\":0.769713,\"accuracy\":1,\"pointCount\":6},\"frame\":{\"byteSum\":620328,\"nonZeroBytes\":4096,\"prefix\":[123,48,88,255,110,44,88,255,110,44,88,255,110,44,88,255]},\"weightPrefix\":[-0.319322,-0.134528,0.599269,-1.030616,-0.857075,-0.822155,-0.264358,-0.870668]}\n",
+      "stderr": "",
+      "times": 1
+    },
+    {
+      "type": "proc_spawn",
+      "cmd": "bash",
+      "args": [
+        "./examples/vite-neural-net-gpu/tests/native-smoke.sh"
+      ],
+      "expect_exit": 0,
+      "save_stdout_as": "native_smoke_stdout"
+    }
+  ]
+}
