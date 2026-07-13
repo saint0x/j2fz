@@ -257,7 +257,9 @@ test("renderBindingModule emits typed bindings", () => {
   });
 
   assert.match(text, /import \{ fileURLToPath \} from "node:url";/);
+  assert.match(text, /const ABI_MANIFEST: FozzyAbiManifest = \{/);
   assert.match(text, /export function createBindings/);
+  assert.match(text, /export function createBindings\(options: Omit<LoadEmbeddedModuleOptions, "manifest">\): demo_bridgeBindings \{/);
   assert.match(text, /export function createDiscoveredBindings\(options: Omit<LoadPackageOptions, "discovery"> = \{\}\)/);
   assert.match(text, /export interface UserRow \{/);
   assert.match(text, /id: bigint;/);
@@ -276,6 +278,7 @@ test("renderBindingModule emits typed bindings", () => {
   assert.match(text, /dispose\(\): void;/);
   assert.match(text, /register_with_callback_main\(fn: \(value: number, ctx: OpaqueHandle<"void">\) => number\): with_callback_mainRegisteredCallbackHandle;/);
   assert.match(text, /module\.exports\.get\("hash32"\)/);
+  assert.match(text, /loadFozzyModuleWithManifest\(\{ \.\.\.options, manifest: ABI_MANIFEST \}\)/);
 });
 
 test("renderBindingJavaScript emits publishable runtime wrapper", () => {
@@ -284,11 +287,12 @@ test("renderBindingJavaScript emits publishable runtime wrapper", () => {
   });
 
   assert.match(text, /import \{ fileURLToPath \} from "node:url";/);
-  assert.match(text, /import \{ loadFozzyModule, loadFozzyPackage \} from "j2fz";/);
+  assert.match(text, /import \{ loadFozzyModuleWithManifest, loadFozzyPackageWithManifest \} from "j2fz";/);
+  assert.match(text, /const ABI_MANIFEST = \{/);
   assert.match(text, /export const TaskState = \{/);
   assert.match(text, /export function createBindings\(options\)/);
   assert.match(text, /export function createDiscoveredBindings\(options = \{\}\)/);
-  assert.match(text, /loadFozzyPackage\(\{/);
+  assert.match(text, /loadFozzyPackageWithManifest\(\{/);
   assert.match(text, /packageRoot: fileURLToPath\(new URL\("\.", import\.meta\.url\)\)/);
   assert.match(text, /return fn\.call\(ptr_borrowed, len\);/);
   assert.match(text, /dispose\(\) \{/);
@@ -301,7 +305,7 @@ test("renderBindingTypes emits declaration output", () => {
     runtimeImportPath: "j2fz",
   });
 
-  assert.match(text, /import type \{ CallbackContextValue, LoadModuleOptions, LoadPackageOptions, OpaqueHandle, RegisteredCallbackHandle \} from "j2fz";/);
+  assert.match(text, /import type \{ CallbackContextValue, LoadEmbeddedModuleOptions, LoadPackageOptions, OpaqueHandle, RegisteredCallbackHandle \} from "j2fz";/);
   assert.match(text, /export interface UserRow \{/);
   assert.match(text, /export const TaskState = \{/);
   assert.match(text, /export interface demo_bridgeBindings/);
@@ -309,6 +313,7 @@ test("renderBindingTypes emits declaration output", () => {
   assert.match(text, /compute_async\(value: number\): Promise<number>;/);
   assert.match(text, /with_callback\(cb: with_callback_mainRegisteredCallbackHandle, cb_ctx: CallbackContextValue<"void">, value: number\): number;/);
   assert.match(text, /register_with_callback_main\(fn: \(value: number, ctx: OpaqueHandle<"void">\) => number\): with_callback_mainRegisteredCallbackHandle;/);
+  assert.match(text, /export function createBindings\(options: Omit<LoadEmbeddedModuleOptions, "manifest">\): demo_bridgeBindings;/);
   assert.match(text, /export function createDiscoveredBindings\(options\?: Omit<LoadPackageOptions, "discovery">\): demo_bridgeBindings;/);
 });
 
@@ -320,6 +325,7 @@ test("renderGeneratedPackageJson emits dependency-aware package metadata", () =>
   assert.match(text, /"name": "demo\.bridge-j2fz"/);
   assert.match(text, /"main": "\.\/index\.js"/);
   assert.match(text, /"types": "\.\/index\.d\.ts"/);
+  assert.doesNotMatch(text, /abi\.manifest\.json/);
   assert.match(text, /"j2fz": "\*"/);
 });
 
@@ -334,6 +340,7 @@ test("renderGeneratedReadme emits export inventory", () => {
   assert.match(text, /import \{ createBindings, createDiscoveredBindings \} from "\.";/);
   assert.match(text, /const discovered = createDiscoveredBindings\(\);/);
   assert.match(text, /const bindings = createBindings\(\{/);
+  assert.doesNotMatch(text, /abiManifest/);
 });
 
 test("writeGeneratedBindings writes a package-ready output directory", () => {
@@ -343,12 +350,11 @@ test("writeGeneratedBindings writes a package-ready output directory", () => {
   });
 
   assert.equal(result.packageDir, outDir);
-  assert.equal(readFileSync(result.modulePath, "utf8").includes("loadFozzyModule"), true);
+  assert.equal(readFileSync(result.modulePath, "utf8").includes("loadFozzyModuleWithManifest"), true);
   assert.equal(readFileSync(result.typesPath, "utf8").includes("OpaqueHandle"), true);
   assert.equal(readFileSync(result.packageJsonPath, "utf8").includes('"main": "./index.js"'), true);
-  assert.equal(result.manifestPath !== null, true);
   assert.equal(result.readmePath !== null, true);
-  assert.equal(readFileSync(result.manifestPath!, "utf8").includes('"schemaVersion"'), true);
+  assert.equal(readFileSync(result.modulePath, "utf8").includes("ABI_MANIFEST"), true);
   assert.equal(readFileSync(result.readmePath!, "utf8").includes("## Usage"), true);
-  assert.equal(readFileSync(join(outDir, "index.ts"), "utf8").includes("LoadModuleOptions"), true);
+  assert.equal(readFileSync(join(outDir, "index.ts"), "utf8").includes("LoadEmbeddedModuleOptions"), true);
 });

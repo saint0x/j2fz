@@ -3,7 +3,11 @@ import { accessSync, constants, readFileSync } from "node:fs";
 import koffi, { type LibraryHandle } from "koffi";
 
 import type { AbiExport, FozzyAbiManifest } from "../types/abi.js";
-import type { LoadModuleOptions, RegisteredCallbackHandle as PublicRegisteredCallbackHandle } from "../types/public.js";
+import type {
+  LoadEmbeddedModuleOptions,
+  LoadModuleOptions,
+  RegisteredCallbackHandle as PublicRegisteredCallbackHandle,
+} from "../types/public.js";
 import { createDiagnosticEmitter, type DiagnosticEmitter } from "./diagnostics.js";
 import {
   AsyncInteropError,
@@ -63,8 +67,24 @@ interface ManifestPlan {
 }
 
 const MANIFEST_PLAN_CACHE = new Map<string, ManifestPlan>();
+const EMBEDDED_MANIFEST_PLAN_CACHE = new WeakMap<FozzyAbiManifest, ManifestPlan>();
 
 export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
+  ensureReadable(options.paths.abiManifest);
+  ensureReadable(options.paths.sharedLibrary);
+  const manifestText = readFileSync(options.paths.abiManifest, "utf8");
+  return loadFozzyModuleFromPlan(options, getOrCreateManifestPlan(manifestText));
+}
+
+export function loadFozzyModuleWithManifest(options: LoadEmbeddedModuleOptions): LoadedFozzyModule {
+  ensureReadable(options.paths.sharedLibrary);
+  return loadFozzyModuleFromPlan(options, getOrCreateEmbeddedManifestPlan(options.manifest));
+}
+
+function loadFozzyModuleFromPlan(
+  options: Omit<LoadEmbeddedModuleOptions, "manifest">,
+  manifestPlan: ManifestPlan,
+): LoadedFozzyModule {
   const emit = createDiagnosticEmitter(options.diagnostics);
   const emitEnabled = emit.enabled;
   if (emitEnabled) {
@@ -73,15 +93,10 @@ export function loadFozzyModule(options: LoadModuleOptions): LoadedFozzyModule {
       message: "Loading Fozzy module",
       detail: {
         sharedLibrary: options.paths.sharedLibrary,
-        abiManifest: options.paths.abiManifest,
+        abiManifest: "abiManifest" in options.paths ? options.paths.abiManifest : null,
       },
     });
   }
-  ensureReadable(options.paths.abiManifest);
-  ensureReadable(options.paths.sharedLibrary);
-
-  const manifestText = readFileSync(options.paths.abiManifest, "utf8");
-  const manifestPlan = getOrCreateManifestPlan(manifestText);
   const manifest = manifestPlan.manifest;
   if (emitEnabled) {
     emit({
@@ -411,6 +426,31 @@ function getOrCreateManifestPlan(manifestText: string): ManifestPlan {
     exports,
   };
   MANIFEST_PLAN_CACHE.set(manifestText, plan);
+  return plan;
+}
+
+function getOrCreateEmbeddedManifestPlan(manifest: FozzyAbiManifest): ManifestPlan {
+  const cached = EMBEDDED_MANIFEST_PLAN_CACHE.get(manifest);
+  if (cached) {
+    return cached;
+  }
+
+  const parsed = parseAbiManifest(manifest);
+  const exports = new Map<string, ExportPlan>();
+  for (const abiExport of parsed.exports) {
+    assertSupportedExportSubset(abiExport);
+    exports.set(abiExport.name, {
+      abi: abiExport,
+      callArgAdapter: compileCallArgAdapter(abiExport),
+      returnNormalizer: compileJsValueNormalizer(abiExport.return.c, parsed),
+    });
+  }
+
+  const plan: ManifestPlan = {
+    manifest: parsed,
+    exports,
+  };
+  EMBEDDED_MANIFEST_PLAN_CACHE.set(manifest, plan);
   return plan;
 }
 

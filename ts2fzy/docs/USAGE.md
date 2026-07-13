@@ -35,9 +35,9 @@ module.dispose();
 Generated packages export two entrypoints:
 
 - `createBindings(options)`
-  Explicit runtime paths.
+  Explicit runtime paths with an embedded ABI manifest.
 - `createDiscoveredBindings(options?)`
-  Package-local artifact discovery rooted at the generated package directory.
+  Package-local artifact discovery rooted at the generated package directory, with the ABI embedded in the generated module.
 
 ```ts
 import { createBindings, createDiscoveredBindings } from "demo.bridge-j2fz";
@@ -45,7 +45,6 @@ import { createBindings, createDiscoveredBindings } from "demo.bridge-j2fz";
 const explicit = createBindings({
   paths: {
     sharedLibrary: "/absolute/path/to/libdemo.dylib",
-    abiManifest: "/absolute/path/to/abi.manifest.json",
   },
 });
 

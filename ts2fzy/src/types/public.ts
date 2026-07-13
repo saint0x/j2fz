@@ -1,3 +1,5 @@
+import type { FozzyAbiManifest } from "./abi.js";
+
 export interface Disposable {
   dispose(): void;
 }
@@ -63,6 +65,16 @@ export interface LoadModuleOptions {
   diagnostics?: DiagnosticsOptions;
 }
 
+export interface EmbeddedLibraryPaths {
+  sharedLibrary: string;
+  header?: string;
+}
+
+export interface LoadEmbeddedModuleOptions extends Omit<LoadModuleOptions, "paths"> {
+  paths: EmbeddedLibraryPaths;
+  manifest: FozzyAbiManifest;
+}
+
 export interface GeneratedBindingOptions {
   runtimeImportPath?: string;
   exportName?: string;
@@ -70,10 +82,14 @@ export interface GeneratedBindingOptions {
   packageName?: string;
   packageVersion?: string;
   packageDescription?: string;
-  emitManifestCopy?: boolean;
   emitReadme?: boolean;
 }
 
 export interface LoadPackageOptions extends Omit<LoadModuleOptions, "paths"> {
   discovery: PackageArtifactDiscoveryOptions;
+}
+
+export interface LoadEmbeddedPackageOptions extends Omit<LoadPackageOptions, "discovery"> {
+  discovery: PackageArtifactDiscoveryOptions;
+  manifest: FozzyAbiManifest;
 }

@@ -297,7 +297,7 @@ This checklist is the full production implementation plan for `j2fz`, the JavaSc
 ✅ Generate TypeScript source wrappers if selected as the primary output mode.
 ✅ Generate owned-handle helpers.
 ✅ Generate callback registration helpers where applicable.
-✅ Generate package-ready binding directories with runtime entrypoint, declarations, manifest copy, and package metadata.
+✅ Generate package-ready binding directories with runtime entrypoint, declarations, embedded ABI metadata, and package metadata.
 ✅ Generate package-local discovered loader entrypoints for emitted packages.
 ✅ Generate async wrappers where applicable.
 - Generate docs metadata from ABI fields.

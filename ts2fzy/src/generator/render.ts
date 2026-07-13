@@ -13,8 +13,11 @@ export function renderBindingModule(
 
   const lines: string[] = [];
   lines.push(`import { fileURLToPath } from "node:url";`);
-  lines.push(`import type { CallbackContextValue, LoadModuleOptions, LoadPackageOptions, OpaqueHandle, RegisteredCallbackHandle } from "${runtimeImportPath}";`);
-  lines.push(`import { loadFozzyModule, loadFozzyPackage } from "${runtimeImportPath}";`);
+  lines.push(`import type { FozzyAbiManifest } from "${runtimeImportPath}";`);
+  lines.push(`import type { CallbackContextValue, LoadEmbeddedModuleOptions, LoadPackageOptions, OpaqueHandle, RegisteredCallbackHandle } from "${runtimeImportPath}";`);
+  lines.push(`import { loadFozzyModuleWithManifest, loadFozzyPackageWithManifest } from "${runtimeImportPath}";`);
+  lines.push("");
+  lines.push(`const ABI_MANIFEST: FozzyAbiManifest = ${renderManifestLiteral(manifest)};`);
   lines.push("");
   for (const handle of model.handleTypes) {
     lines.push(`export interface ${handle.typeName} extends OpaqueHandle<${JSON.stringify(handle.brand)}> {`);
@@ -48,16 +51,17 @@ export function renderBindingModule(
   }
   lines.push("}");
   lines.push("");
-  lines.push(`export function ${exportName}(options: LoadModuleOptions): ${sanitizeIdentifier(manifest.package.name)}Bindings {`);
-  lines.push("  const module = loadFozzyModule(options);");
+  lines.push(`export function ${exportName}(options: Omit<LoadEmbeddedModuleOptions, "manifest">): ${sanitizeIdentifier(manifest.package.name)}Bindings {`);
+  lines.push("  const module = loadFozzyModuleWithManifest({ ...options, manifest: ABI_MANIFEST });");
   lines.push("  return createBindingsFromLoadedModule(module);");
   lines.push("}");
   lines.push("");
   lines.push(
     `export function ${discoveredExportName}(options: Omit<LoadPackageOptions, "discovery"> = {}): ${sanitizeIdentifier(manifest.package.name)}Bindings {`,
   );
-  lines.push("  const module = loadFozzyPackage({");
+  lines.push("  const module = loadFozzyPackageWithManifest({");
   lines.push("    ...options,");
+  lines.push("    manifest: ABI_MANIFEST,");
   lines.push("    discovery: {");
   lines.push("      packageRoot: fileURLToPath(new URL(\".\", import.meta.url)),");
   lines.push(`      package: { name: ${JSON.stringify(manifest.package.name)}, version: ${JSON.stringify(manifest.package.version)} },`);
@@ -103,19 +107,22 @@ export function renderBindingJavaScript(
 
   const lines: string[] = [];
   lines.push(`import { fileURLToPath } from "node:url";`);
-  lines.push(`import { loadFozzyModule, loadFozzyPackage } from "${runtimeImportPath}";`);
+  lines.push(`import { loadFozzyModuleWithManifest, loadFozzyPackageWithManifest } from "${runtimeImportPath}";`);
+  lines.push("");
+  lines.push(`const ABI_MANIFEST = ${renderManifestLiteral(manifest)};`);
   lines.push("");
   for (const layout of model.layouts) {
     renderLayoutDeclarations(lines, layout, "js");
   }
   lines.push(`export function ${exportName}(options) {`);
-  lines.push("  const module = loadFozzyModule(options);");
+  lines.push("  const module = loadFozzyModuleWithManifest({ ...options, manifest: ABI_MANIFEST });");
   lines.push("  return createBindingsFromLoadedModule(module);");
   lines.push("}");
   lines.push("");
   lines.push(`export function ${discoveredExportName}(options = {}) {`);
-  lines.push("  const module = loadFozzyPackage({");
+  lines.push("  const module = loadFozzyPackageWithManifest({");
   lines.push("    ...options,");
+  lines.push("    manifest: ABI_MANIFEST,");
   lines.push("    discovery: {");
   lines.push("      packageRoot: fileURLToPath(new URL(\".\", import.meta.url)),");
   lines.push(`      package: { name: ${JSON.stringify(manifest.package.name)}, version: ${JSON.stringify(manifest.package.version)} },`);
@@ -160,7 +167,7 @@ export function renderBindingTypes(
   const model = buildGeneratedModuleModel(manifest, exportName);
 
   const lines: string[] = [];
-  lines.push(`import type { CallbackContextValue, LoadModuleOptions, LoadPackageOptions, OpaqueHandle, RegisteredCallbackHandle } from "${runtimeImportPath}";`);
+  lines.push(`import type { CallbackContextValue, LoadEmbeddedModuleOptions, LoadPackageOptions, OpaqueHandle, RegisteredCallbackHandle } from "${runtimeImportPath}";`);
   lines.push("");
   for (const handle of model.handleTypes) {
     lines.push(`export interface ${handle.typeName} extends OpaqueHandle<${JSON.stringify(handle.brand)}> {`);
@@ -194,7 +201,7 @@ export function renderBindingTypes(
   }
   lines.push("}");
   lines.push("");
-  lines.push(`export function ${exportName}(options: LoadModuleOptions): ${sanitizeIdentifier(manifest.package.name)}Bindings;`);
+  lines.push(`export function ${exportName}(options: Omit<LoadEmbeddedModuleOptions, "manifest">): ${sanitizeIdentifier(manifest.package.name)}Bindings;`);
   lines.push(`export function ${discoveredExportName}(options?: Omit<LoadPackageOptions, "discovery">): ${sanitizeIdentifier(manifest.package.name)}Bindings;`);
   lines.push("");
   return `${lines.join("\n")}\n`;
@@ -222,9 +229,8 @@ export function renderGeneratedPackageJson(
         import: "./index.js",
         types: "./index.d.ts",
       },
-      "./abi.manifest.json": "./abi.manifest.json",
     },
-    files: ["index.js", "index.d.ts", "abi.manifest.json", "README.md"],
+    files: ["index.js", "index.d.ts", "README.md"],
     keywords: ["fozzy", "ffi", "j2fz", "generated-bindings"],
   };
   if (!runtimeImportPath.startsWith(".") && !runtimeImportPath.startsWith("/")) {
@@ -270,7 +276,6 @@ export function renderGeneratedReadme(
   lines.push(`const bindings = ${exportName}({`);
   lines.push("  paths: {");
   lines.push('    sharedLibrary: "/absolute/path/to/library",');
-  lines.push('    abiManifest: "/absolute/path/to/abi.manifest.json",');
   lines.push("  },");
   lines.push("});");
   lines.push("");
@@ -290,6 +295,40 @@ function sanitizeIdentifier(value: string): string {
 
 function defaultGeneratedPackageName(packageName: string): string {
   return `${packageName.replace(/[^A-Za-z0-9._-]/g, "-")}-j2fz`;
+}
+
+function renderManifestLiteral(value: unknown, indent = 0): string {
+  const pad = "  ".repeat(indent);
+  const nestedPad = "  ".repeat(indent + 1);
+
+  if (typeof value === "string") {
+    return JSON.stringify(value);
+  }
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  if (typeof value === "bigint") {
+    return `${value}n`;
+  }
+  if (value === null) {
+    return "null";
+  }
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return "[]";
+    }
+    return `[\n${value.map((item) => `${nestedPad}${renderManifestLiteral(item, indent + 1)}`).join(",\n")}\n${pad}]`;
+  }
+  if (typeof value === "object") {
+    const entries = Object.entries(value);
+    if (entries.length === 0) {
+      return "{}";
+    }
+    return `{\n${entries
+      .map(([key, entryValue]) => `${nestedPad}${JSON.stringify(key)}: ${renderManifestLiteral(entryValue, indent + 1)}`)
+      .join(",\n")}\n${pad}}`;
+  }
+  throw new Error(`unsupported manifest literal value: ${String(value)}`);
 }
 
 function renderLayoutDeclarations(

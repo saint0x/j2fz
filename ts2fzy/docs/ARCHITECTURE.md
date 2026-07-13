@@ -15,6 +15,7 @@ The core architectural rule is:
 The current implementation uses:
 
 - Fozzy ABI manifests as the source of truth
+- embedded ABI manifests inside generated binding packages
 - Koffi as the Node-native C FFI substrate
 - strict TypeScript as the public contract layer
 
@@ -48,7 +49,7 @@ This layer exists in [src/types/abi.ts](/Users/deepsaint/Desktop/j2fz/src/types/
 
 ### 2. Manifest Validation
 
-The manifest layer parses JSON ABI artifacts and rejects malformed or unsupported contracts before any native library is loaded.
+The manifest layer parses ABI artifacts and rejects malformed or unsupported contracts before any native library is loaded.
 
 This layer exists in [src/runtime/manifest.ts](/Users/deepsaint/Desktop/j2fz/src/runtime/manifest.ts:1).
 
@@ -110,6 +111,7 @@ Current generator responsibilities:
 - map ABI types into TypeScript surface types
 - render package-ready JavaScript and declaration output
 - write generated package output
+- embed the validated ABI manifest directly into generated package entrypoints
 - emit ownership-aware handle interfaces for owned pointer returns
 - emit `repr(C)` struct and enum TypeScript declarations
 - emit typed callback registration helpers

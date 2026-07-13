@@ -2,13 +2,14 @@
 
 `ts2fzy` is the TypeScript-first side of `j2fz`.
 
-It lets JavaScript and TypeScript call native [Fzy](https://github.com/saint0x/fzy) libraries through the Fzy C ABI manifest and generated bindings.
+It lets JavaScript and TypeScript call native [Fzy](https://github.com/saint0x/fzy) libraries through the Fzy C ABI contract and generated bindings.
 
 ## What It Does
 
 - manifest parsing and ABI validation
 - native library loading and symbol preflight
 - typed binding generation
+- embedded generated-package ABI manifests with no runtime JSON sidecar
 - callback registration helpers
 - ownership-aware pointer handling
 - generated package-local discovery loaders

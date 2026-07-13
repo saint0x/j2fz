@@ -2,9 +2,10 @@ import { accessSync, constants, existsSync } from "node:fs";
 import { join } from "node:path";
 
 import type {
+  EmbeddedLibraryPaths,
   LibraryPaths,
+  LoadEmbeddedPackageOptions,
   LoadPackageOptions,
-  LoadModuleOptions,
   PackageArtifactDiscoveryOptions,
 } from "../types/public.js";
 import { createDiagnosticEmitter } from "./diagnostics.js";
@@ -13,13 +14,77 @@ import {
   defaultHeaderFileNameForPackage,
   defaultSharedLibraryFileNameForPackage,
 } from "./platform.js";
-import { loadFozzyModule, type LoadedFozzyModule } from "./loader.js";
+import {
+  loadFozzyModule,
+  loadFozzyModuleWithManifest,
+  type LoadedFozzyModule,
+} from "./loader.js";
 
 const ENV_SHARED_LIBRARY = "J2FZ_SHARED_LIBRARY";
 const ENV_ABI_MANIFEST = "J2FZ_ABI_MANIFEST";
 const ENV_HEADER = "J2FZ_HEADER";
 
 export function discoverLibraryPaths(options: PackageArtifactDiscoveryOptions): LibraryPaths {
+  const resolved = resolveDiscoveredArtifacts(options, true);
+  if (resolved.abiManifest === undefined) {
+    throw new SymbolLoadError("ABI manifest discovery did not resolve a readable path");
+  }
+  return resolved as LibraryPaths;
+}
+
+export function discoverEmbeddedLibraryPaths(options: PackageArtifactDiscoveryOptions): EmbeddedLibraryPaths {
+  const resolved = resolveDiscoveredArtifacts(options, false);
+  const embedded: EmbeddedLibraryPaths = {
+    sharedLibrary: resolved.sharedLibrary,
+  };
+  if (resolved.header !== undefined) {
+    embedded.header = resolved.header;
+  }
+  return embedded;
+}
+
+export function loadFozzyPackage(options: LoadPackageOptions): LoadedFozzyModule {
+  const emit = createDiagnosticEmitter(options.diagnostics);
+  const paths = discoverLibraryPaths(options.discovery);
+  emit({
+    kind: "package.discovery.resolved",
+    message: "Resolved generated package artifacts",
+    detail: {
+      packageRoot: options.discovery.packageRoot,
+      sharedLibrary: paths.sharedLibrary,
+      abiManifest: paths.abiManifest,
+      header: paths.header ?? null,
+    },
+  });
+  return loadFozzyModule({
+    ...options,
+    paths,
+  });
+}
+
+export function loadFozzyPackageWithManifest(options: LoadEmbeddedPackageOptions): LoadedFozzyModule {
+  const emit = createDiagnosticEmitter(options.diagnostics);
+  const paths = discoverEmbeddedLibraryPaths(options.discovery);
+  emit({
+    kind: "package.discovery.resolved",
+    message: "Resolved generated package artifacts",
+    detail: {
+      packageRoot: options.discovery.packageRoot,
+      sharedLibrary: paths.sharedLibrary,
+      abiManifest: null,
+      header: paths.header ?? null,
+    },
+  });
+  return loadFozzyModuleWithManifest({
+    ...options,
+    paths,
+  });
+}
+
+function resolveDiscoveredArtifacts(
+  options: PackageArtifactDiscoveryOptions,
+  requireAbiManifest: boolean,
+): Partial<LibraryPaths> & EmbeddedLibraryPaths {
   const env = options.env ?? process.env;
   const packageName = options.package?.name ?? "fozzy_package";
   const nativeDir = join(options.packageRoot, options.nativeDir ?? "native");
@@ -47,36 +112,20 @@ export function discoverLibraryPaths(options: PackageArtifactDiscoveryOptions): 
       : env[ENV_HEADER] ?? join(includeDir, defaultHeaderFileNameForPackage(packageName));
 
   ensureReadable(sharedLibrary, "shared library");
-  ensureReadable(abiManifest, "ABI manifest");
+  if (requireAbiManifest) {
+    ensureReadable(abiManifest, "ABI manifest");
+  }
 
-  const resolved: LibraryPaths = {
+  const resolved: Partial<LibraryPaths> & EmbeddedLibraryPaths = {
     sharedLibrary,
-    abiManifest,
   };
+  if (requireAbiManifest) {
+    resolved.abiManifest = abiManifest;
+  }
   if (existsSync(explicitHeaderPath)) {
     resolved.header = explicitHeaderPath;
   }
   return resolved;
-}
-
-export function loadFozzyPackage(options: LoadPackageOptions): LoadedFozzyModule {
-  const emit = createDiagnosticEmitter(options.diagnostics);
-  const paths = discoverLibraryPaths(options.discovery);
-  emit({
-    kind: "package.discovery.resolved",
-    message: "Resolved generated package artifacts",
-    detail: {
-      packageRoot: options.discovery.packageRoot,
-      sharedLibrary: paths.sharedLibrary,
-      abiManifest: paths.abiManifest,
-      header: paths.header ?? null,
-    },
-  });
-  const loadOptions: LoadModuleOptions = {
-    ...options,
-    paths,
-  };
-  return loadFozzyModule(loadOptions);
 }
 
 function ensureReadable(path: string, label: string): void {
